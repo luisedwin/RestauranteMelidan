@@ -96,19 +96,68 @@
   margin: 0;
 }
 
-/* Accesos Directos Operativos */
+/* Accesos Directos Operativos (4 Módulos para Admin) */
 .ops-shortcuts-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
   margin-bottom: 1.5rem;
 }
 
-@container melidan-shell (max-width: 760px) {
+@container melidan-shell (max-width: 980px) {
+  .ops-shortcuts-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@container melidan-shell (max-width: 560px) {
   .ops-shortcuts-grid {
     grid-template-columns: 1fr;
     gap: 0.75rem;
   }
+}
+
+/* Historial de Compras (Exclusivo Admin) */
+.history-kpi-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 767.98px) {
+  .history-kpi-strip {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.history-kpi-box {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 0.9rem;
+}
+
+.history-purchase-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 0.9rem 1.05rem;
+  margin-bottom: 0.65rem;
+  transition: var(--transition);
+}
+
+.history-purchase-card:hover {
+  border-color: var(--melidan-orange);
+  box-shadow: var(--shadow-sm);
+}
+
+.history-register-box {
+  background: var(--bg-elevated);
+  border: 1.5px dashed var(--melidan-orange);
+  border-radius: var(--radius-lg);
+  padding: 1rem;
+  margin-bottom: 1rem;
 }
 
 /* Panel de Gestión de Personal */

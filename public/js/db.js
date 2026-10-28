@@ -1,6 +1,6 @@
 /**
  * db.js - Cliente HTTP hacia la API REST de Melidan (PostgreSQL 18).
- * PostgreSQL es la fuente de verdad; LocalStorage no almacena datos operativos.
+ * PostgreSQL es la fuente de verdad; adjunta token de sesión para endpoints protegidos por rol.
  */
 class MelidanDB {
   constructor() {
@@ -10,11 +10,27 @@ class MelidanDB {
     this.initPromise = this.init();
   }
 
+  getAuthHeaders() {
+    try {
+      const raw = localStorage.getItem('melidan_auth_user');
+      const user = raw ? JSON.parse(raw) : null;
+      if (user && user.token) {
+        return { Authorization: `Bearer ${user.token}` };
+      }
+    } catch (_) {}
+    return {};
+  }
+
   async request(path, options = {}) {
+    const { headers: extraHeaders = {}, ...restOptions } = options;
     const res = await fetch(`${this.apiBase}${path}`, {
       cache: 'no-store',
-      headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
-      ...options
+      ...restOptions,
+      headers: {
+        'Content-Type': 'application/json',
+        ...this.getAuthHeaders(),
+        ...extraHeaders
+      }
     });
     let json = {};
     try { json = await res.json(); } catch (_) {}
@@ -44,7 +60,7 @@ class MelidanDB {
   updateConnectionBadge(connected) {
     document.querySelectorAll('.db-status-badge').forEach((badge) => {
       badge.innerHTML = connected
-        ? '<span class="badge-dot-green"></span> PostgreSQL 18 Conectado (Melidan_db)'
+        ? '<span class="badge-dot-green"></span> PostgreSQL 18 Conectado (melidan_db)'
         : '<span class="badge-dot-amber"></span> PostgreSQL no disponible';
       badge.className = `db-status-badge ${connected ? 'db-connected' : 'db-local'}`;
     });
@@ -75,6 +91,9 @@ class MelidanDB {
 
   async registerUser(data) {
     const j = await this.request('/auth?action=register', { method: 'POST', body: JSON.stringify(data) });
+    if (j.user && window.AuthService?.saveSession) {
+      window.AuthService.saveSession(j.user);
+    }
     return j.user;
   }
 
@@ -87,15 +106,24 @@ class MelidanDB {
     })).order;
   }
 
-  async getProducts() {
+  async getCategoriesAndProducts() {
     const j = await this.request('/products');
-    return (j.productos || []).map((p) => ({
-      ...p,
-      category: p.categoria_nombre,
-      name: p.name,
-      price: Number(p.price),
-      image: p.image
-    }));
+    return {
+      categorias: j.categorias || [],
+      productos: (j.productos || []).map((p) => ({
+        ...p,
+        category: p.categoria_nombre,
+        name: p.name,
+        description: p.description || '',
+        price: Number(p.price),
+        image: p.image
+      }))
+    };
+  }
+
+  async getProducts() {
+    const data = await this.getCategoriesAndProducts();
+    return data.productos;
   }
 
   async getMesas() { return this.request('/mesas'); }
@@ -116,8 +144,23 @@ class MelidanDB {
   async createReceipt(data) {
     return this.request('/billing', { method: 'POST', body: JSON.stringify(data) });
   }
+
+  async getPurchasesHistory(filters = {}) {
+    const p = new URLSearchParams();
+    if (filters.search) p.set('search', filters.search);
+    if (filters.metodo_pago && filters.metodo_pago !== 'todos') p.set('metodo_pago', filters.metodo_pago);
+    if (filters.tipo_comprobante && filters.tipo_comprobante !== 'todos') p.set('tipo_comprobante', filters.tipo_comprobante);
+    const qs = p.toString();
+    return this.request(`/purchases-history${qs ? `?${qs}` : ''}`);
+  }
+
+  async registerHistoricalPurchase(data) {
+    return this.request('/purchases-history', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+  }
 }
 
 window.MelidanDB = MelidanDB;
 window.db = new MelidanDB();
-

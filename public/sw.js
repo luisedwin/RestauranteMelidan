@@ -1,26 +1,30 @@
-const CACHE = 'melidan-shell-v3';
+const CACHE = 'melidan-shell-v4';
 const SHELL = [
   '/',
   '/login',
   '/index.html',
   '/admin.html',
   '/mozo.html',
+  '/carta.html',
   '/cocina.html',
   '/cajero.html',
   '/css/base.css',
   '/css/styles.css',
   '/css/admin.css',
   '/css/mozo.css',
+  '/css/carta.css',
   '/css/cocina.css',
   '/css/cajero.css',
   '/css/animations.css',
   '/css/dark-mode.css',
   '/js/theme.js',
+  '/js/rbac.js',
   '/js/db.js',
   '/js/auth.js',
   '/js/app.js',
   '/js/admin.js',
   '/js/mozo.js',
+  '/js/carta.js',
   '/js/cocina.js',
   '/js/cajero.js',
   '/manifest.webmanifest'
@@ -60,4 +64,3 @@ self.addEventListener('fetch', (event) => {
       .catch(() => caches.match(event.request).then((cached) => cached || caches.match('/index.html')))
   );
 });
-

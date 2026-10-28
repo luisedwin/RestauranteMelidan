@@ -11,8 +11,9 @@
   <title>Melidan - Caja y Facturación Electrónica</title>
   <meta name="description" content="Punto de venta y caja para cobro de mesas y emisión de comprobantes digitales.">
 
-  <!-- Controlador Anti-FOUC de Tema Oscuro y Vista Móvil -->
+  <!-- Controlador Anti-FOUC de Tema Oscuro y Guardián RBAC -->
   <script src="/js/theme.js"></script>
+  <script src="/js/rbac.js"></script>
 
   <!-- Fuentes Google: Outfit & Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -36,38 +37,25 @@
 
     <!-- Cabecera de Caja -->
     <header class="melidan-navbar">
-      <div class="d-flex align-items-center gap-2">
-        <a href="/login" class="brand-logo">Melidan<span class="dot">.</span></a>
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <span class="brand-logo" style="cursor: default;">Melidan<span class="dot">.</span></span>
         <span class="badge bg-warning text-dark rounded-pill px-2 py-1 small fw-bold">Caja & Facturación</span>
+        <span class="badge bg-light text-secondary border small d-none d-md-inline rbac-user-badge">Caja</span>
       </div>
 
-      <div class="d-flex align-items-center gap-2">
-        <!-- Selector Rápido de Módulos -->
-        <div class="dropdown">
-          <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-            <i class="bi bi-grid-fill"></i><span class="d-none d-sm-inline ms-1">Módulos</span>
-          </button>
-          <ul class="dropdown-menu dropdown-menu-end shadow">
-            <li><a class="dropdown-item" href="/admin.html"><i class="bi bi-speedometer2 me-2"></i>Dashboard Admin</a></li>
-            <li><a class="dropdown-item" href="/mozo.html"><i class="bi bi-grid-3x3-gap-fill text-success me-2"></i>Mozo (Mesas & Carta)</a></li>
-            <li><a class="dropdown-item" href="/cocina.html"><i class="bi bi-fire text-danger me-2"></i>Cocina (KDS)</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item text-danger" href="/login"><i class="bi bi-box-arrow-right me-2"></i>Salir</a></li>
-          </ul>
-        </div>
-
-        <!-- Botón de Demostración Móvil en PC -->
-        <button type="button" class="viewport-toggle-btn" title="Demostración Responsive Móvil" aria-label="Demostración Responsive Móvil">
-          <i class="bi bi-phone"></i><span class="d-none d-md-inline ms-1 small">Móvil</span>
-        </button>
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <a href="/admin.html" class="btn btn-sm btn-outline-secondary" data-allowed-roles="ADMIN" title="Volver al Panel Admin">
+          <i class="bi bi-speedometer2"></i> Admin
+        </a>
 
         <!-- Botón de Modo Oscuro -->
         <button type="button" class="theme-toggle-btn" title="Alternar Modo Oscuro" aria-label="Alternar Modo Oscuro">
           <i class="bi bi-moon-stars-fill"></i><span class="d-none d-sm-inline ms-1 small">Oscuro</span>
         </button>
 
-        <a href="/admin.html" class="btn btn-sm btn-outline-secondary" title="Volver al Dashboard">
-          <i class="bi bi-arrow-left"></i> Dashboard
+        <a href="/login" class="btn btn-sm btn-outline-danger btn-logout-melidan" title="Cerrar Sesión">
+          <i class="bi bi-box-arrow-right"></i>
+          <span class="d-none d-md-inline ms-1">Salir</span>
         </a>
       </div>
     </header>
@@ -201,6 +189,7 @@
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/auth.js"></script>
   <script src="/js/db.js"></script>
   <script src="/js/cajero.js"></script>
   <script>if ("serviceWorker" in navigator) window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js").catch(() => {}));</script>

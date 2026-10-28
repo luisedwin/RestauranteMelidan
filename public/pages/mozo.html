@@ -11,8 +11,9 @@
   <title>Melidan - Control de Mesas y Mozo</title>
   <meta name="description" content="Control de mesas, aforo en tiempo real y toma de pedidos para mozos de Melidan.">
 
-  <!-- Controlador Anti-FOUC de Tema Oscuro y Vista Móvil -->
+  <!-- Controlador Anti-FOUC de Tema Oscuro y Guardián RBAC -->
   <script src="/js/theme.js"></script>
+  <script src="/js/rbac.js"></script>
 
   <!-- Fuentes Google: Outfit & Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -40,18 +41,26 @@
     <div id="mozo-view-tables" class="mozo-view-tab active">
       <div class="tables-screen">
 
-        <!-- Fila Superior de Marca, Tema, Demo Móvil y Dashboard -->
+        <!-- Fila Superior de Marca, Carta, Tema y Cierre de Sesión -->
         <div class="tables-top-bar">
-          <a href="/login" class="brand-logo">Melidan<span class="dot">.</span></a>
+          <div class="d-flex align-items-center gap-2">
+            <span class="brand-logo" style="cursor: default;">Melidan<span class="dot">.</span></span>
+            <span class="badge bg-light text-secondary border small d-none d-sm-inline rbac-user-badge">Salón</span>
+          </div>
           <div class="d-flex align-items-center gap-2 flex-wrap">
-            <button type="button" class="viewport-toggle-btn" title="Demostración Responsive Móvil" aria-label="Demostración Responsive Móvil">
-              <i class="bi bi-phone"></i><span class="d-none d-md-inline ms-1 small">Móvil</span>
-            </button>
+            <a href="/carta.html" class="btn btn-sm btn-melidan-outline">
+              <i class="bi bi-journal-richtext text-warning"></i>
+              <span>Carta</span>
+            </a>
+            <a href="/admin.html" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1" id="btn-back-dashboard" data-allowed-roles="ADMIN">
+              <i class="bi bi-speedometer2"></i> Admin
+            </a>
             <button type="button" class="theme-toggle-btn" title="Alternar Modo Oscuro" aria-label="Alternar Modo Oscuro">
               <i class="bi bi-moon-stars-fill"></i><span class="d-none d-sm-inline ms-1 small">Oscuro</span>
             </button>
-            <a href="/admin.html" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1" id="btn-back-dashboard">
-              <i class="bi bi-arrow-left"></i> Dashboard
+            <a href="/login" class="btn btn-sm btn-outline-danger btn-logout-melidan" title="Cerrar Sesión">
+              <i class="bi bi-box-arrow-right"></i>
+              <span class="d-none d-md-inline ms-1">Salir</span>
             </a>
           </div>
         </div>
@@ -79,16 +88,13 @@
         <!-- Cuadrícula de 15 Mesas (5 Columnas en PC / 3 Columnas en Móvil) -->
         <div class="tables-grid" id="tables-grid-container"></div>
 
-        <!-- Barra Rápida de Acciones del Mozo -->
+        <!-- Barra Rápida de Acciones del Mozo (Solo Mesas y Carta) -->
         <div class="d-flex gap-2 mt-2 flex-wrap">
           <button class="btn btn-melidan-orange flex-fill" onclick="mozoApp.switchTab('menu')">
-            <i class="bi bi-receipt me-1"></i> Tomar Comanda
+            <i class="bi bi-receipt me-1"></i> Tomar Comanda Rápida
           </button>
-          <a href="/cocina.html" class="btn btn-melidan-outline" title="Ver Cocina KDS">
-            <i class="bi bi-fire"></i> KDS
-          </a>
-          <a href="/cajero.html" class="btn btn-melidan-outline" title="Ver Caja">
-            <i class="bi bi-cash-stack"></i> Caja
+          <a href="/carta.html" class="btn btn-melidan-teal flex-fill">
+            <i class="bi bi-journal-richtext me-1"></i> Abrir Apartado Carta
           </a>
         </div>
       </div>
@@ -211,9 +217,14 @@
               </button>
             </div>
 
-            <button class="btn btn-melidan-orange w-100 fw-bold" onclick="mozoApp.goToOrderForMesa()">
-              <i class="bi bi-cart-plus me-1"></i> Tomar Pedido en esta Mesa
-            </button>
+            <div class="d-grid gap-2">
+              <button class="btn btn-melidan-orange w-100 fw-bold" onclick="mozoApp.goToOrderForMesa()">
+                <i class="bi bi-cart-plus me-1"></i> Tomar Pedido en esta Mesa
+              </button>
+              <button class="btn btn-melidan-outline w-100 fw-bold" onclick="mozoApp.openCartaForMesa()">
+                <i class="bi bi-journal-richtext me-1"></i> Abrir Carta Digital de esta Mesa
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -227,6 +238,7 @@
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/auth.js"></script>
   <script src="/js/db.js"></script>
   <script src="/js/mozo.js"></script>
   <script>if ("serviceWorker" in navigator) window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js").catch(() => {}));</script>

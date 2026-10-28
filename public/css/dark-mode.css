@@ -89,14 +89,6 @@
   border-color: var(--border-color);
 }
 
-@media (min-width: 768px) {
-  html[data-theme="dark"][data-viewport="mobile"] .app-container,
-  html[data-theme="dark"][data-viewport="mobile"] .app-container-wide {
-    border-color: #334155 !important;
-    box-shadow: 0 28px 65px rgba(0, 0, 0, 0.72), 0 0 0 1px rgba(148, 163, 184, 0.2) !important;
-  }
-}
-
 [data-theme="dark"] .melidan-navbar,
 [data-theme="dark"] .kds-header,
 [data-theme="dark"] .station-filters,
@@ -225,23 +217,26 @@
 /* ==========================================================================
    Botones, Radios, Filtros y Controles Interactivos
    ========================================================================== */
-[data-theme="dark"] .theme-toggle-btn,
-[data-theme="dark"] .viewport-toggle-btn {
+[data-theme="dark"] .theme-toggle-btn {
   background-color: #1E293B;
   border-color: #475569;
   color: #F1F5F9;
 }
 
-[data-theme="dark"] .theme-toggle-btn:hover,
-[data-theme="dark"] .viewport-toggle-btn:hover {
+[data-theme="dark"] .theme-toggle-btn:hover {
   background-color: #334155;
   color: #FFFFFF;
 }
 
-[data-theme="dark"] .viewport-toggle-btn.is-mobile-active {
-  background-color: rgba(255, 87, 34, 0.2);
-  border-color: var(--melidan-orange);
-  color: #FF8A65;
+[data-theme="dark"] .history-kpi-box,
+[data-theme="dark"] .history-register-box {
+  background-color: #162032 !important;
+  border-color: #334155 !important;
+}
+
+[data-theme="dark"] .history-purchase-card {
+  background-color: var(--bg-card) !important;
+  border-color: var(--border-color) !important;
 }
 
 [data-theme="dark"] .btn-outline-dark,
@@ -264,7 +259,7 @@
   color: #FFFFFF !important;
 }
 
-[data-theme="dark"] .btn-check:checked + .btn-outline-dark {
+[data-theme="dark"] .btn-check:checked+.btn-outline-dark {
   background-color: var(--melidan-orange) !important;
   border-color: var(--melidan-orange) !important;
   color: #FFFFFF !important;
@@ -440,4 +435,3 @@
   border: 1px solid #475569;
   color: #F8FAFC;
 }
-

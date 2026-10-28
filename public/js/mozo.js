@@ -185,6 +185,11 @@ const mozoApp = {
     this.showToast(`📝 Tomando comanda para Mesa ${String(num).padStart(2, '0')}`);
   },
 
+  openCartaForMesa() {
+    const num = this.selectedMesa?.numero_mesa || 4;
+    window.location.href = `/carta.html?mesa=${encodeURIComponent(num)}`;
+  },
+
   switchTab(tab) {
     this.activeTab = tab;
     document.querySelectorAll('.mozo-view-tab').forEach((el) => el.classList.remove('active'));

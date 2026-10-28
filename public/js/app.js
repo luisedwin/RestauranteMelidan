@@ -164,28 +164,17 @@ class AppController {
       this.showScreen('login');
     } else {
       const existingUser = window.AuthService.getCurrentUser();
-      if (existingUser) {
-        this.applyRolePermissions(existingUser);
-        this.updateUserHeaders(existingUser);
-        const roleConfig = this.getRoleConfig(existingUser.role);
-        this.showScreen(roleConfig.defaultScreen);
-      } else {
-        this.showScreen('login');
+      if (existingUser && existingUser.token) {
+        const homeUrl = window.RBAC ? window.RBAC.getHomeUrl(existingUser) : '/carta.html';
+        window.location.replace(homeUrl);
+        return;
       }
+      this.showScreen('login');
     }
 
     // Sincronización con PostgreSQL en segundo plano sin bloquear el Login
     try {
       await window.db.init();
-      if (!forceLogin && window.AuthService.getCurrentUser()) {
-        await Promise.all([
-          this.renderAdminMetrics(),
-          this.renderStaffList(),
-          this.renderMenuDishes(),
-          this.renderKdsOrders(),
-          this.renderTrackerOrder()
-        ]);
-      }
     } catch (err) {
       console.warn('[AppController] Advertencia en carga inicial:', err);
     }
@@ -496,21 +485,28 @@ class AppController {
 
         try {
           const user = await window.AuthService.login(email, password);
-          this.applyRolePermissions(user);
-          this.updateUserHeaders(user);
           const roleConfig = this.getRoleConfig(user.role);
-
           const normRole = this.normalizeRole(user.role);
-          let targetHtml = '/admin.html';
-          if (normRole === 'ADMIN') targetHtml = '/admin.html';
-          else if (normRole === 'WAITER' || normRole === 'CLIENT' || normRole === 'RECEPCIONISTA') targetHtml = '/mozo.html';
-          else if (normRole === 'CHEF') targetHtml = '/cocina.html';
-          else if (normRole === 'CASHIER') targetHtml = '/cajero.html';
+
+          let targetHtml = '/carta.html';
+          if (window.RBAC) {
+            targetHtml = window.RBAC.getHomeUrl(user);
+          } else if (normRole === 'ADMIN') {
+            targetHtml = '/admin.html';
+          } else if (normRole === 'CHEF') {
+            targetHtml = '/cocina.html';
+          } else if (normRole === 'WAITER' || normRole === 'RECEPCIONISTA') {
+            targetHtml = '/mozo.html';
+          } else if (normRole === 'CASHIER') {
+            targetHtml = '/cajero.html';
+          } else {
+            targetHtml = '/carta.html';
+          }
 
           this.showToast(`¡Bienvenido ${user.name}! Redirigiendo a ${roleConfig.label}...`);
           setTimeout(() => {
             window.location.href = targetHtml;
-          }, 420);
+          }, 360);
         } catch (err) {
           alertBox.textContent = err.message;
           alertBox.classList.remove('d-none');
@@ -1550,14 +1546,11 @@ class AppController {
 
     try {
       const user = await window.AuthService.login(email, password);
-      if (window.location.pathname === '/login' && window.history.replaceState) {
-        window.history.replaceState({}, '', '/');
-      }
-      this.applyRolePermissions(user);
-      this.updateUserHeaders(user);
-      const roleConfig = this.getRoleConfig(user.role);
-      this.showToast(`¡Bienvenido ${user.name}! [${roleConfig.label}]`);
-      this.showScreen(roleConfig.defaultScreen);
+      const targetHtml = window.RBAC ? window.RBAC.getHomeUrl(user) : '/carta.html';
+      this.showToast(`¡Bienvenido ${user.name}! Redirigiendo...`);
+      setTimeout(() => {
+        window.location.href = targetHtml;
+      }, 360);
     } catch (err) {
       this.showToast(`Error al autenticar: ${err.message}`, 'error');
     }

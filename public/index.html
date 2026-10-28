@@ -34,13 +34,10 @@
   <!-- Contenedor Principal Web Responsive + Demo Móvil -->
   <main class="app-container app-container-auth">
 
-    <!-- Barra de Utilidades Superior (Tema Oscuro y Demo Móvil) -->
+    <!-- Barra de Utilidades Superior (Modo Oscuro) -->
     <div class="portal-topbar">
       <small class="text-muted fw-bold" style="font-size: 0.72rem; letter-spacing: 0.06em;">PORTAL MELIDAN</small>
       <div class="d-flex align-items-center gap-2">
-        <button type="button" class="viewport-toggle-btn" title="Demostración Responsive Móvil" aria-label="Demostración Responsive Móvil">
-          <i class="bi bi-phone"></i><span class="d-none d-md-inline ms-1 small">Móvil</span>
-        </button>
         <button type="button" class="theme-toggle-btn" title="Alternar Modo Oscuro" aria-label="Alternar Modo Oscuro">
           <i class="bi bi-moon-stars-fill"></i><span class="d-none d-sm-inline ms-1 small">Oscuro</span>
         </button>
@@ -89,33 +86,6 @@
             <a href="#" class="link-melidan-teal fw-bold d-block" onclick="app.showScreen('register'); return false;">
               ✨ ¿No tienes cuenta? Regístrate aquí
             </a>
-          </div>
-
-          <!-- Módulos Separados (Acceso Directo Operativo) -->
-          <div class="mt-3 pt-3 border-top text-center">
-            <small class="text-secondary fw-bold d-block mb-2" style="font-size: 0.74rem; letter-spacing: 0.05em;">MÓDULOS DEL SISTEMA:</small>
-            <div class="row g-2">
-              <div class="col-6">
-                <a href="/admin.html" class="btn btn-outline-dark btn-sm w-100 fw-bold py-2">
-                  <i class="bi bi-speedometer2 text-danger me-1"></i> Admin
-                </a>
-              </div>
-              <div class="col-6">
-                <a href="/mozo.html" class="btn btn-outline-dark btn-sm w-100 fw-bold py-2">
-                  <i class="bi bi-grid-3x3-gap-fill text-success me-1"></i> Mozo / Mesas
-                </a>
-              </div>
-              <div class="col-6">
-                <a href="/cocina.html" class="btn btn-outline-dark btn-sm w-100 fw-bold py-2">
-                  <i class="bi bi-fire text-warning me-1"></i> Cocina KDS
-                </a>
-              </div>
-              <div class="col-6">
-                <a href="/cajero.html" class="btn btn-outline-dark btn-sm w-100 fw-bold py-2">
-                  <i class="bi bi-cash-coin text-primary me-1"></i> Cajero
-                </a>
-              </div>
-            </div>
           </div>
         </form>
       </div>
@@ -739,68 +709,6 @@
 
   </main>
 
-  <!-- Botón Flotante para Cambiar Rápido de Roles (RBAC) -->
-  <div class="dev-role-floater dropdown">
-    <button class="btn btn-dark btn-sm rounded-pill shadow-lg dropdown-toggle px-3 py-2 fw-bold d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown">
-      <i class="bi bi-shield-lock-fill text-warning"></i>
-      <span>Probar Roles</span>
-    </button>
-    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 p-2" style="min-width: 290px;">
-      <li><h6 class="dropdown-header small fw-bold text-uppercase text-secondary">Control de Acceso por Rol (RBAC)</h6></li>
-      <li>
-        <a class="dropdown-item rounded-2 py-2 d-flex align-items-center justify-content-between" href="#" onclick="app.quickLogin('chef@melidan.com', 'password123'); return false;">
-          <div>
-            <div class="fw-bold">👨‍🍳 Cocinero (Marco Antonio)</div>
-            <div class="small text-muted" style="font-size: 0.74rem;">Apartado ÚNICO: Cocina KDS</div>
-          </div>
-          <span class="badge bg-warning text-dark ms-2">Solo Cocina</span>
-        </a>
-      </li>
-      <li>
-        <a class="dropdown-item rounded-2 py-2 d-flex align-items-center justify-content-between" href="#" onclick="app.quickLogin('carlos.p@melidan.com', 'password123'); return false;">
-          <div>
-            <div class="fw-bold">🛎️ Mozo (Carlos Paredes)</div>
-            <div class="small text-muted" style="font-size: 0.74rem;">Apartado: Carta QR y Tracker</div>
-          </div>
-          <span class="badge bg-success-subtle text-success ms-2">Salón</span>
-        </a>
-      </li>
-      <li>
-        <a class="dropdown-item rounded-2 py-2 d-flex align-items-center justify-content-between" href="#" onclick="app.quickLogin('maria.s@melidan.com', 'password123'); return false;">
-          <div>
-            <div class="fw-bold">💵 Cajera (María Salazar)</div>
-            <div class="small text-muted" style="font-size: 0.74rem;">Apartado: Facturación y Tracker</div>
-          </div>
-          <span class="badge bg-info-subtle text-info ms-2">Caja</span>
-        </a>
-      </li>
-      <li>
-        <a class="dropdown-item rounded-2 py-2 d-flex align-items-center justify-content-between" href="#" onclick="app.quickLogin('recepcion@melidan.com', 'password123'); return false;">
-          <div>
-            <div class="fw-bold">🛎️ Recepción (Aforo)</div>
-            <div class="small text-muted" style="font-size: 0.74rem;">Apartado: Monitoreo y Carta</div>
-          </div>
-          <span class="badge bg-info-subtle text-info ms-2">Recepción</span>
-        </a>
-      </li>
-      <li>
-        <a class="dropdown-item rounded-2 py-2 d-flex align-items-center justify-content-between" href="#" onclick="app.quickLogin('admin@melidan.com', 'password123'); return false;">
-          <div>
-            <div class="fw-bold">👑 Admin (Don Roberto)</div>
-            <div class="small text-muted" style="font-size: 0.74rem;">Acceso Total: Todos los apartados</div>
-          </div>
-          <span class="badge bg-primary-subtle text-primary ms-2">Total</span>
-        </a>
-      </li>
-      <li><hr class="dropdown-divider"></li>
-      <li>
-        <div class="px-2 py-1 small text-muted" style="font-size: 0.73rem;">
-          🔒 Conectado a PostgreSQL 18 (melidan_db).
-        </div>
-      </li>
-    </ul>
-  </div>
-
   <!-- ====================================================================
        MODALES DE INTERFAZ Y FEEDBACK
        ==================================================================== -->
@@ -973,6 +881,7 @@
 
   <!-- Bootstrap 5 JS Bundle & Controladores -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/rbac.js"></script>
   <script src="/js/db.js"></script>
   <script src="/js/auth.js"></script>
   <script src="/js/app.js"></script>

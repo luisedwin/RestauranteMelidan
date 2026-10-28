@@ -6,6 +6,7 @@ const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const { pool } = require('../config/db');
 const { publicUser, userDto, validateUser, dbRoleAliases } = require('../utils/validators');
+const { signToken, verifyToken, extractBearerToken, requireAdmin } = require('../utils/authToken');
 
 const router = express.Router();
 const asyncRoute = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
@@ -13,6 +14,16 @@ const asyncRoute = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next
 async function getUserByEmail(email) {
   const { rows } = await pool.query('SELECT * FROM usuarios WHERE LOWER(email) = LOWER($1) LIMIT 1', [email]);
   return rows[0] || null;
+}
+
+async function getNextVoucherNumber(client, tipoComprobante) {
+  const serie = tipoComprobante === 'factura' ? 'F001' : 'B001';
+  const seq = await client.query(
+    `SELECT COALESCE(MAX(NULLIF(SUBSTRING(numero_comprobante FROM '[0-9]+$'), '')::int), 1025) + 1 AS next
+     FROM comprobantes`
+  );
+  const nextInt = Number(seq.rows[0].next || 1026);
+  return `${serie}-${String(nextInt).padStart(8, '0')}`;
 }
 
 // ============================================================================
@@ -59,8 +70,8 @@ router.all('/auth', asyncRoute(async (req, res) => {
     }
 
     const session = publicUser(user);
-    session.token = crypto.randomBytes(24).toString('hex');
-    return res.json({ success: true, message: 'Inicio de sesión exitoso', user: session });
+    session.token = signToken(user);
+    return res.json({ success: true, message: 'Inicio de sesión exitoso', token: session.token, user: session });
   }
 
   if (action === 'register') {
@@ -76,8 +87,8 @@ router.all('/auth', asyncRoute(async (req, res) => {
         [d.nombre, d.email, d.password_hash, d.rol, d.tipo_documento, d.numero_documento || null, d.nacionalidad, d.telefono || null, d.turno, d.estado, d.avatar]
       );
       const session = publicUser(rows[0]);
-      session.token = crypto.randomBytes(24).toString('hex');
-      return res.status(201).json({ success: true, message: '¡Cuenta registrada con éxito en Melidan!', user: session });
+      session.token = signToken(rows[0]);
+      return res.status(201).json({ success: true, message: '¡Cuenta registrada con éxito en Melidan!', token: session.token, user: session });
     } catch (e) {
       if (e.code === '23505') {
         return res.status(409).json({ success: false, message: 'El correo electrónico ya se encuentra registrado' });
@@ -279,11 +290,22 @@ router.post('/staff/:id/restore', asyncRoute(async (req, res) => {
 }));
 
 // ============================================================================
-// 4. PRODUCTOS Y CATEGORÍAS
+// 4. PRODUCTOS Y CATEGORÍAS (CARTA GASTRONÓMICA)
 // ============================================================================
-router.get('/products', asyncRoute(async (req, res) => {
+const handleGetCatalog = asyncRoute(async (req, res) => {
   const [cats, products] = await Promise.all([
-    pool.query('SELECT id_categoria, nombre, descripcion FROM categorias ORDER BY id_categoria'),
+    pool.query(
+      `SELECT id_categoria, nombre, descripcion
+       FROM categorias
+       ORDER BY CASE nombre
+         WHEN 'Entradas' THEN 1
+         WHEN 'Platos de Fondo' THEN 2
+         WHEN 'Especialidades al Horno' THEN 3
+         WHEN 'Bebidas' THEN 4
+         WHEN 'Postres' THEN 5
+         ELSE 6
+       END, id_categoria`
+    ),
     pool.query(
       `SELECT p.id_producto AS id, p.id_categoria, c.nombre AS categoria_nombre,
               p.nombre AS name, p.descripcion AS description, p.precio AS price,
@@ -292,11 +314,14 @@ router.get('/products', asyncRoute(async (req, res) => {
        FROM productos p
        LEFT JOIN categorias c ON p.id_categoria = c.id_categoria
        WHERE p.disponible = TRUE
-       ORDER BY p.id_categoria, p.id_producto`
+       ORDER BY p.destacado_menu DESC, p.id_producto ASC`
     )
   ]);
   res.json({ success: true, categorias: cats.rows, productos: products.rows });
-}));
+});
+
+router.get('/products', handleGetCatalog);
+router.get('/menu', handleGetCatalog);
 
 // ============================================================================
 // 5. CONTROL DE MESAS Y AFORO (15 MESAS EN TIEMPO REAL)
@@ -364,7 +389,10 @@ router.get('/orders', asyncRoute(async (req, res) => {
   const { rows } = await pool.query(
     `SELECT p.id_pedido, p.numero_comanda, p.id_mesa, m.numero_mesa, m.estado AS estado_mesa,
             p.id_usuario, p.nombre_cliente,
-            COALESCE(u.nombre, 'Mozo de Turno') AS mozo_nombre,
+            CASE
+              WHEN u.rol = 'cliente' THEN 'Pedido en Carta Digital'
+              ELSE COALESCE(u.nombre, 'Mozo de Turno')
+            END AS mozo_nombre,
             COALESCE((SELECT SUM(dp.cantidad * dp.precio_unitario) FROM detalle_pedidos dp WHERE dp.id_pedido = p.id_pedido), 0) AS total,
             EXISTS(SELECT 1 FROM ventas v WHERE v.id_pedido = p.id_pedido AND v.estado_pago = 'exitoso') AS pagado,
             p.estado, p.fecha_hora,
@@ -383,8 +411,10 @@ router.get('/orders', asyncRoute(async (req, res) => {
               d.cantidad, d.precio_unitario, d.observaciones, pr.tipo_coccion, pr.id_categoria,
               CASE
                 WHEN pr.id_categoria = 3 THEN 'Bar y Bebidas'
+                WHEN pr.id_categoria = 4 THEN 'Repostería / Postres'
                 WHEN pr.tipo_coccion = 'horno_artesanal' THEN 'Horno Artesanal'
                 WHEN pr.tipo_coccion = 'fuego_lento' THEN 'Horno / Fuego Lento'
+                WHEN pr.id_categoria = 5 AND pr.tipo_coccion = 'no_aplica' THEN 'Cocina Fría / Entradas'
                 ELSE 'Estación Wok'
               END AS estacion,
               pr.tiempo_preparacion_min
@@ -417,32 +447,45 @@ router.post('/orders', asyncRoute(async (req, res) => {
     return res.status(400).json({ success: false, message: 'El pedido debe contener al menos un producto' });
   }
 
+  const tokenPayload = verifyToken(extractBearerToken(req));
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
-    const tableNum = Number(d.table_num ?? d.numero_mesa);
-    const tr = await client.query('SELECT id_mesa FROM mesas WHERE numero_mesa = $1 LIMIT 1', [tableNum]);
+    const tableNum = Number(d.table_num ?? d.numero_mesa ?? 4);
+    const tr = await client.query(
+      'SELECT id_mesa, estado, monto_acumulado, mozo_asignado FROM mesas WHERE numero_mesa = $1 LIMIT 1',
+      [tableNum]
+    );
     if (!tr.rows[0]) {
       await client.query('ROLLBACK');
       return res.status(404).json({ success: false, message: 'Mesa no encontrada' });
     }
 
-    let waiterId = Number(d.id_usuario) || null;
-    if (!waiterId && d.waiter_name) {
+    const mesaRow = tr.rows[0];
+    let orderingUser = null;
+    const requestedUid = Number(d.id_usuario || tokenPayload?.uid || 0);
+    if (requestedUid > 0) {
+      const ur = await client.query('SELECT id_usuario, nombre, rol FROM usuarios WHERE id_usuario = $1 LIMIT 1', [requestedUid]);
+      orderingUser = ur.rows[0] || null;
+    } else if (d.waiter_name) {
       const wr = await client.query(
-        `SELECT id_usuario FROM usuarios WHERE LOWER(nombre) LIKE LOWER($1) AND is_deleted = FALSE LIMIT 1`,
+        `SELECT id_usuario, nombre, rol FROM usuarios WHERE LOWER(nombre) LIKE LOWER($1) AND is_deleted = FALSE LIMIT 1`,
         [`%${String(d.waiter_name).trim()}%`]
       );
-      waiterId = wr.rows[0]?.id_usuario || null;
+      orderingUser = wr.rows[0] || null;
     }
 
     const cr = await client.query('SELECT COALESCE(MAX(numero_comanda), 1050) + 1 AS next FROM pedidos');
     const comanda = Number(cr.rows[0].next);
 
+    const clientLabel = String(
+      d.client_name || (orderingUser?.rol === 'cliente' ? orderingUser.nombre : 'Comensal')
+    ).trim() || 'Comensal';
+
     const order = await client.query(
       `INSERT INTO pedidos(numero_comanda, id_mesa, id_usuario, nombre_cliente, estado)
        VALUES($1, $2, $3, $4, 'pendiente') RETURNING id_pedido, numero_comanda, estado`,
-      [comanda, tr.rows[0].id_mesa, waiterId, String(d.client_name || 'Comensal')]
+      [comanda, mesaRow.id_mesa, orderingUser?.id_usuario || null, clientLabel]
     );
 
     let total = 0;
@@ -451,29 +494,48 @@ router.post('/orders', asyncRoute(async (req, res) => {
       const qty = Number(item.cantidad ?? item.quantity ?? item.qty);
       const pr = await client.query('SELECT precio FROM productos WHERE id_producto = $1 AND disponible = TRUE', [pid]);
       if (!pr.rows[0] || !Number.isInteger(qty) || qty <= 0) {
-        throw new Error(`Producto o cantidad inválida: ${pid}`);
+        const invalidErr = new Error(`Producto o cantidad inválida: ${pid}`);
+        invalidErr.status = 422;
+        invalidErr.expose = true;
+        throw invalidErr;
       }
       const price = Number(pr.rows[0].precio);
       total += price * qty;
       await client.query(
         'INSERT INTO detalle_pedidos(id_pedido, id_producto, cantidad, precio_unitario, observaciones) VALUES($1,$2,$3,$4,$5)',
-        [order.rows[0].id_pedido, pid, qty, price, item.observaciones ?? item.notes ?? '']
+        [order.rows[0].id_pedido, pid, qty, price, String(item.observaciones ?? item.notes ?? '').slice(0, 250)]
       );
     }
 
-    const waiterLabel = String(d.waiter_name || '').trim() || null;
+    const isClientOrder = orderingUser?.rol === 'cliente' || (!orderingUser && !d.waiter_name);
+    let waiterAssigned = mesaRow.mozo_asignado;
+    if (!isClientOrder) {
+      waiterAssigned = orderingUser?.nombre || String(d.waiter_name || '').trim() || mesaRow.mozo_asignado || 'Mozo de Turno';
+    } else if (!waiterAssigned || waiterAssigned === '-') {
+      waiterAssigned = 'Pedido en Carta';
+    }
+
+    const prevAmount = ['ocupada', 'cuenta'].includes(String(mesaRow.estado || '').toLowerCase())
+      ? Number(mesaRow.monto_acumulado || 0)
+      : 0;
+    const nextAmount = Number((prevAmount + total).toFixed(2));
+
     await client.query(
       `UPDATE mesas
        SET estado = 'ocupada',
-           tiempo_min = 15,
-           mozo_asignado = COALESCE((SELECT nombre FROM usuarios WHERE id_usuario = $1), $2, mozo_asignado),
-           monto_acumulado = $3
-       WHERE id_mesa = $4`,
-      [waiterId, waiterLabel, total, tr.rows[0].id_mesa]
+           tiempo_min = CASE WHEN tiempo_min > 0 THEN tiempo_min ELSE 15 END,
+           mozo_asignado = $1,
+           monto_acumulado = $2
+       WHERE id_mesa = $3`,
+      [waiterAssigned, nextAmount, mesaRow.id_mesa]
     );
 
     await client.query('COMMIT');
-    res.status(201).json({ success: true, message: 'Comanda creada con éxito en PostgreSQL', order: { ...order.rows[0], total } });
+    res.status(201).json({
+      success: true,
+      message: 'Comanda creada con éxito en PostgreSQL',
+      order: { ...order.rows[0], numero_mesa: tableNum, total }
+    });
   } catch (e) {
     await client.query('ROLLBACK');
     throw e;
@@ -523,7 +585,8 @@ router.get('/dashboard', asyncRoute(async (req, res) => {
                 FROM usuarios`),
     pool.query(
       `SELECT p.id_pedido, p.numero_comanda, m.numero_mesa,
-              COALESCE(u.nombre, 'Mozo de Turno') AS mozo_nombre, p.nombre_cliente,
+              CASE WHEN u.rol = 'cliente' THEN 'Pedido en Carta' ELSE COALESCE(u.nombre, 'Mozo de Turno') END AS mozo_nombre,
+              p.nombre_cliente,
               COALESCE((SELECT SUM(dp.cantidad * dp.precio_unitario) FROM detalle_pedidos dp WHERE dp.id_pedido = p.id_pedido), 0) AS total,
               p.estado,
               CASE
@@ -657,9 +720,7 @@ router.post('/billing', asyncRoute(async (req, res) => {
       [oid, payment, total]
     );
 
-    const serie = type === 'factura' ? 'F001' : 'B001';
-    const seq = await client.query('SELECT COALESCE(MAX(id_comprobante), 1000) + 1 AS next FROM comprobantes');
-    const num = `${serie}-${String(seq.rows[0].next).padStart(8, '0')}`;
+    const num = await getNextVoucherNumber(client, type);
 
     const comp = await client.query(
       `INSERT INTO comprobantes(id_venta, tipo_comprobante, numero_comprobante)
@@ -696,5 +757,206 @@ router.post('/billing', asyncRoute(async (req, res) => {
   }
 }));
 
-module.exports = router;
+// ============================================================================
+// 9. HISTORIAL Y REGISTRO DE COMPRAS ANTERIORES (EXCLUSIVO PARA ADMIN)
+// ============================================================================
+router.get('/purchases-history', requireAdmin, asyncRoute(async (req, res) => {
+  const { search = '', metodo_pago = '', tipo_comprobante = '' } = req.query;
+  const cond = [`v.estado_pago = 'exitoso'`];
+  const params = [];
 
+  if (search) {
+    params.push(`%${String(search).toLowerCase().trim()}%`);
+    cond.push(
+      `(LOWER(COALESCE(p.nombre_cliente, '')) LIKE $${params.length}
+        OR LOWER(COALESCE(c.numero_comprobante, '')) LIKE $${params.length}
+        OR CAST(p.numero_comanda AS TEXT) LIKE $${params.length}
+        OR LOWER(COALESCE(u.nombre, '')) LIKE $${params.length})`
+    );
+  }
+  if (metodo_pago && metodo_pago !== 'todos') {
+    params.push(String(metodo_pago).trim());
+    cond.push(`v.metodo_pago = $${params.length}`);
+  }
+  if (tipo_comprobante && tipo_comprobante !== 'todos') {
+    params.push(String(tipo_comprobante).trim());
+    cond.push(`c.tipo_comprobante = $${params.length}`);
+  }
+
+  const [kpiRes, rowsRes] = await Promise.all([
+    pool.query(
+      `SELECT
+         COUNT(*)::int AS total_compras,
+         COALESCE(SUM(monto_total), 0)::numeric(12,2) AS monto_acumulado,
+         COALESCE(AVG(monto_total), 0)::numeric(10,2) AS ticket_promedio,
+         COUNT(*) FILTER (WHERE fecha_pago::date = CURRENT_DATE)::int AS compras_hoy,
+         COALESCE(SUM(monto_total) FILTER (WHERE fecha_pago::date = CURRENT_DATE), 0)::numeric(12,2) AS monto_hoy
+       FROM ventas
+       WHERE estado_pago = 'exitoso'`
+    ),
+    pool.query(
+      `SELECT
+         v.id_venta,
+         v.id_pedido,
+         v.metodo_pago,
+         v.monto_total,
+         v.estado_pago,
+         v.fecha_pago,
+         TO_CHAR(v.fecha_pago, 'DD/MM/YYYY HH12:MI AM') AS fecha_formato,
+         p.numero_comanda,
+         p.nombre_cliente,
+         p.estado AS estado_pedido,
+         COALESCE(m.numero_mesa, 1) AS numero_mesa,
+         CASE WHEN u.rol = 'cliente' THEN 'Pedido en Carta' ELSE COALESCE(u.nombre, 'Caja / Gerencia') END AS atendido_por,
+         c.id_comprobante,
+         COALESCE(c.tipo_comprobante::text, 'boleta') AS tipo_comprobante,
+         COALESCE(c.numero_comprobante, 'SIN-COMP') AS numero_comprobante
+       FROM ventas v
+       JOIN pedidos p ON v.id_pedido = p.id_pedido
+       LEFT JOIN comprobantes c ON c.id_venta = v.id_venta
+       LEFT JOIN mesas m ON p.id_mesa = m.id_mesa
+       LEFT JOIN usuarios u ON p.id_usuario = u.id_usuario
+       WHERE ${cond.join(' AND ')}
+       ORDER BY v.fecha_pago DESC, v.id_venta DESC`,
+      params
+    )
+  ]);
+
+  const history = rowsRes.rows;
+  if (history.length > 0) {
+    const orderIds = history.map((r) => r.id_pedido);
+    const itemsRes = await pool.query(
+      `SELECT d.id_pedido, d.cantidad, d.precio_unitario,
+              (d.cantidad * d.precio_unitario)::numeric(10,2) AS subtotal,
+              pr.nombre AS nombre_plato, d.observaciones
+       FROM detalle_pedidos d
+       JOIN productos pr ON d.id_producto = pr.id_producto
+       WHERE d.id_pedido = ANY($1::int[])
+       ORDER BY d.id_detalle`,
+      [orderIds]
+    );
+    const byOrder = new Map();
+    for (const item of itemsRes.rows) {
+      if (!byOrder.has(item.id_pedido)) byOrder.set(item.id_pedido, []);
+      byOrder.get(item.id_pedido).push(item);
+    }
+    for (const row of history) {
+      row.items = byOrder.get(row.id_pedido) || [];
+    }
+  }
+
+  const k = kpiRes.rows[0] || {};
+  res.json({
+    success: true,
+    summary: {
+      total_compras: Number(k.total_compras || 0),
+      monto_acumulado: Number(k.monto_acumulado || 0),
+      ticket_promedio: Number(k.ticket_promedio || 0),
+      compras_hoy: Number(k.compras_hoy || 0),
+      monto_hoy: Number(k.monto_hoy || 0)
+    },
+    count: history.length,
+    history
+  });
+}));
+
+router.post('/purchases-history', requireAdmin, asyncRoute(async (req, res) => {
+  const d = req.body || {};
+  const items = Array.isArray(d.items) ? d.items : [];
+  if (!items.length) {
+    return res.status(422).json({ success: false, message: 'Agrega al menos un producto para registrar la compra.' });
+  }
+
+  const payment = ['aplicacion', 'efectivo_caja', 'tarjeta_caja'].includes(d.metodo_pago)
+    ? d.metodo_pago
+    : 'efectivo_caja';
+  const voucherType = ['boleta', 'factura'].includes(d.tipo_comprobante)
+    ? d.tipo_comprobante
+    : 'boleta';
+  const tableNum = Number(d.numero_mesa || 1);
+  const clientName = String(d.nombre_cliente || 'Comensal Histórico').trim() || 'Comensal Histórico';
+
+  let purchaseDate = new Date();
+  if (d.fecha_compra) {
+    const parsed = new Date(d.fecha_compra);
+    if (Number.isNaN(parsed.getTime())) {
+      return res.status(422).json({ success: false, message: 'La fecha de compra ingresada no es válida.' });
+    }
+    purchaseDate = parsed;
+  }
+
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const tr = await client.query('SELECT id_mesa FROM mesas WHERE numero_mesa = $1 LIMIT 1', [tableNum]);
+    const idMesa = tr.rows[0]?.id_mesa || (await client.query('SELECT id_mesa FROM mesas ORDER BY numero_mesa LIMIT 1')).rows[0].id_mesa;
+
+    const cr = await client.query('SELECT COALESCE(MAX(numero_comanda), 1050) + 1 AS next FROM pedidos');
+    const comanda = Number(cr.rows[0].next);
+
+    const pRes = await client.query(
+      `INSERT INTO pedidos(numero_comanda, id_mesa, id_usuario, nombre_cliente, estado, fecha_hora)
+       VALUES($1, $2, $3, $4, 'entregado', $5)
+       RETURNING id_pedido, numero_comanda`,
+      [comanda, idMesa, req.authUser?.uid || 1, clientName, purchaseDate.toISOString()]
+    );
+    const idPedido = pRes.rows[0].id_pedido;
+
+    let total = 0;
+    for (const item of items) {
+      const pid = Number(item.id_producto ?? item.id);
+      const qty = Number(item.cantidad ?? item.quantity ?? 1);
+      const pr = await client.query('SELECT precio FROM productos WHERE id_producto = $1', [pid]);
+      if (!pr.rows[0] || !Number.isInteger(qty) || qty <= 0) {
+        const invalidErr = new Error('Producto o cantidad inválida en el registro de compra.');
+        invalidErr.status = 422;
+        invalidErr.expose = true;
+        throw invalidErr;
+      }
+      const unitPrice = Number(pr.rows[0].precio);
+      total += unitPrice * qty;
+      await client.query(
+        `INSERT INTO detalle_pedidos(id_pedido, id_producto, cantidad, precio_unitario, observaciones)
+         VALUES($1, $2, $3, $4, $5)`,
+        [idPedido, pid, qty, unitPrice, String(item.observaciones || '').slice(0, 250)]
+      );
+    }
+
+    const vRes = await client.query(
+      `INSERT INTO ventas(id_pedido, metodo_pago, monto_total, estado_pago, fecha_pago)
+       VALUES($1, $2, $3, 'exitoso', $4)
+       RETURNING id_venta`,
+      [idPedido, payment, total, purchaseDate.toISOString()]
+    );
+
+    const voucherNumber = await getNextVoucherNumber(client, voucherType);
+    const cRes = await client.query(
+      `INSERT INTO comprobantes(id_venta, tipo_comprobante, numero_comprobante, fecha_emision)
+       VALUES($1, $2, $3, $4)
+       RETURNING id_comprobante, numero_comprobante, TO_CHAR(fecha_emision, 'DD/MM/YYYY HH12:MI AM') AS fecha_formato`,
+      [vRes.rows[0].id_venta, voucherType, voucherNumber, purchaseDate.toISOString()]
+    );
+
+    await client.query('COMMIT');
+    res.status(201).json({
+      success: true,
+      message: `Compra histórica registrada con comprobante ${cRes.rows[0].numero_comprobante}`,
+      purchase: {
+        id_venta: vRes.rows[0].id_venta,
+        id_pedido: idPedido,
+        numero_comanda: comanda,
+        id_comprobante: cRes.rows[0].id_comprobante,
+        numero_comprobante: cRes.rows[0].numero_comprobante,
+        fecha_formato: cRes.rows[0].fecha_formato,
+        monto_total: Number(total.toFixed(2))
+      }
+    });
+  } catch (e) {
+    await client.query('ROLLBACK');
+    throw e;
+  } finally {
+    client.release();
+  }
+}));
+
+module.exports = router;

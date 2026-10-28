@@ -39,7 +39,7 @@ app.use(express.static(PUBLIC_DIR, { index: 'index.html' }));
 app.use(express.static(PAGES_DIR));
 
 // Rutas amigables sin extensión
-const cleanModuleRoutes = ['admin', 'mozo', 'cocina', 'cajero'];
+const cleanModuleRoutes = ['admin', 'mozo', 'cocina', 'cajero', 'carta'];
 for (const mod of cleanModuleRoutes) {
   app.get(`/${mod}`, (req, res) => {
     res.sendFile(path.join(PAGES_DIR, `${mod}.html`));
@@ -63,27 +63,37 @@ app.use((err, req, res, _next) => {
   });
 });
 
-const server = app.listen(PORT, () => {
-  console.log(`\n  ✔ Melidan Web activa en: http://localhost:${PORT}/login`);
-  console.log(`  ✔ PostgreSQL: ${dbConfig.user}@${dbConfig.host}:${dbConfig.port}/${dbConfig.database}\n`);
-});
-
-server.on('error', (err) => {
-  if (err.code === 'EADDRINUSE') {
-    console.error(`\n  [Aviso] El puerto ${PORT} ya está en uso por otra instancia de Melidan.\n`);
-    process.exit(0);
-  }
-  console.error('[Servidor] Error crítico al iniciar:', err);
-  process.exit(1);
-});
-
-async function shutdown() {
-  server.close(async () => {
-    try { await pool.end(); } catch (_) {}
-    process.exit(0);
+function startServer(port = PORT) {
+  const server = app.listen(port, () => {
+    const actualPort = server.address()?.port || port;
+    console.log(`\n  ✔ Melidan Web activa en: http://localhost:${actualPort}/login`);
+    console.log(`  ✔ PostgreSQL: ${dbConfig.user}@${dbConfig.host}:${dbConfig.port}/${dbConfig.database}\n`);
   });
+
+  server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      console.error(`\n  [Aviso] El puerto ${port} ya está en uso por otra instancia de Melidan.\n`);
+      process.exit(0);
+    }
+    console.error('[Servidor] Error crítico al iniciar:', err);
+    process.exit(1);
+  });
+
+  async function shutdown() {
+    server.close(async () => {
+      try { await pool.end(); } catch (_) {}
+      process.exit(0);
+    });
+  }
+
+  process.on('SIGINT', shutdown);
+  process.on('SIGTERM', shutdown);
+  return server;
 }
 
-process.on('SIGINT', shutdown);
-process.on('SIGTERM', shutdown);
+if (require.main === module) {
+  startServer(PORT);
+}
+
+module.exports = { app, startServer };
 

@@ -167,45 +167,7 @@ button, .btn, .bottom-bar-btn, a.btn {
   }
 }
 
-/* ==========================================================================
-   Modo Demostración Móvil en PC ([data-viewport="mobile"])
-   Permite demostrar el diseño responsive móvil directamente desde PC
-   ========================================================================== */
-@media (min-width: 768px) {
-  html[data-viewport="mobile"] body {
-    padding: 1.5rem 1rem !important;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-  }
-
-  html[data-viewport="mobile"] .app-container,
-  html[data-viewport="mobile"] .app-container-wide,
-  html[data-viewport="mobile"] .app-container.spa-expanded {
-    width: 390px !important;
-    max-width: 390px !important;
-    min-height: 820px;
-    margin: 0 auto !important;
-    border-radius: 34px !important;
-    border: 6px solid #1E293B !important;
-    box-shadow: 0 25px 60px rgba(15, 23, 42, 0.28), 0 0 0 1px rgba(255, 255, 255, 0.12) !important;
-    overflow-x: hidden;
-  }
-
-  /* Indicador superior tipo smartphone en modo demo móvil */
-  html[data-viewport="mobile"] .app-container::before,
-  html[data-viewport="mobile"] .app-container-wide::before {
-    content: "";
-    display: block;
-    width: 96px;
-    height: 5px;
-    background: rgba(100, 116, 139, 0.45);
-    border-radius: 999px;
-    margin: 8px auto 2px;
-    flex-shrink: 0;
-  }
-}
+/* Diseño 100% responsive nativo mediante Media Queries y Container Queries */
 
 /* ==========================================================================
    Barra de Navegación / Cabecera Superior
@@ -342,8 +304,7 @@ button, .btn, .bottom-bar-btn, a.btn {
   color: var(--text-primary);
 }
 
-.theme-toggle-btn,
-.viewport-toggle-btn {
+.theme-toggle-btn {
   background: var(--bg-elevated);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-full);
@@ -359,22 +320,9 @@ button, .btn, .bottom-bar-btn, a.btn {
   line-height: 1.2;
 }
 
-.theme-toggle-btn:hover,
-.viewport-toggle-btn:hover {
+.theme-toggle-btn:hover {
   background: var(--border-light);
   transform: translateY(-1px);
-}
-
-.viewport-toggle-btn.is-mobile-active {
-  background: var(--melidan-orange-soft);
-  border-color: var(--melidan-orange);
-  color: var(--melidan-orange);
-}
-
-@media (max-width: 767.98px) {
-  .viewport-toggle-btn {
-    display: none !important;
-  }
 }
 
 /* ==========================================================================
