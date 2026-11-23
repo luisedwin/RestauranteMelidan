@@ -43,6 +43,19 @@
       </div>
 
       <div class="d-flex align-items-center gap-2 flex-wrap">
+        <!-- Botón Exclusivo para Admin: Descargar Excel Detallado de Ventas con Tablas y Gráficos -->
+        <button
+          type="button"
+          class="btn btn-sm btn-success fw-bold py-2 px-3"
+          id="btn-export-sales-excel"
+          data-allowed-roles="ADMIN"
+          onclick="adminApp.downloadSalesExcel(this)"
+          title="Descargar Excel detallado de ventas con tablas completas, gráfico de barras y gráfico de pastel"
+        >
+          <i class="bi bi-file-earmark-excel-fill me-1"></i>
+          <span>Excel de Ventas</span>
+        </button>
+
         <!-- Botón Exclusivo para Admin: Historial y Registro de Compras Anteriores -->
         <button
           type="button"
@@ -75,6 +88,15 @@
           <p class="text-secondary small mb-0" id="admin-welcome-subtitle">Bienvenido, Don Roberto (Administración General)</p>
         </div>
         <div class="d-flex align-items-center gap-2 flex-wrap">
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-success fw-bold rounded-pill px-3 py-2"
+            id="btn-dashboard-export-excel"
+            data-allowed-roles="ADMIN"
+            onclick="adminApp.downloadSalesExcel(this)"
+          >
+            <i class="bi bi-file-earmark-spreadsheet-fill me-1"></i> Ver / Descargar Excel Detallado
+          </button>
           <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill fw-bold">
             <i class="bi bi-database-check me-1"></i> PostgreSQL 18 Activo
           </span>
@@ -116,39 +138,67 @@
         </div>
       </div>
 
-      <!-- Accesos Directos Operativos del Administrador (Todo el Sistema) -->
+      <!-- Accesos Directos Operativos del Administrador (Todo el Sistema en Vivo) -->
       <div class="ops-shortcuts-grid">
         <a href="/mozo.html" class="card text-decoration-none border shadow-sm p-3 h-100 d-flex flex-row align-items-center gap-3">
           <div class="kpi-icon-box kpi-icon-teal"><i class="bi bi-grid-3x3-gap-fill"></i></div>
-          <div>
-            <h6 class="fw-bold text-dark mb-1">Control de Mesas</h6>
-            <small class="text-muted">15 mesas y rotación en vivo</small>
+          <div class="flex-grow-1">
+            <div class="d-flex justify-content-between align-items-center gap-1">
+              <h6 class="fw-bold text-dark mb-1">Control de Mesas</h6>
+              <span class="badge bg-success-subtle text-success small" id="badge-ops-mesas">0/15</span>
+            </div>
+            <small class="text-muted">15 mesas, rotación y cierre rápido</small>
           </div>
         </a>
 
         <a href="/carta.html" class="card text-decoration-none border shadow-sm p-3 h-100 d-flex flex-row align-items-center gap-3">
           <div class="kpi-icon-box kpi-icon-purple"><i class="bi bi-journal-richtext"></i></div>
-          <div>
-            <h6 class="fw-bold text-dark mb-1">Carta Digital</h6>
-            <small class="text-muted">Platos, entradas, bebidas y pedidos</small>
+          <div class="flex-grow-1">
+            <div class="d-flex justify-content-between align-items-center gap-1">
+              <h6 class="fw-bold text-dark mb-1">Carta Digital</h6>
+              <span class="badge bg-warning-subtle text-warning-emphasis small" id="badge-ops-carta">Especial Hoy</span>
+            </div>
+            <small class="text-muted">Platos, especiales del día y pedidos</small>
           </div>
         </a>
 
         <a href="/cocina.html" class="card text-decoration-none border shadow-sm p-3 h-100 d-flex flex-row align-items-center gap-3">
           <div class="kpi-icon-box kpi-icon-orange"><i class="bi bi-fire"></i></div>
-          <div>
-            <h6 class="fw-bold text-dark mb-1">Pantalla Cocina KDS</h6>
-            <small class="text-muted">Comandas activas y estaciones</small>
+          <div class="flex-grow-1">
+            <div class="d-flex justify-content-between align-items-center gap-1">
+              <h6 class="fw-bold text-dark mb-1">Pantalla Cocina KDS</h6>
+              <span class="badge bg-danger-subtle text-danger small" id="badge-ops-kds">0 activas</span>
+            </div>
+            <small class="text-muted">Comandas, estaciones y comentarios</small>
           </div>
         </a>
 
         <a href="/cajero.html" class="card text-decoration-none border shadow-sm p-3 h-100 d-flex flex-row align-items-center gap-3">
           <div class="kpi-icon-box kpi-icon-blue"><i class="bi bi-receipt"></i></div>
-          <div>
-            <h6 class="fw-bold text-dark mb-1">Caja y Facturación</h6>
-            <small class="text-muted">Emisión de boletas y facturas</small>
+          <div class="flex-grow-1">
+            <div class="d-flex justify-content-between align-items-center gap-1">
+              <h6 class="fw-bold text-dark mb-1">Caja y Facturación</h6>
+              <span class="badge bg-primary-subtle text-primary small" id="badge-ops-caja">0 por cobrar</span>
+            </div>
+            <small class="text-muted">Yape, Plin, boletas PDF y promos</small>
           </div>
         </a>
+      </div>
+
+      <!-- Monitor Operativo en Vivo (Salón, KDS y Caja) -->
+      <div class="card border shadow-sm p-3 p-md-4 mb-4">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+          <div>
+            <h5 class="fw-bold mb-0"><i class="bi bi-activity text-melidan-orange me-2"></i>Monitor Operativo en Vivo (Salón & KDS)</h5>
+            <small class="text-muted">Seguimiento inmediato de comandas activas, comentarios de clientes y estado en cocina</small>
+          </div>
+          <button type="button" class="btn btn-sm btn-melidan-outline" onclick="adminApp.loadDashboard()">
+            <i class="bi bi-arrow-clockwise"></i> Actualizar
+          </button>
+        </div>
+        <div id="admin-live-monitor" class="row g-2">
+          <div class="col-12 text-center py-3 text-muted small">Sincronizando operación en vivo...</div>
+        </div>
       </div>
 
       <!-- ====================================================================
@@ -220,7 +270,16 @@
               </h5>
               <small class="text-muted">Registro auditado de ventas y comprobantes en PostgreSQL (Solo Administrador)</small>
             </div>
-            <div class="d-flex align-items-center gap-2">
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+              <button
+                type="button"
+                class="btn btn-sm btn-success fw-bold py-2 px-3"
+                id="btn-modal-export-excel"
+                data-allowed-roles="ADMIN"
+                onclick="adminApp.downloadSalesExcel(this)"
+              >
+                <i class="bi bi-file-earmark-excel-fill me-1"></i> Exportar Excel (.xlsx)
+              </button>
               <button
                 type="button"
                 class="btn btn-sm btn-melidan-orange py-2 px-3"

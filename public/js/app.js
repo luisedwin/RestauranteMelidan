@@ -482,6 +482,7 @@ class AppController {
         alertBox.classList.add('d-none');
         submitBtn.disabled = true;
         submitBtn.textContent = 'Verificando credenciales...';
+        let redirecting = false;
 
         try {
           const user = await window.AuthService.login(email, password);
@@ -503,16 +504,20 @@ class AppController {
             targetHtml = '/carta.html';
           }
 
+          redirecting = true;
+          submitBtn.textContent = 'Ingresando...';
           this.showToast(`¡Bienvenido ${user.name}! Redirigiendo a ${roleConfig.label}...`);
           setTimeout(() => {
             window.location.href = targetHtml;
-          }, 360);
+          }, 320);
         } catch (err) {
           alertBox.textContent = err.message;
           alertBox.classList.remove('d-none');
         } finally {
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'Iniciar Sesión';
+          if (!redirecting) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Iniciar Sesión';
+          }
         }
       });
     }
@@ -523,7 +528,9 @@ class AppController {
         e.preventDefault();
         const email = document.getElementById('forgot-email').value;
         const alertBox = document.getElementById('forgot1-alert');
+        const submitBtn = formForgot1.querySelector('button[type="submit"]');
         alertBox.classList.add('d-none');
+        if (submitBtn) submitBtn.disabled = true;
 
         try {
           const res = await window.AuthService.sendOtpCode(email);
@@ -538,6 +545,8 @@ class AppController {
         } catch (err) {
           alertBox.textContent = err.message;
           alertBox.classList.remove('d-none');
+        } finally {
+          if (submitBtn) submitBtn.disabled = false;
         }
       });
     }
@@ -548,7 +557,9 @@ class AppController {
         e.preventDefault();
         const code = document.getElementById('otp-code').value.replace(/[^0-9]/g, '');
         const alertBox = document.getElementById('forgot2-alert');
+        const submitBtn = formForgot2.querySelector('button[type="submit"]');
         alertBox.classList.add('d-none');
+        if (submitBtn) submitBtn.disabled = true;
 
         try {
           await window.AuthService.verifyOtp(this.currentRecoveryEmail, code);
@@ -558,6 +569,8 @@ class AppController {
         } catch (err) {
           alertBox.textContent = err.message;
           alertBox.classList.remove('d-none');
+        } finally {
+          if (submitBtn) submitBtn.disabled = false;
         }
       });
     }
@@ -569,7 +582,9 @@ class AppController {
         const p1 = document.getElementById('new-password').value;
         const p2 = document.getElementById('confirm-password').value;
         const alertBox = document.getElementById('forgot3-alert');
+        const submitBtn = formForgot3.querySelector('button[type="submit"]');
         alertBox.classList.add('d-none');
+        if (submitBtn) submitBtn.disabled = true;
 
         try {
           await window.AuthService.resetPassword(this.currentRecoveryEmail, this.currentRecoveryCode, p1, p2);
@@ -580,6 +595,8 @@ class AppController {
         } catch (err) {
           alertBox.textContent = err.message;
           alertBox.classList.remove('d-none');
+        } finally {
+          if (submitBtn) submitBtn.disabled = false;
         }
       });
     }
@@ -1217,7 +1234,7 @@ class AppController {
 
       return `
         <div class="dish-item-card">
-          <img src="${this.escapeHtml(imgUrl)}" alt="${this.escapeHtml(d.name)}" class="dish-img-thumb" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=400&q=80'">
+          <img src="${this.escapeHtml(imgUrl)}" alt="${this.escapeHtml(d.name)}" class="dish-img-thumb" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=400&q=80'">
           <div class="flex-grow-1">
             <div class="d-flex align-items-center justify-content-between gap-2">
               <h4 class="dish-name-title mb-1">${this.escapeHtml(d.name)}</h4>
@@ -1431,7 +1448,13 @@ class AppController {
 
   async showElectronicReceipt() {
     this.showToast('Consultando comprobante en PostgreSQL (melidan_db)...');
-    const receipt = await window.db.getReceipt();
+    let receipt = null;
+    try {
+      receipt = await window.db.getReceipt();
+    } catch (err) {
+      this.showToast(err.message || 'No se pudo consultar el comprobante en PostgreSQL.', 'error');
+      return;
+    }
     if (!receipt) {
       this.showToast('No se encontró comprobante registrado en PostgreSQL aún.', 'error');
       return;
@@ -1513,11 +1536,15 @@ class AppController {
   }
 
   async callWaiter() {
-    const orders = await window.db.getOrders();
-    const activeOrder = orders[0];
-    const waiter = activeOrder?.mozo_nombre || 'Carlos Paredes';
-    const table = String(activeOrder?.numero_mesa || 4).padStart(2, '0');
-    this.showToast(`🛎️ Mozo ${waiter} notificado a la Mesa ${table}. ¡Viene en camino!`);
+    try {
+      const orders = await window.db.getOrders();
+      const activeOrder = orders[0];
+      const waiter = activeOrder?.mozo_nombre || 'Carlos Paredes';
+      const table = String(activeOrder?.numero_mesa || 4).padStart(2, '0');
+      this.showToast(`🛎️ Mozo ${waiter} notificado a la Mesa ${table}. ¡Viene en camino!`);
+    } catch (_) {
+      this.showToast('🛎️ Mozo notificado a tu mesa. ¡Viene en camino!');
+    }
   }
 
   logout() {

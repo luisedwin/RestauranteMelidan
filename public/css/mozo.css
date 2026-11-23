@@ -71,7 +71,7 @@
 .legend-dot.dot-limpiar { background-color: #3B82F6; }
 .legend-dot.dot-cuenta  { background-color: #EF4444; }
 
-/* Cuadrícula de 15 Mesas Adaptativa (5 columnas en PC, 3 en Móvil) */
+/* Cuadrícula de 15 Mesas Adaptativa (5 en PC/Tablet Horizontal, 4 en Tablet Vertical, 3 en Móvil, 2 en pantallas muy angostas) */
 .tables-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -79,16 +79,37 @@
   margin-bottom: 1.5rem;
 }
 
-@container melidan-shell (max-width: 720px) {
+@container melidan-shell (max-width: 860px) {
+  .tables-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.85rem;
+  }
+}
+
+@container melidan-shell (max-width: 620px) {
   .tables-grid {
     grid-template-columns: repeat(3, 1fr);
-    gap: 0.8rem;
+    gap: 0.75rem;
   }
 }
 
 @container melidan-shell (max-width: 345px) {
   .tables-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (orientation: landscape) and (max-height: 540px) {
+  .tables-screen {
+    padding: 0.75rem max(1rem, env(safe-area-inset-right)) 1.25rem max(1rem, env(safe-area-inset-left));
+  }
+  .tables-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.55rem;
+  }
+  .table-node {
+    min-height: 76px;
+    padding: 0.65rem 0.45rem;
   }
 }
 
@@ -228,5 +249,139 @@
 
 .bg-melidan-orange {
   background-color: var(--melidan-orange) !important;
+}
+
+/* Badge de Alerta KDS en la tarjeta de Mesa */
+.table-kds-ready-pill {
+  position: absolute;
+  top: -8px;
+  right: -6px;
+  background: #10B981;
+  color: #FFFFFF;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 0.18rem 0.5rem;
+  border-radius: 999px;
+  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.35);
+  border: 2px solid var(--bg-surface);
+  animation: pulseKdsReady 1.8s infinite ease-in-out;
+}
+
+@keyframes pulseKdsReady {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+}
+
+/* Panel Deslizable de Comanda (Click en fondo oscuro para cerrar) */
+.mozo-drawer-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1055;
+  background: rgba(15, 23, 42, 0.54);
+  backdrop-filter: blur(4px);
+  display: none;
+  justify-content: flex-end;
+  align-items: stretch;
+  padding: 0;
+  cursor: pointer;
+}
+
+.mozo-drawer-overlay.open {
+  display: flex;
+  animation: fadeInBackdrop 0.2s ease;
+}
+
+@keyframes fadeInBackdrop {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.mozo-drawer-panel {
+  width: min(920px, 95vw);
+  height: 100%;
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+  box-shadow: -12px 0 36px rgba(15, 23, 42, 0.24);
+  cursor: default;
+  animation: slideDrawerIn 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+@keyframes slideDrawerIn {
+  from { transform: translateX(36px); opacity: 0.7; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.mozo-drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--bg-surface);
+}
+
+.mozo-drawer-body {
+  padding: 1.15rem 1.25rem 2rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.mozo-close-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border-color);
+  background-color: var(--bg-elevated);
+  color: var(--text-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.mozo-close-circle:hover {
+  border-color: var(--melidan-orange);
+  color: var(--melidan-orange);
+  transform: rotate(90deg);
+}
+
+.mozo-cart-item-block {
+  padding-bottom: 0.65rem;
+  margin-bottom: 0.65rem;
+  border-bottom: 1px dashed var(--border-color);
+}
+
+.mozo-note-toggle-btn {
+  border: none;
+  background: transparent;
+  color: var(--melidan-teal);
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 0.15rem 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.mozo-note-toggle-btn:hover {
+  text-decoration: underline;
+}
+
+[data-theme="dark"] .mozo-drawer-panel,
+[data-theme="dark"] .mozo-drawer-header {
+  background-color: var(--bg-surface);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .mozo-close-circle {
+  background-color: #1E293B;
+  border-color: #475569;
+  color: #F1F5F9;
 }
 

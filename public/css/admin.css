@@ -160,6 +160,25 @@
   margin-bottom: 1rem;
 }
 
+/* Insignia Yape (Bootstrap 5.3 no incluye bg-purple-subtle de fábrica) */
+.bg-purple-subtle {
+  background-color: rgba(116, 34, 132, 0.13) !important;
+  border-color: rgba(116, 34, 132, 0.34) !important;
+}
+
+.text-purple {
+  color: #742284 !important;
+}
+
+[data-theme="dark"] .bg-purple-subtle {
+  background-color: rgba(168, 85, 247, 0.2) !important;
+  border-color: rgba(192, 132, 252, 0.42) !important;
+}
+
+[data-theme="dark"] .text-purple {
+  color: #E9D5FF !important;
+}
+
 /* Panel de Gestión de Personal */
 .staff-toolbar {
   display: flex;
@@ -285,6 +304,17 @@
     justify-content: flex-end;
     padding-top: 0.5rem;
     border-top: 1px solid var(--border-light);
+  }
+}
+
+@media (orientation: landscape) and (max-height: 540px) {
+  .kpi-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.65rem;
+  }
+  .ops-shortcuts-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.65rem;
   }
 }
 

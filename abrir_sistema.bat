@@ -37,7 +37,15 @@ if not exist "node_modules\express" (
 
 :: Asegurar que el servicio PostgreSQL este iniciado (sin tocar datos de la base)
 sc query postgresql-x64-18 2>nul | findstr /I "RUNNING" >nul
-if errorlevel 1 net start postgresql-x64-18 >nul 2>&1
+if errorlevel 1 (
+    net session >nul 2>&1
+    if not errorlevel 1 (
+        net start postgresql-x64-18 >nul 2>&1
+    ) else (
+        echo Iniciando servicio PostgreSQL ^(requiere permiso de Administrador^)...
+        powershell -NoProfile -Command "try { Start-Process -FilePath 'net' -ArgumentList 'start','postgresql-x64-18' -Verb RunAs -WindowStyle Hidden -Wait -ErrorAction Stop } catch { exit 1 }" >nul 2>&1
+    )
+)
 
 :: Liberar instancia previa en el puerto 8000 si existiera
 for /f "tokens=5" %%P in ('netstat -aon ^| findstr ":8000 " ^| findstr "LISTENING"') do (

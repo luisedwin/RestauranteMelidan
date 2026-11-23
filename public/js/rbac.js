@@ -85,13 +85,25 @@
   }
 
   function detectCurrentModule(pathname) {
-    const clean = String(pathname || '').toLowerCase();
+    const clean = String(pathname || '').toLowerCase().replace(/\/+$/, '');
     if (clean === '/admin' || clean.endsWith('/admin.html')) return 'admin';
     if (clean === '/mozo' || clean.endsWith('/mozo.html')) return 'mozo';
     if (clean === '/carta' || clean.endsWith('/carta.html')) return 'carta';
     if (clean === '/cocina' || clean.endsWith('/cocina.html')) return 'cocina';
     if (clean === '/cajero' || clean.endsWith('/cajero.html')) return 'cajero';
     return null;
+  }
+
+  function isTokenExpired(token) {
+    if (!token || typeof token !== 'string' || !token.includes('.')) return true;
+    try {
+      const b64 = token.split('.')[0].replace(/-/g, '+').replace(/_/g, '/');
+      const padded = b64 + '='.repeat((4 - (b64.length % 4)) % 4);
+      const payload = JSON.parse(atob(padded));
+      return !payload || !payload.exp || Number(payload.exp) < Date.now();
+    } catch (_) {
+      return false; // Si el entorno no tiene atob (ej. Node), dejar que el servidor valide
+    }
   }
 
   function saveNotice(msg) {
@@ -114,6 +126,13 @@
       return false;
     }
 
+    if (typeof atob === 'function' && isTokenExpired(user.token)) {
+      try { localStorage.removeItem(SESSION_KEY); } catch (_) {}
+      saveNotice('Tu sesión expiró. Por favor inicia sesión nuevamente.');
+      window.location.replace('/login');
+      return false;
+    }
+
     if (!cfg.allowed.includes(currentModule)) {
       saveNotice(`Acceso restringido: el rol ${cfg.label} no tiene acceso a este módulo.`);
       window.location.replace(cfg.home);
@@ -123,9 +142,61 @@
     return true;
   }
 
+  const MODULE_META = {
+    admin:  { href: '/admin.html',  icon: 'bi-speedometer2',      label: 'Admin' },
+    mozo:   { href: '/mozo.html',   icon: 'bi-grid-3x3-gap-fill', label: 'Mesas' },
+    carta:  { href: '/carta.html',  icon: 'bi-journal-richtext',  label: 'Carta' },
+    cocina: { href: '/cocina.html', icon: 'bi-fire',              label: 'KDS Cocina' },
+    cajero: { href: '/cajero.html', icon: 'bi-cash-coin',         label: 'Caja' }
+  };
+
+  function injectRoleNavigationBar(cfg, currentModule) {
+    if (!cfg || !currentModule || !Array.isArray(cfg.allowed) || cfg.allowed.length <= 1) return;
+    if (document.getElementById('rbac-role-nav-bar')) return;
+
+    const mainContainer = document.querySelector('main.app-container');
+    if (!mainContainer) return;
+
+    const nav = document.createElement('nav');
+    nav.id = 'rbac-role-nav-bar';
+    nav.className = 'role-omni-bar';
+    nav.setAttribute('aria-label', `Navegación de ${cfg.label}`);
+
+    const roleTag = document.createElement('span');
+    roleTag.className = 'role-omni-tag';
+    roleTag.textContent = `${cfg.icon} ${cfg.code === 'ADMIN' ? 'Acceso Total Admin' : cfg.label}`;
+    nav.appendChild(roleTag);
+
+    const linksWrap = document.createElement('div');
+    linksWrap.className = 'role-omni-links';
+
+    cfg.allowed.forEach((modKey) => {
+      const meta = MODULE_META[modKey];
+      if (!meta) return;
+      const a = document.createElement('a');
+      a.href = meta.href;
+      a.className = `role-omni-link${modKey === currentModule ? ' active' : ''}`;
+      a.setAttribute('data-module', modKey);
+      a.innerHTML = `<i class="bi ${meta.icon}"></i><span>${meta.label}</span>`;
+      linksWrap.appendChild(a);
+    });
+
+    nav.appendChild(linksWrap);
+
+    const headerEl = mainContainer.querySelector('header.melidan-navbar, header.kds-header, header.carta-header, .tables-top-bar');
+    if (headerEl && headerEl.parentNode) {
+      headerEl.insertAdjacentElement('afterend', nav);
+    } else {
+      mainContainer.prepend(nav);
+    }
+  }
+
   function applyDomRestrictions() {
     const user = getStoredUser();
     const cfg = getRoleConfig(user);
+    const currentModule = typeof window !== 'undefined' && window.location
+      ? detectCurrentModule(window.location.pathname)
+      : null;
 
     document.querySelectorAll('[data-allowed-roles]').forEach((el) => {
       const allowedList = String(el.getAttribute('data-allowed-roles') || '')
@@ -141,6 +212,7 @@
       document.querySelectorAll('.rbac-user-badge').forEach((badge) => {
         badge.textContent = `${cfg.icon} ${user.name} (${cfg.label})`;
       });
+      injectRoleNavigationBar(cfg, currentModule);
     }
 
     document.querySelectorAll('.btn-logout-melidan').forEach((btn) => {

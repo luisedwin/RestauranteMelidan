@@ -6,6 +6,7 @@ require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
 const express = require('express');
 const { pool, dbConfig } = require('./config/db');
+const { ensureCartaMarketingSchema } = require('./utils/syncCartaMarketing');
 const apiRouter = require('./routes/api');
 
 const app = express();
@@ -55,7 +56,14 @@ app.use((req, res, next) => {
 });
 
 // Manejador centralizado de errores
-app.use((err, req, res, _next) => {
+app.use((err, req, res, next) => {
+  if (res.headersSent) return next(err);
+  if (err && err.type === 'entity.parse.failed') {
+    return res.status(400).json({
+      success: false,
+      message: 'Formato JSON inválido en la solicitud'
+    });
+  }
   console.error('[Melidan API Error]', err.message);
   res.status(err.status || 500).json({
     success: false,
@@ -64,6 +72,10 @@ app.use((err, req, res, _next) => {
 });
 
 function startServer(port = PORT) {
+  ensureCartaMarketingSchema(pool).catch((err) => {
+    console.warn('[Melidan Sync] Sincronización pendiente hasta conectar PostgreSQL:', err.message);
+  });
+
   const server = app.listen(port, () => {
     const actualPort = server.address()?.port || port;
     console.log(`\n  ✔ Melidan Web activa en: http://localhost:${actualPort}/login`);

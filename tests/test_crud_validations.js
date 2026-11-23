@@ -266,20 +266,81 @@ async function runTests() {
 
   const cartaHtml = fs.readFileSync(path.join(PROJECT_ROOT, 'public', 'pages', 'carta.html'), 'utf8');
   assert(
-    cartaHtml.includes('Buscar plato o bebida...') &&
+    cartaHtml.includes('Buscar plato') &&
     cartaHtml.includes('Populares hoy') &&
     cartaHtml.includes('Entradas') &&
+    cartaHtml.includes('Combos') &&
+    cartaHtml.includes('Menú del Día') &&
+    cartaHtml.includes('Bebidas y Jarras') &&
+    cartaHtml.includes('carta-promos-strip') &&
+    cartaHtml.includes('btn-promos-prev') &&
+    cartaHtml.includes('btn-promos-next') &&
+    cartaHtml.includes('carta-promos-dots') &&
+    cartaHtml.includes('carta-day-tabs') &&
     cartaHtml.includes('Ver Carrito') &&
-    cartaHtml.includes('Mesa #04'),
-    'carta.html implementa fielmente el diseño solicitado (Mesa #04, buscador, categorías, Populares hoy y Ver Carrito)'
+    cartaHtml.includes('carta-carousel-track') &&
+    cartaHtml.includes('carta-special-card') &&
+    !cartaHtml.includes('carta-roulette-canvas') &&
+    cartaHtml.includes('carta-comment-toggle'),
+    'carta.html incluye Carta completa, Carrusel 4 platos, Especial del Día, Promos, Combos, Menú del Día y Jarras'
+  );
+
+  const mozoHtml = fs.readFileSync(path.join(PROJECT_ROOT, 'public', 'pages', 'mozo.html'), 'utf8');
+  assert(
+    !mozoHtml.includes('Volver a Mesas') &&
+    mozoHtml.includes('mozo-order-overlay') &&
+    mozoHtml.includes('handleOverlayBackdropClick') &&
+    mozoHtml.includes('mozo-comment-toggle'),
+    'mozo.html elimina "Volver a Mesas", permite cerrar con clic fuera y ofrece comentarios opcionales'
+  );
+
+  const cajeroHtml = fs.readFileSync(path.join(PROJECT_ROOT, 'public', 'pages', 'cajero.html'), 'utf8');
+  assert(
+    cajeroHtml.includes('data-method="yape"') &&
+    cajeroHtml.includes('data-method="plin"') &&
+    cajeroHtml.includes('Ver Boleta') &&
+    cajeroHtml.includes('Descargar Boleta'),
+    'cajero.html ofrece Yape, Plin y botones post-pago de Ver Boleta y Descargar Boleta'
   );
 
   const adminHtml = fs.readFileSync(path.join(PROJECT_ROOT, 'public', 'pages', 'admin.html'), 'utf8');
   assert(
     adminHtml.includes('salesHistoryModal') &&
     adminHtml.includes('form-historical-purchase') &&
+    adminHtml.includes('admin-live-monitor') &&
+    adminHtml.includes('btn-export-sales-excel') &&
+    adminHtml.includes('downloadSalesExcel') &&
     adminHtml.includes('data-allowed-roles="ADMIN"'),
-    'admin.html incluye botón y modal de Historial y Registro de Compras Anteriores protegido solo para ADMIN'
+    'admin.html incluye Monitor en Vivo, botón Excel de Ventas detallado, Historial protegido para ADMIN y acceso a todos los módulos'
+  );
+
+  const cocinaHtml = fs.readFileSync(path.join(PROJECT_ROOT, 'public', 'pages', 'cocina.html'), 'utf8');
+  const cocinaJs = fs.readFileSync(path.join(PROJECT_ROOT, 'public', 'js', 'cocina.js'), 'utf8');
+  assert(
+    cocinaHtml.includes('kds-status-tabs') &&
+    cocinaHtml.includes('data-status="pendiente"') &&
+    cocinaHtml.includes('data-status="en_cocina"') &&
+    cocinaHtml.includes('data-status="listo"') &&
+    cocinaHtml.indexOf('kds-status-tabs') < cocinaHtml.indexOf('kds-order-filters') &&
+    cocinaHtml.includes('kds-station-select') &&
+    cocinaHtml.includes('kds-order-search') &&
+    cocinaJs.includes("currentStatus: 'pendiente'"),
+    'cocina.html/js ubica estados clicables (Nuevas por defecto, Cocinando, Listas) a la izquierda y filtro de pedidos a la derecha'
+  );
+
+  const cartaJs = fs.readFileSync(path.join(PROJECT_ROOT, 'public', 'js', 'carta.js'), 'utf8');
+  assert(
+    cartaJs.includes('pickRandomComplements') &&
+    cartaJs.includes('shuffleRandomComplements') &&
+    cartaJs.includes('addComplementToCart') &&
+    cartaJs.includes('es_complemento'),
+    'carta.js implementa complementos aleatorios rebajados (-20%) con opción de mezclar en el carrito'
+  );
+
+  const rbacSrc = fs.readFileSync(path.join(PROJECT_ROOT, 'public', 'js', 'rbac.js'), 'utf8');
+  assert(
+    rbacSrc.includes('injectRoleNavigationBar') && rbacSrc.includes('role-omni-bar'),
+    'public/js/rbac.js inyecta barra de navegación completa para Admin (5 módulos) y restringida para cada rol'
   );
 
   const themeCode = fs.readFileSync(path.join(PROJECT_ROOT, 'public', 'js', 'theme.js'), 'utf8');
@@ -290,6 +351,16 @@ async function runTests() {
 
   const darkCss = fs.readFileSync(path.join(PROJECT_ROOT, 'public', 'css', 'dark-mode.css'), 'utf8');
   assert(darkCss.includes('[data-theme="dark"]') && darkCss.includes('-webkit-autofill'), 'public/css/dark-mode.css cubre Modo Oscuro completo');
+
+  const baseCss = fs.readFileSync(path.join(PROJECT_ROOT, 'public', 'css', 'base.css'), 'utf8');
+  const cartaCss = fs.readFileSync(path.join(PROJECT_ROOT, 'public', 'css', 'carta.css'), 'utf8');
+  assert(
+    baseCss.includes('orientation: landscape') &&
+    baseCss.includes('safe-area-inset-left') &&
+    cartaCss.includes('orientation: landscape') &&
+    cartaCss.includes('carta-popular-badge'),
+    'Hojas CSS incluyen responsive completo para celulares, tablets y modo horizontal (landscape)'
+  );
 
   const batContent = fs.readFileSync(path.join(PROJECT_ROOT, 'abrir_sistema.bat'), 'utf8');
   assert(
@@ -315,15 +386,57 @@ async function runTests() {
       assert(pageRes.status === 200, `Ruta web ${route} responde HTTP 200 OK`);
     }
 
-    // 6.2 Verificar catálogo de Carta vía API
+    // 6.2 Verificar catálogo de Carta (precios decimales, combos, menú del día, jarras, promos y populares 7d)
     const menuRes = await httpJson(baseUrl, '/api/menu');
+    const popularItems = (menuRes.body?.productos || []).filter((p) => p.is_popular_week);
+    const catNames = (menuRes.body?.categorias || []).map((c) => c.nombre);
+    const allHaveDecimals = (menuRes.body?.productos || []).every((p) => Number((Number(p.price) % 1).toFixed(2)) > 0);
+    const lunMenu = await httpJson(baseUrl, '/api/menu?day=LUN');
+    const marMenu = await httpJson(baseUrl, '/api/menu?day=MAR');
+    const lunExclusiveIds = (lunMenu.body?.productos || []).filter((p) => p.is_day_exclusive && p.available_today).map((p) => p.id).join(',');
+    const marExclusiveIds = (marMenu.body?.productos || []).filter((p) => p.is_day_exclusive && p.available_today).map((p) => p.id).join(',');
+
     assert(
       menuRes.status === 200 &&
-      Array.isArray(menuRes.body?.categorias) &&
-      menuRes.body.categorias.length >= 5 &&
+      catNames.includes('Combos') &&
+      catNames.includes('Menú del Día') &&
+      catNames.includes('Platos Criollos') &&
+      catNames.includes('Bebidas y Jarras') &&
       Array.isArray(menuRes.body?.productos) &&
-      menuRes.body.productos.length >= 24,
-      `GET /api/menu entrega ${menuRes.body?.categorias?.length} categorías y ${menuRes.body?.productos?.length} platos para la Carta`
+      menuRes.body.productos.length >= 40 &&
+      allHaveDecimals,
+      `GET /api/menu entrega ${catNames.length} categorías (incluyendo Combos, Menú del Día, Criollos y Jarras) y ${menuRes.body?.productos?.length} productos todos con precios psicológicos decimales`
+    );
+    assert(
+      Array.isArray(menuRes.body?.promociones) &&
+      menuRes.body.promociones.length >= 4 &&
+      Boolean(lunExclusiveIds) &&
+      Boolean(marExclusiveIds) &&
+      lunExclusiveIds !== marExclusiveIds,
+      `Promociones activas (${menuRes.body?.promociones?.length}) y programación por días diferenciada (Lun·Mié·Vie vs Mar·Jue·Sáb)`
+    );
+    assert(
+      popularItems.length >= 1 &&
+      popularItems.length <= 4 &&
+      Boolean(menuRes.body?.popular_meta?.source) &&
+      popularItems.every((p) => Number(p.popular_rank) >= 1),
+      `GET /api/menu calcula dinámicamente ${popularItems.length} platillos populares según ventas (${menuRes.body?.popular_meta?.source})`
+    );
+    const compPool = menuRes.body?.complement_pool || [];
+    assert(
+      Array.isArray(compPool) &&
+      compPool.length >= 8 &&
+      compPool.every((c) => Number(c.complement_price) < Number(c.original_price) && Number(c.discount_percent) === 20),
+      `GET /api/menu entrega pool de ${compPool.length} complementos aleatorios con -20% de descuento exclusivo`
+    );
+
+    const ordersRes = await httpJson(baseUrl, '/api/orders');
+    assert(
+      ordersRes.status === 200 &&
+      Array.isArray(ordersRes.body?.orders) &&
+      ordersRes.body.orders.length > 0 &&
+      Array.isArray(ordersRes.body.orders[0]?.items),
+      `GET /api/orders responde HTTP 200 y entrega ${ordersRes.body?.orders?.length} comandas/cuentas con sus ítems y estaciones`
     );
 
     // 6.3 Login independiente de los 5 roles
@@ -379,6 +492,31 @@ async function runTests() {
       `GET /api/purchases-history autoriza a ADMIN y retorna ${adminHistGet.body?.history?.length} compras registradas`
     );
 
+    // 6.5B Seguridad RBAC y generación de Excel Detallado (.xlsx con tablas, barras y pastel)
+    const excelNoAuth = await fetch(`${baseUrl}/api/reports/sales-excel`);
+    const excelWaiter = await fetch(`${baseUrl}/api/reports/sales-excel`, {
+      headers: { Authorization: `Bearer ${tokens.WAITER}` }
+    });
+    const excelAdmin = await fetch(`${baseUrl}/api/reports/sales-excel`, {
+      headers: { Authorization: `Bearer ${tokens.ADMIN}` }
+    });
+    const excelBuf = Buffer.from(await excelAdmin.arrayBuffer());
+    const excelLatin = excelBuf.toString('latin1');
+    assert(
+      excelNoAuth.status === 401 &&
+      excelWaiter.status === 403 &&
+      excelAdmin.status === 200 &&
+      String(excelAdmin.headers.get('content-type') || '').includes('spreadsheetml.sheet') &&
+      excelBuf[0] === 0x50 && excelBuf[1] === 0x4b &&
+      excelLatin.includes('xl/charts/chart1.xml') &&
+      excelLatin.includes('xl/charts/chart2.xml') &&
+      excelLatin.includes('xl/worksheets/sheet4.xml'),
+      `GET /api/reports/sales-excel protege con RBAC (401/403) y genera Excel .xlsx válido (${excelBuf.length} bytes) con 4 hojas, gráfico de barras y gráfico de pastel`
+    );
+
+    const prod6 = (menuRes.body?.productos || []).find((p) => Number(p.id) === 6);
+    const prod7 = (menuRes.body?.productos || []).find((p) => Number(p.id) === 7);
+    const expectedHistTotal = Number((Number(prod6?.original_price ?? prod6?.price ?? 27.9) + Number(prod7?.original_price ?? prod7?.price ?? 11.9)).toFixed(2));
     const adminHistPost = await httpJson(baseUrl, '/api/purchases-history', {
       method: 'POST',
       headers: { Authorization: `Bearer ${tokens.ADMIN}` },
@@ -395,8 +533,8 @@ async function runTests() {
       })
     });
     assert(
-      adminHistPost.status === 201 && Number(adminHistPost.body?.purchase?.monto_total) === 40,
-      `POST /api/purchases-history registra compra anterior de S/ 40.00 (${adminHistPost.body?.purchase?.numero_comprobante}) para ADMIN`
+      adminHistPost.status === 201 && Number(adminHistPost.body?.purchase?.monto_total) === expectedHistTotal,
+      `POST /api/purchases-history registra compra anterior de S/ ${expectedHistTotal.toFixed(2)} (${adminHistPost.body?.purchase?.numero_comprobante}) para ADMIN`
     );
 
     // Limpiar compra de prueba para dejar la base impecable
@@ -409,7 +547,53 @@ async function runTests() {
       await pool.query('DELETE FROM pedidos WHERE id_pedido = $1', [pid]);
     }
 
-    // 6.6 Pedido desde Carta por Cliente y limpieza atómica
+    // 6.6 Carrusel de 4 Platos + Platillo Especial del Día con rotación diaria sin repetición
+    const datesToCheck = ['2026-11-22', '2026-11-23', '2026-11-24', '2026-11-25'];
+    const dailyResponses = await Promise.all(datesToCheck.map((dt) => httpJson(baseUrl, `/api/daily-specials?date=${dt}`)));
+    const day1 = dailyResponses[0];
+    const day1Again = await httpJson(baseUrl, '/api/daily-specials?date=2026-11-22');
+    const day2 = dailyResponses[1];
+    const day1Carousel = day1.body?.carousel || [];
+    const day1Special = day1.body?.special_of_day;
+    const day2Carousel = day2.body?.carousel || [];
+    const day1Key = `${day1Special?.id}|${day1Carousel.map((s) => s.id).join(',')}`;
+    const day1AgainKey = `${day1Again.body?.special_of_day?.id}|${(day1Again.body?.carousel || []).map((s) => s.id).join(',')}`;
+    const uniqueCarouselImages = new Set(day1Carousel.map((s) => s.image).filter(Boolean));
+    const consecutiveSpecialIds = dailyResponses.map((r) => Number(r.body?.special_of_day?.id));
+    const uniqueConsecutiveSpecials = new Set(consecutiveSpecialIds);
+    const day1CarouselSet = new Set(day1Carousel.map((c) => Number(c.id)));
+    const carouselOverlapDay1ToDay2 = day2Carousel.filter((c) => day1CarouselSet.has(Number(c.id)));
+
+    assert(
+      day1.status === 200 &&
+      day1Carousel.length === 4 &&
+      uniqueCarouselImages.size === 4 &&
+      day1.body?.counts?.carousel === 4 &&
+      Boolean(day1Special) &&
+      !day1Carousel.some((c) => Number(c.id) === Number(day1Special.id)),
+      'GET /api/daily-specials entrega exactamente 4 imágenes distintas para el carrusel y 1 Platillo Especial del Día independiente'
+    );
+    assert(
+      Number(day1Special?.discount_percent) === 25 &&
+      Number(day1Special?.special_price) < Number(day1Special?.original_price) &&
+      Number(day1Special?.savings_amount) > 0 &&
+      Number((Number(day1Special.original_price) - Number(day1Special.special_price)).toFixed(2)) === Number(day1Special.savings_amount),
+      `Platillo Especial del Día (${day1Special?.name}) reduce su precio de S/ ${Number(day1Special?.original_price).toFixed(2)} a S/ ${Number(day1Special?.special_price).toFixed(2)} (-25%)`
+    );
+    assert(
+      day1Key === day1AgainKey &&
+      uniqueConsecutiveSpecials.size === datesToCheck.length &&
+      carouselOverlapDay1ToDay2.length === 0,
+      'Rotación diaria garantizada: 4 días consecutivos tienen distintos Platillos Especiales y el carrusel renueva sus 4 platos cada día sin repetirse'
+    );
+
+    // 6.7 Pedido desde Carta (incluyendo Platillo Especial con precio rebajado y comentario opcional) -> Pago Yape/Plin -> Boleta PDF + Promoción
+    const todayShowcase = await httpJson(baseUrl, '/api/daily-specials');
+    const todaySpecial = todayShowcase.body?.special_of_day;
+    const regularDish = (menuRes.body?.productos || []).find((p) => Number(p.id) !== Number(todaySpecial?.id) && Number(p.id) === 7)
+      || (menuRes.body?.productos || []).find((p) => Number(p.id) !== Number(todaySpecial?.id));
+    const expectedOrderTotal = Number((Number(todaySpecial.special_price) + Number(regularDish.price)).toFixed(2));
+
     const mesaSnapshot = (await pool.query('SELECT id_mesa, estado, tiempo_min, mozo_asignado, monto_acumulado FROM mesas WHERE numero_mesa = 15')).rows[0];
     const clientOrderRes = await httpJson(baseUrl, '/api/orders', {
       method: 'POST',
@@ -417,20 +601,96 @@ async function runTests() {
       body: JSON.stringify({
         table_num: 15,
         client_name: 'Camila Torres (Test Carta)',
+        comentarios: 'Sin cebolla y servir bebidas primero',
         id_usuario: usersByRole.CLIENT.db_id,
         items: [
-          { id_producto: 6, cantidad: 1, observaciones: 'Término medio' },
-          { id_producto: 4, cantidad: 1, observaciones: '' }
+          { id_producto: Number(todaySpecial.id), cantidad: 1, observaciones: 'Término medio' },
+          { id_producto: Number(regularDish.id), cantidad: 1, observaciones: '' }
         ]
       })
     });
     assert(
-      clientOrderRes.status === 201 && Number(clientOrderRes.body?.order?.total) === 52,
-      'POST /api/orders permite al Cliente pedir en la Carta (Lomo Saltado S/ 28 + Ají de Gallina S/ 24 = S/ 52.00)'
+      clientOrderRes.status === 201 &&
+      Number(clientOrderRes.body?.order?.total) === expectedOrderTotal &&
+      clientOrderRes.body?.order?.comentarios === 'Sin cebolla y servir bebidas primero',
+      `POST /api/orders aplica el precio rebajado del Especial del Día y registra pedido con comentario opcional (S/ ${expectedOrderTotal.toFixed(2)})`
     );
 
+    let testVoucherId = null;
+    let testSaleId = null;
     if (clientOrderRes.body?.order?.id_pedido) {
       const oid = clientOrderRes.body.order.id_pedido;
+
+      // Pago con Yape
+      const yapePayRes = await httpJson(baseUrl, '/api/billing', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${tokens.CASHIER}` },
+        body: JSON.stringify({
+          id_pedido: oid,
+          metodo_pago: 'aplicacion',
+          canal_pago: 'Yape',
+          referencia_pago: 'YAPE-554433',
+          tipo_comprobante: 'boleta',
+          documento_cliente: '76891234',
+          nombre_cliente: 'Camila Torres',
+          cajero_nombre: 'María Salazar'
+        })
+      });
+
+      testVoucherId = yapePayRes.body?.id_comprobante;
+      testSaleId = yapePayRes.body?.id_venta;
+      const rcpt = yapePayRes.body?.receipt;
+
+      assert(
+        yapePayRes.status === 201 &&
+        rcpt?.canal_pago === 'Yape' &&
+        rcpt?.restaurante?.ruc === '20601234567' &&
+        String(rcpt?.codigo_promo || '').startsWith('MELIDAN15-') &&
+        Boolean(rcpt?.descripcion_promo) &&
+        Boolean(rcpt?.monto_en_letras),
+        `POST /api/billing procesa pago Yape y emite boleta profesional (${rcpt?.numero_comprobante}) con cupón ${rcpt?.codigo_promo}`
+      );
+
+      // Descarga de PDF real de la boleta
+      const pdfHttpRes = await fetch(`${baseUrl}/api/billing/${testVoucherId}/pdf`);
+      const pdfBuf = Buffer.from(await pdfHttpRes.arrayBuffer());
+      const pdfStr = pdfBuf.toString('latin1');
+      assert(
+        pdfHttpRes.status === 200 &&
+        String(pdfHttpRes.headers.get('content-type') || '').includes('application/pdf') &&
+        pdfStr.startsWith('%PDF-1.4') &&
+        pdfStr.includes('MELIDAN RESTAURANTE') &&
+        pdfStr.includes('20601234567') &&
+        pdfStr.includes('Yape') &&
+        pdfStr.includes('PROMOCION PARA TU SIGUIENTE COMPRA') &&
+        pdfStr.includes(rcpt.codigo_promo),
+        'GET /api/billing/:id/pdf genera y descarga PDF válido con datos del restaurante, platillos, Yape y cupón promocional'
+      );
+
+      // Verificar también canal Plin en el mismo flujo antes de limpiar
+      const plinPayRes = await httpJson(baseUrl, '/api/billing', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${tokens.CASHIER}` },
+        body: JSON.stringify({
+          id_pedido: oid,
+          metodo_pago: 'aplicacion',
+          canal_pago: 'Plin',
+          referencia_pago: 'PLIN-889900',
+          tipo_comprobante: 'boleta',
+          documento_cliente: '76891234',
+          nombre_cliente: 'Camila Torres'
+        })
+      });
+      assert(
+        plinPayRes.status === 201 && plinPayRes.body?.receipt?.canal_pago === 'Plin',
+        'POST /api/billing soporta pago con Plin con canal diferenciado en boleta y BD'
+      );
+
+      // Limpiar registros temporales de prueba
+      if (testSaleId) {
+        await pool.query('DELETE FROM comprobantes WHERE id_venta = $1', [testSaleId]);
+        await pool.query('DELETE FROM ventas WHERE id_venta = $1', [testSaleId]);
+      }
       await pool.query('DELETE FROM detalle_pedidos WHERE id_pedido = $1', [oid]);
       await pool.query('DELETE FROM pedidos WHERE id_pedido = $1', [oid]);
       if (mesaSnapshot) {
@@ -439,6 +699,77 @@ async function runTests() {
           [mesaSnapshot.estado, mesaSnapshot.tiempo_min, mesaSnapshot.mozo_asignado, mesaSnapshot.monto_acumulado, mesaSnapshot.id_mesa]
         );
       }
+    }
+
+    // 6.8 Consolidación de múltiples pedidos de una misma mesa en UNA SOLA boleta + Complemento -20%
+    const compItem = compPool[0];
+    const mainDishForMesa = (menuRes.body?.productos || []).find((p) => Number(p.id) !== Number(todaySpecial?.id) && ![3, 4, 5].includes(Number(p.id_categoria)));
+    const mesa14Snap = (await pool.query('SELECT id_mesa, estado, tiempo_min, mozo_asignado, monto_acumulado FROM mesas WHERE numero_mesa = 14')).rows[0];
+
+    const firstMesaOrder = await httpJson(baseUrl, '/api/orders', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${tokens.CLIENT}` },
+      body: JSON.stringify({
+        table_num: 14,
+        client_name: 'Prueba Mesa Unificada',
+        items: [
+          { id_producto: Number(mainDishForMesa.id), cantidad: 1 },
+          { id_producto: Number(compItem.id), cantidad: 1, es_complemento: true }
+        ]
+      })
+    });
+    const expectedFirstTotal = Number((Number(mainDishForMesa.price) + Number(compItem.complement_price)).toFixed(2));
+    assert(
+      firstMesaOrder.status === 201 && Number(firstMesaOrder.body?.order?.total) === expectedFirstTotal,
+      `POST /api/orders aplica descuento -20% de complemento en el servidor (S/ ${expectedFirstTotal.toFixed(2)})`
+    );
+
+    const secondMesaOrder = await httpJson(baseUrl, '/api/orders', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${tokens.WAITER}` },
+      body: JSON.stringify({
+        table_num: 14,
+        client_name: 'Prueba Mesa Unificada',
+        items: [{ id_producto: Number(mainDishForMesa.id), cantidad: 1 }]
+      })
+    });
+    const expectedConsolidatedTotal = Number((expectedFirstTotal + Number(mainDishForMesa.price)).toFixed(2));
+
+    const unifiedBillRes = await httpJson(baseUrl, '/api/billing', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${tokens.CASHIER}` },
+      body: JSON.stringify({
+        id_pedido: firstMesaOrder.body?.order?.id_pedido,
+        metodo_pago: 'efectivo_caja',
+        canal_pago: 'Efectivo',
+        tipo_comprobante: 'boleta',
+        nombre_cliente: 'Prueba Mesa Unificada'
+      })
+    });
+
+    assert(
+      secondMesaOrder.status === 201 &&
+      unifiedBillRes.status === 201 &&
+      Number(unifiedBillRes.body?.consolidated_orders) === 2 &&
+      Number(unifiedBillRes.body?.monto_total) === expectedConsolidatedTotal &&
+      unifiedBillRes.body?.receipt?.items?.some((it) => Number(it.cantidad) === 2),
+      `POST /api/billing consolida 2 pedidos consecutivos de la Mesa 14 en UNA SOLA boleta (S/ ${expectedConsolidatedTotal.toFixed(2)})`
+    );
+
+    // Limpiar prueba de mesa consolidada
+    if (unifiedBillRes.body?.id_venta) {
+      await pool.query('DELETE FROM comprobantes WHERE id_venta = $1', [unifiedBillRes.body.id_venta]);
+      await pool.query('DELETE FROM ventas WHERE id_venta = $1', [unifiedBillRes.body.id_venta]);
+    }
+    for (const cleanupId of [firstMesaOrder.body?.order?.id_pedido, secondMesaOrder.body?.order?.id_pedido].filter(Boolean)) {
+      await pool.query('DELETE FROM detalle_pedidos WHERE id_pedido = $1', [cleanupId]);
+      await pool.query('DELETE FROM pedidos WHERE id_pedido = $1', [cleanupId]);
+    }
+    if (mesa14Snap) {
+      await pool.query(
+        'UPDATE mesas SET estado = $1, tiempo_min = $2, mozo_asignado = $3, monto_acumulado = $4 WHERE id_mesa = $5',
+        [mesa14Snap.estado, mesa14Snap.tiempo_min, mesa14Snap.mozo_asignado, mesa14Snap.monto_acumulado, mesa14Snap.id_mesa]
+      );
     }
 
     await syncAllSequences();
