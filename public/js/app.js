@@ -1230,11 +1230,11 @@ class AppController {
     container.innerHTML = dishes.map(d => {
       const price = parseFloat(d.price).toFixed(2);
       const isPopular = d.destacado_menu || d.popular;
-      const imgUrl = d.image || d.imagen_url || 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=400&q=80';
+      const imgUrl = d.image || d.imagen_url || '/img/platos/plato_01.jpg';
 
       return `
         <div class="dish-item-card">
-          <img src="${this.escapeHtml(imgUrl)}" alt="${this.escapeHtml(d.name)}" class="dish-img-thumb" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=400&q=80'">
+          <img src="${this.escapeHtml(imgUrl)}" alt="${this.escapeHtml(d.name)}" class="dish-img-thumb" loading="lazy" onerror="this.onerror=null;this.src='/img/platos/plato_01.jpg'">
           <div class="flex-grow-1">
             <div class="d-flex align-items-center justify-content-between gap-2">
               <h4 class="dish-name-title mb-1">${this.escapeHtml(d.name)}</h4>

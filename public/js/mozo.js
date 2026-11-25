@@ -324,7 +324,7 @@ const mozoApp = {
 
     container.innerHTML = filtered.map((d) => `
       <div class="menu-item-card">
-        <img src="${this.escapeHtml(d.image)}" class="menu-item-img" alt="${this.escapeHtml(d.name)}" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=400&q=80'">
+        <img src="${this.escapeHtml(d.image)}" class="menu-item-img" alt="${this.escapeHtml(d.name)}" loading="lazy" onerror="this.onerror=null;this.src='/img/platos/plato_01.jpg'">
         <div class="menu-item-info">
           <h6 class="menu-item-title">${this.escapeHtml(d.name)}</h6>
           <span class="badge bg-light text-secondary border small mb-1">${this.escapeHtml(d.category || 'Carta')}</span>

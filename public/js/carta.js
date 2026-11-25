@@ -56,7 +56,7 @@ const cartaApp = {
   },
 
   highResImage(url) {
-    const fallback = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=900&q=80';
+    const fallback = '/img/platos/plato_06.jpg';
     if (!url) return fallback;
     return String(url).replace(/([?&])w=\d+/i, '$1w=900');
   },
@@ -425,7 +425,7 @@ const cartaApp = {
       return;
     }
 
-    const fallbackImg = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=900&q=80';
+    const fallbackImg = '/img/platos/plato_06.jpg';
 
     track.innerHTML = slides.map((dish, idx) => `
       <div class="carta-carousel-slide ${idx === this.carouselIndex ? 'active' : ''}" data-slide-index="${idx}">
@@ -552,7 +552,7 @@ const cartaApp = {
       return;
     }
 
-    const fallbackImg = 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=900&q=80';
+    const fallbackImg = '/img/platos/plato_01.jpg';
     const origPrice = Number(dish.original_price ?? dish.price);
     const promoPrice = Number(dish.special_price ?? dish.price);
     const savings = Number(dish.savings_amount ?? Math.max(0, origPrice - promoPrice));
@@ -802,7 +802,7 @@ const cartaApp = {
       return;
     }
 
-    const fallbackImg = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=400&q=80';
+    const fallbackImg = '/img/platos/plato_06.jpg';
 
     grid.innerHTML = filtered.map((dish) => {
       const id = Number(dish.id);
@@ -1146,7 +1146,7 @@ const cartaApp = {
       return;
     }
 
-    const fallbackImg = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=240&q=80';
+    const fallbackImg = '/img/platos/plato_06.jpg';
     const discPct = Number(this.complementDiscountPercent || 20);
     const canShuffle = this.complementPool.filter((c) => !cartIds.has(Number(c.id))).length > suggestions.length;
 

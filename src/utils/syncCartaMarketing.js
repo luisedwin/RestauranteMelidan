@@ -23,64 +23,64 @@ const CATEGORIES_SEED = [
 
 const PRODUCTS_SEED = [
   // Platos Especiales (id_categoria = 1)
-  [1, 1, 'Lechón a Fuego Lento', 'Corte jugoso marinado en especias tradicionales horneado a leña por 6 horas con camote glaseado.', 47.90, null, 'Firma de la Casa', 'TODOS', 'fuego_lento', 35, true, 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=400&q=80'],
-  [2, 1, 'Costillar Glaseado a la Leña', 'Costillar tierno caramelizado con salsa BBQ artesanal, especias andinas y papas doradas.', 41.90, null, 'Favorito del Chef', 'TODOS', 'horno_artesanal', 25, true, 'https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?auto=format&fit=crop&w=400&q=80'],
-  [13, 1, 'Panceta Crocante al Horno de Barro', 'Panceta horneada lentamente con piel ultra crocante, camote glaseado y zarza criolla.', 45.90, null, 'Horno de Barro', 'TODOS', 'horno_artesanal', 30, true, 'https://images.unsplash.com/photo-1600891964092-4316c288032e?auto=format&fit=crop&w=400&q=80'],
-  [14, 1, 'Osobuco Braseado 8 Horas', 'Osobuco de res cocido a fuego lento en chicha de jora y hierbas andinas sobre puré rústico.', 51.90, null, 'Cocción 8h', 'TODOS', 'fuego_lento', 32, false, 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=400&q=80'],
-  [15, 1, 'Pato Asado a la Leña Norteña', 'Cuarto de pato tierno macerado en culantro, naranja agria y zapallo loche horneado a leña.', 48.90, null, null, 'TODOS', 'horno_artesanal', 28, false, 'https://images.unsplash.com/photo-1518492104633-130d0cc84637?auto=format&fit=crop&w=400&q=80'],
-  [28, 1, 'Pachamanca a la Olla Tradicional', 'Tres carnes maceradas en chincho y huacatay con papa nativa, habas, choclo, humita y ají.', 44.90, 52.90, 'Solo Domingos', 'DOM', 'fuego_lento', 30, true, 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=400&q=80'],
+  [1, 1, 'Lechón a Fuego Lento', 'Corte jugoso marinado en especias tradicionales horneado a leña por 6 horas con camote glaseado.', 47.90, null, 'Firma de la Casa', 'TODOS', 'fuego_lento', 35, true, '/img/platos/plato_01.jpg'],
+  [2, 1, 'Costillar Glaseado a la Leña', 'Costillar tierno caramelizado con salsa BBQ artesanal, especias andinas y papas doradas.', 41.90, null, 'Favorito del Chef', 'TODOS', 'horno_artesanal', 25, true, '/img/platos/plato_02.jpg'],
+  [13, 1, 'Panceta Crocante al Horno de Barro', 'Panceta horneada lentamente con piel ultra crocante, camote glaseado y zarza criolla.', 45.90, null, 'Horno de Barro', 'TODOS', 'horno_artesanal', 30, true, '/img/platos/plato_13.jpg'],
+  [14, 1, 'Osobuco Braseado 8 Horas', 'Osobuco de res cocido a fuego lento en chicha de jora y hierbas andinas sobre puré rústico.', 51.90, null, 'Cocción 8h', 'TODOS', 'fuego_lento', 32, false, '/img/platos/plato_14.jpg'],
+  [15, 1, 'Pato Asado a la Leña Norteña', 'Cuarto de pato tierno macerado en culantro, naranja agria y zapallo loche horneado a leña.', 48.90, null, null, 'TODOS', 'horno_artesanal', 28, false, '/img/platos/plato_15.jpg'],
+  [28, 1, 'Pachamanca a la Olla Tradicional', 'Tres carnes maceradas en chincho y huacatay con papa nativa, habas, choclo, humita y ají.', 44.90, 52.90, 'Solo Domingos', 'DOM', 'fuego_lento', 30, true, '/img/platos/plato_28.jpg'],
 
   // Platos Criollos (id_categoria = 2)
-  [3, 2, 'Lomo Saltado Tradicional', 'Corte premium de lomo fino flameado al wok con cebolla morada, tomate y papas nativas.', 37.90, null, null, 'TODOS', 'estandar', 15, false, 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80'],
-  [4, 2, 'Ají de Gallina', 'Receta tradicional con crema de ají amarillo, pechuga deshilachada, nueces, papas y aceituna.', 24.90, null, 'Clásico Criollo', 'TODOS', 'estandar', 12, true, 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=400&q=80'],
-  [6, 2, 'Lomo Saltado Clásico', 'Trozos de lomo jugoso flameado al wok con cebolla, tomate, ají amarillo, servido con arroz.', 27.90, null, 'Más Pedido', 'TODOS', 'estandar', 14, true, 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=400&q=80'],
-  [16, 2, 'Arroz con Pato a la Chiclayana', 'Arroz graneado al culantro y cerveza negra con pierna de pato dorada y sarsa norteña.', 43.90, null, 'Receta Norteña', 'TODOS', 'fuego_lento', 22, true, 'https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=400&q=80'],
-  [17, 2, 'Seco de Res con Frejoles', 'Asado de tira cocido lentamente en salsa de culantro y loche con frejoles canarios cremosos.', 38.90, null, null, 'TODOS', 'fuego_lento', 20, false, 'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=400&q=80'],
-  [18, 2, 'Tallarines Verdes con Bife Angosto', 'Pasta artesanal en salsa pesto de albahaca y espinaca con bife angosto a la parrilla (250g).', 41.90, null, null, 'TODOS', 'estandar', 18, false, 'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=400&q=80'],
-  [19, 2, 'Chaufa Amazónico al Wok', 'Arroz salteado a fuego alto con cecina ahumada, chorizo regional y plátano maduro.', 33.90, null, null, 'TODOS', 'estandar', 14, false, 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=400&q=80'],
-  [29, 2, 'Carapulcra con Sopa Seca Chinchana', 'Papa seca guisada con maní y cerdo acompañada de tallarín aderezado en albahaca y achiote.', 29.90, 35.90, 'Lun · Mié · Vie', 'LUN,MIE,VIE', 'fuego_lento', 16, true, 'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=400&q=80'],
-  [30, 2, 'Arroz con Mariscos a la Criolla', 'Arroz meloso en salsa madre de coral, langostinos, calamar, conchas y sarza criolla fresca.', 36.90, 42.90, 'Lun · Mié · Vie', 'LUN,MIE,VIE', 'estandar', 18, true, 'https://images.unsplash.com/photo-1559847844-5315695dadae?auto=format&fit=crop&w=400&q=80'],
-  [31, 2, 'Tacu Tacu con Lomo al Jugo', 'Crujiente tacu tacu de frejoles canarios coronado con lomo saltado jugoso y plátano frito.', 34.90, 39.90, 'Mar · Jue · Sáb', 'MAR,JUE,SAB', 'estandar', 16, true, 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80'],
-  [32, 2, 'Cau Cau Criollo de Mondongo', 'Guiso tradicional limeño en crema de palillo y hierbabuena fresca con papa en cubos y arroz.', 26.90, 31.90, 'Mar · Jue · Sáb', 'MAR,JUE,SAB', 'fuego_lento', 15, false, 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=400&q=80'],
+  [3, 2, 'Lomo Saltado Tradicional', 'Corte premium de lomo fino flameado al wok con cebolla morada, tomate y papas nativas.', 37.90, null, null, 'TODOS', 'estandar', 15, false, '/img/platos/plato_03.jpg'],
+  [4, 2, 'Ají de Gallina', 'Receta tradicional con crema de ají amarillo, pechuga deshilachada, nueces, papas y aceituna.', 24.90, null, 'Clásico Criollo', 'TODOS', 'estandar', 12, true, '/img/platos/plato_04.jpg'],
+  [6, 2, 'Lomo Saltado Clásico', 'Trozos de lomo jugoso flameado al wok con cebolla, tomate, ají amarillo, servido con arroz.', 27.90, null, 'Más Pedido', 'TODOS', 'estandar', 14, true, '/img/platos/plato_06.jpg'],
+  [16, 2, 'Arroz con Pato a la Chiclayana', 'Arroz graneado al culantro y cerveza negra con pierna de pato dorada y sarsa norteña.', 43.90, null, 'Receta Norteña', 'TODOS', 'fuego_lento', 22, true, '/img/platos/plato_16.jpg'],
+  [17, 2, 'Seco de Res con Frejoles', 'Asado de tira cocido lentamente en salsa de culantro y loche con frejoles canarios cremosos.', 38.90, null, null, 'TODOS', 'fuego_lento', 20, false, '/img/platos/plato_17.jpg'],
+  [18, 2, 'Tallarines Verdes con Bife Angosto', 'Pasta artesanal en salsa pesto de albahaca y espinaca con bife angosto a la parrilla (250g).', 41.90, null, null, 'TODOS', 'estandar', 18, false, '/img/platos/plato_18.jpg'],
+  [19, 2, 'Chaufa Amazónico al Wok', 'Arroz salteado a fuego alto con cecina ahumada, chorizo regional y plátano maduro.', 33.90, null, null, 'TODOS', 'estandar', 14, false, '/img/platos/plato_19.jpg'],
+  [29, 2, 'Carapulcra con Sopa Seca Chinchana', 'Papa seca guisada con maní y cerdo acompañada de tallarín aderezado en albahaca y achiote.', 29.90, 35.90, 'Lun · Mié · Vie', 'LUN,MIE,VIE', 'fuego_lento', 16, true, '/img/platos/plato_29.jpg'],
+  [30, 2, 'Arroz con Mariscos a la Criolla', 'Arroz meloso en salsa madre de coral, langostinos, calamar, conchas y sarza criolla fresca.', 36.90, 42.90, 'Lun · Mié · Vie', 'LUN,MIE,VIE', 'estandar', 18, true, '/img/platos/plato_30.jpg'],
+  [31, 2, 'Tacu Tacu con Lomo al Jugo', 'Crujiente tacu tacu de frejoles canarios coronado con lomo saltado jugoso y plátano frito.', 34.90, 39.90, 'Mar · Jue · Sáb', 'MAR,JUE,SAB', 'estandar', 16, true, '/img/platos/plato_31.jpg'],
+  [32, 2, 'Cau Cau Criollo de Mondongo', 'Guiso tradicional limeño en crema de palillo y hierbabuena fresca con papa en cubos y arroz.', 26.90, 31.90, 'Mar · Jue · Sáb', 'MAR,JUE,SAB', 'fuego_lento', 15, false, '/img/platos/plato_32.jpg'],
 
   // Entradas (id_categoria = 5)
-  [8, 5, 'Causa Limeña de Cangrejo', 'Masa suave de papa amarilla al limón y ají amarillo rellena de pulpa de cangrejo y palta.', 25.90, null, null, 'TODOS', 'estandar', 10, true, 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=400&q=80'],
-  [9, 5, 'Anticuchos de Corazón a la Brasa', 'Brochetas tradicionales marinadas en ají panca con papas doradas, choclo y ají carretillero.', 24.90, null, 'A la Brasa', 'TODOS', 'estandar', 14, true, 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=400&q=80'],
-  [10, 5, 'Papa a la Huancaína Artesanal', 'Rodajas de papa blanca bañadas en salsa cremosa de ají amarillo asado y queso serrano.', 17.90, null, null, 'TODOS', 'estandar', 8, false, 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=400&q=80'],
-  [11, 5, 'Tequeños de Lomo y Queso (6 und.)', 'Crujientes tequeños rellenos de lomo saltado jugoso y queso andino con guacamole casero.', 21.90, null, 'Para Compartir', 'TODOS', 'estandar', 10, false, 'https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=400&q=80'],
-  [12, 5, 'Pulpo al Olivo', 'Láminas tiernas de pulpo bañadas en emulsión artesanal de aceitunas botija de Tacna.', 31.90, null, null, 'TODOS', 'estandar', 10, false, 'https://images.unsplash.com/photo-1559847844-5315695dadae?auto=format&fit=crop&w=400&q=80'],
-  [33, 5, 'Choritos a la Chalaca (8 und.)', 'Choros frescos cubiertos con zarza chalaca de cebolla, tomate, choclo tierno y toque de limón.', 22.90, null, 'Entrada Fresca', 'TODOS', 'estandar', 9, false, 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=400&q=80'],
+  [8, 5, 'Causa Limeña de Cangrejo', 'Masa suave de papa amarilla al limón y ají amarillo rellena de pulpa de cangrejo y palta.', 25.90, null, null, 'TODOS', 'estandar', 10, true, '/img/platos/plato_08.jpg'],
+  [9, 5, 'Anticuchos de Corazón a la Brasa', 'Brochetas tradicionales marinadas en ají panca con papas doradas, choclo y ají carretillero.', 24.90, null, 'A la Brasa', 'TODOS', 'estandar', 14, true, '/img/platos/plato_09.jpg'],
+  [10, 5, 'Papa a la Huancaína Artesanal', 'Rodajas de papa blanca bañadas en salsa cremosa de ají amarillo asado y queso serrano.', 17.90, null, null, 'TODOS', 'estandar', 8, false, '/img/platos/plato_10.jpg'],
+  [11, 5, 'Tequeños de Lomo y Queso (6 und.)', 'Crujientes tequeños rellenos de lomo saltado jugoso y queso andino con guacamole casero.', 21.90, null, 'Para Compartir', 'TODOS', 'estandar', 10, false, '/img/platos/plato_11.jpg'],
+  [12, 5, 'Pulpo al Olivo', 'Láminas tiernas de pulpo bañadas en emulsión artesanal de aceitunas botija de Tacna.', 31.90, null, null, 'TODOS', 'estandar', 10, false, '/img/platos/plato_12.jpg'],
+  [33, 5, 'Choritos a la Chalaca (8 und.)', 'Choros frescos cubiertos con zarza chalaca de cebolla, tomate, choclo tierno y toque de limón.', 22.90, null, 'Entrada Fresca', 'TODOS', 'estandar', 9, false, '/img/platos/plato_33.jpg'],
 
   // Bebidas y Jarras (id_categoria = 3)
-  [5, 3, 'Jarra de Chicha Morada Artesanal (1L)', 'Bebida natural de maíz morado hervida con piña golden, manzana, clavo y canela (rinde 4 vasos).', 14.90, null, 'Jarra 1L', 'TODOS', 'estandar', 5, true, 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=400&q=80'],
-  [7, 3, 'Limonada Frozen Clásica', 'Bebida refrescante de limón sutil licuada con hielo frapé y hojas de menta fresca.', 11.90, null, null, 'TODOS', 'estandar', 5, true, 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=400&q=80'],
-  [20, 3, 'Maracuyá Sour de la Casa', 'Cóctel bandera preparado con pisco quebranta seleccionado, zumo de maracuyá y amargo.', 21.90, null, 'Cóctel de Autor', 'TODOS', 'estandar', 6, false, 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=400&q=80'],
-  [21, 3, 'Jarra de Maracuyá Natural (1L)', 'Refresco natural de pulpa pura de maracuyá infusionado con hojas frescas de hierbabuena.', 15.90, null, 'Jarra 1L', 'TODOS', 'estandar', 5, false, 'https://images.unsplash.com/photo-1546173159-315724a31696?auto=format&fit=crop&w=400&q=80'],
-  [25, 3, 'Maracuyá Sour sin Alcohol', 'Pulpa natural de maracuyá batida con limón fresco, jarabe artesanal y espuma suave.', 12.90, null, 'Sin Alcohol', 'TODOS', 'estandar', 5, true, 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=400&q=80'],
-  [26, 3, 'Emoliente Frutal Helado', 'Infusión tradicional de cebada, linaza y hierbas andinas servida bien fría con piña y limón.', 10.90, null, null, 'TODOS', 'estandar', 4, false, 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=400&q=80'],
-  [34, 3, 'Jarra de Limonada de Hierbabuena (1L)', 'Limonada fresca batida con hierbabuena del huerto y hielo frapé ideal para compartir en mesa.', 16.90, 19.90, 'Jarra 1L · Promo', 'TODOS', 'estandar', 5, true, 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=400&q=80'],
-  [35, 3, 'Jarra de Sangría Criolla (1L)', 'Vino tinto seleccionado macerado con naranja, manzana, canela y toque de pisco acholado.', 34.90, 42.90, 'Jarra 1L · Finde', 'VIE,SAB,DOM', 'estandar', 6, false, 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=400&q=80'],
-  [36, 3, 'Vaso de Chicha Morada (450ml)', 'Porción individual bien helada de nuestra chicha morada casera con toque de limón sutil.', 6.50, null, 'Personal', 'TODOS', 'estandar', 3, false, 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=400&q=80'],
-  [37, 3, 'Pisco Sour Clásico Peruano', 'Pisco quebranta puro, zumo de limón fresco, jarabe de goma, clara y gotas de amargo.', 22.90, null, 'Clásico Barra', 'TODOS', 'estandar', 6, false, 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=400&q=80'],
-  [38, 3, 'Chilcano de Maracuyá o Limón', 'Refrescante chilcano con pisco quebranta, ginger ale bien frío, limón y pulpa de estación.', 18.90, 22.90, 'Happy Hour', 'TODOS', 'estandar', 5, false, 'https://images.unsplash.com/photo-1546173159-315724a31696?auto=format&fit=crop&w=400&q=80'],
-  [39, 3, 'Inca Kola / Gaseosa Personal (500ml)', 'Botella personal helada (Inca Kola, Coca-Cola o agua mineral con/sin gas).', 5.90, null, null, 'TODOS', 'estandar', 2, false, 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=400&q=80'],
+  [5, 3, 'Jarra de Chicha Morada Artesanal (1L)', 'Bebida natural de maíz morado hervida con piña golden, manzana, clavo y canela (rinde 4 vasos).', 14.90, null, 'Jarra 1L', 'TODOS', 'estandar', 5, true, '/img/platos/plato_05.jpg'],
+  [7, 3, 'Limonada Frozen Clásica', 'Bebida refrescante de limón sutil licuada con hielo frapé y hojas de menta fresca.', 11.90, null, null, 'TODOS', 'estandar', 5, true, '/img/platos/plato_07.jpg'],
+  [20, 3, 'Maracuyá Sour de la Casa', 'Cóctel bandera preparado con pisco quebranta seleccionado, zumo de maracuyá y amargo.', 21.90, null, 'Cóctel de Autor', 'TODOS', 'estandar', 6, false, '/img/platos/plato_20.jpg'],
+  [21, 3, 'Jarra de Maracuyá Natural (1L)', 'Refresco natural de pulpa pura de maracuyá infusionado con hojas frescas de hierbabuena.', 15.90, null, 'Jarra 1L', 'TODOS', 'estandar', 5, false, '/img/platos/plato_21.jpg'],
+  [25, 3, 'Maracuyá Sour sin Alcohol', 'Pulpa natural de maracuyá batida con limón fresco, jarabe artesanal y espuma suave.', 12.90, null, 'Sin Alcohol', 'TODOS', 'estandar', 5, true, '/img/platos/plato_25.jpg'],
+  [26, 3, 'Emoliente Frutal Helado', 'Infusión tradicional de cebada, linaza y hierbas andinas servida bien fría con piña y limón.', 10.90, null, null, 'TODOS', 'estandar', 4, false, '/img/platos/plato_26.jpg'],
+  [34, 3, 'Jarra de Limonada de Hierbabuena (1L)', 'Limonada fresca batida con hierbabuena del huerto y hielo frapé ideal para compartir en mesa.', 16.90, 19.90, 'Jarra 1L · Promo', 'TODOS', 'estandar', 5, true, '/img/platos/plato_34.jpg'],
+  [35, 3, 'Jarra de Sangría Criolla (1L)', 'Vino tinto seleccionado macerado con naranja, manzana, canela y toque de pisco acholado.', 34.90, 42.90, 'Jarra 1L · Finde', 'VIE,SAB,DOM', 'estandar', 6, false, '/img/platos/plato_35.jpg'],
+  [36, 3, 'Vaso de Chicha Morada (450ml)', 'Porción individual bien helada de nuestra chicha morada casera con toque de limón sutil.', 6.50, null, 'Personal', 'TODOS', 'estandar', 3, false, '/img/platos/plato_36.jpg'],
+  [37, 3, 'Pisco Sour Clásico Peruano', 'Pisco quebranta puro, zumo de limón fresco, jarabe de goma, clara y gotas de amargo.', 22.90, null, 'Clásico Barra', 'TODOS', 'estandar', 6, false, '/img/platos/plato_37.jpg'],
+  [38, 3, 'Chilcano de Maracuyá o Limón', 'Refrescante chilcano con pisco quebranta, ginger ale bien frío, limón y pulpa de estación.', 18.90, 22.90, 'Happy Hour', 'TODOS', 'estandar', 5, false, '/img/platos/plato_38.jpg'],
+  [39, 3, 'Inca Kola / Gaseosa Personal (500ml)', 'Botella personal helada (Inca Kola, Coca-Cola o agua mineral con/sin gas).', 5.90, null, null, 'TODOS', 'estandar', 2, false, '/img/platos/plato_39.jpg'],
 
   // Postres (id_categoria = 4)
-  [22, 4, 'Suspiro a la Limeña Clásico', 'Manjar de yemas sedoso coronado con merengue italiano al oporto y canela en polvo.', 15.90, null, null, 'TODOS', 'estandar', 6, true, 'https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&w=400&q=80'],
-  [23, 4, 'Picarones con Miel de Chancaca', 'Aros crocantes de zapallo macre y camote bañados en miel aromática de higo y naranja.', 14.90, null, 'Hecho al Momento', 'TODOS', 'estandar', 8, false, 'https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=400&q=80'],
-  [24, 4, 'Tres Leches de Lúcuma', 'Bizcocho esponjoso embebido en tres leches y pulpa de lúcuma de seda con cacao peruano.', 17.90, null, null, 'TODOS', 'estandar', 6, false, 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=400&q=80'],
-  [27, 4, 'Combinado Clásico Limeño', 'Dúo tradicional de mazamorra morada con frutas secas y arroz con leche a la canela.', 13.90, null, null, 'TODOS', 'fuego_lento', 6, true, 'https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=400&q=80'],
+  [22, 4, 'Suspiro a la Limeña Clásico', 'Manjar de yemas sedoso coronado con merengue italiano al oporto y canela en polvo.', 15.90, null, null, 'TODOS', 'estandar', 6, true, '/img/platos/plato_22.jpg'],
+  [23, 4, 'Picarones con Miel de Chancaca', 'Aros crocantes de zapallo macre y camote bañados en miel aromática de higo y naranja.', 14.90, null, 'Hecho al Momento', 'TODOS', 'estandar', 8, false, '/img/platos/plato_23.jpg'],
+  [24, 4, 'Tres Leches de Lúcuma', 'Bizcocho esponjoso embebido en tres leches y pulpa de lúcuma de seda con cacao peruano.', 17.90, null, null, 'TODOS', 'estandar', 6, false, '/img/platos/plato_24.jpg'],
+  [27, 4, 'Combinado Clásico Limeño', 'Dúo tradicional de mazamorra morada con frutas secas y arroz con leche a la canela.', 13.90, null, null, 'TODOS', 'fuego_lento', 6, true, '/img/platos/plato_27.jpg'],
 
   // Combos (id_categoria = 6)
-  [40, 6, 'Combo Criollo Para 2', '1 Lomo Saltado Clásico + 1 Ají de Gallina + 1 Jarra de Chicha Morada (1L). Ideal para compartir.', 54.90, 67.70, 'Ahorra S/ 12.80', 'TODOS', 'estandar', 18, true, 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80'],
-  [41, 6, 'Combo Horno & Brasa Familiar (4 pers.)', '1 Lechón a Fuego Lento + 1 Costillar Glaseado + 1 Anticuchos + 2 Jarras 1L a elección.', 119.90, 145.50, 'Ahorra S/ 25.60', 'TODOS', 'horno_artesanal', 30, true, 'https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?auto=format&fit=crop&w=400&q=80'],
-  [42, 6, 'Combo Almuerzo Express Wok', '1 Chaufa Amazónico al Wok + 3 Tequeños de Lomo y Queso + 1 Limonada Frozen.', 39.90, 49.90, 'Ahorra S/ 10.00', 'TODOS', 'estandar', 15, false, 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=400&q=80'],
-  [43, 6, 'Combo Dúo Barra & Piqueo', '1 Tequeños de Lomo y Queso (6 und.) + 2 Chilcanos de Maracuyá o Limón bien helados.', 46.90, 59.70, 'Ahorra S/ 12.80', 'VIE,SAB,DOM', 'estandar', 12, false, 'https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=400&q=80'],
+  [40, 6, 'Combo Criollo Para 2', '1 Lomo Saltado Clásico + 1 Ají de Gallina + 1 Jarra de Chicha Morada (1L). Ideal para compartir.', 54.90, 67.70, 'Ahorra S/ 12.80', 'TODOS', 'estandar', 18, true, '/img/platos/plato_40.jpg'],
+  [41, 6, 'Combo Horno & Brasa Familiar (4 pers.)', '1 Lechón a Fuego Lento + 1 Costillar Glaseado + 1 Anticuchos + 2 Jarras 1L a elección.', 119.90, 145.50, 'Ahorra S/ 25.60', 'TODOS', 'horno_artesanal', 30, true, '/img/platos/plato_41.jpg'],
+  [42, 6, 'Combo Almuerzo Express Wok', '1 Chaufa Amazónico al Wok + 3 Tequeños de Lomo y Queso + 1 Limonada Frozen.', 39.90, 49.90, 'Ahorra S/ 10.00', 'TODOS', 'estandar', 15, false, '/img/platos/plato_42.jpg'],
+  [43, 6, 'Combo Dúo Barra & Piqueo', '1 Tequeños de Lomo y Queso (6 und.) + 2 Chilcanos de Maracuyá o Limón bien helados.', 46.90, 59.70, 'Ahorra S/ 12.80', 'VIE,SAB,DOM', 'estandar', 12, false, '/img/platos/plato_43.jpg'],
 
   // Menú del Día (id_categoria = 7)
-  [44, 7, 'Menú del Día (Lun · Mié · Vie)', 'Entrada: Papa a la Huancaína + Fondo: Carapulcra con Sopa Seca (o Lomo Clásico) + Vaso de Chicha.', 21.90, 28.90, 'Lun · Mié · Vie', 'LUN,MIE,VIE', 'fuego_lento', 14, true, 'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=400&q=80'],
-  [45, 7, 'Menú del Día (Mar · Jue · Sáb)', 'Entrada: Causa Limeña + Fondo: Ají de Gallina (o Tacu Tacu al Jugo) + Vaso de Limonada.', 22.90, 29.90, 'Mar · Jue · Sáb', 'MAR,JUE,SAB', 'estandar', 14, true, 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=400&q=80'],
-  [46, 7, 'Menú Especial de Domingo', 'Entrada: Anticuchos a la Brasa + Fondo: Pachamanca a la Olla + Chicha Morada + Combinado Limeño.', 32.90, 42.90, 'Solo Domingos', 'DOM', 'fuego_lento', 22, true, 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=400&q=80']
+  [44, 7, 'Menú del Día (Lun · Mié · Vie)', 'Entrada: Papa a la Huancaína + Fondo: Carapulcra con Sopa Seca (o Lomo Clásico) + Vaso de Chicha.', 21.90, 28.90, 'Lun · Mié · Vie', 'LUN,MIE,VIE', 'fuego_lento', 14, true, '/img/platos/plato_44.jpg'],
+  [45, 7, 'Menú del Día (Mar · Jue · Sáb)', 'Entrada: Causa Limeña + Fondo: Ají de Gallina (o Tacu Tacu al Jugo) + Vaso de Limonada.', 22.90, 29.90, 'Mar · Jue · Sáb', 'MAR,JUE,SAB', 'estandar', 14, true, '/img/platos/plato_45.jpg'],
+  [46, 7, 'Menú Especial de Domingo', 'Entrada: Anticuchos a la Brasa + Fondo: Pachamanca a la Olla + Chicha Morada + Combinado Limeño.', 32.90, 42.90, 'Solo Domingos', 'DOM', 'fuego_lento', 22, true, '/img/platos/plato_46.jpg']
 ];
 
 const PROMOS_SEED = [
@@ -94,16 +94,17 @@ const PROMOS_SEED = [
 async function runSync(pool) {
   const client = await pool.connect();
   try {
-    // Verificación rápida: si ya tiene columnas, tabla promos y precios decimales nuevos, salir en < 2 ms
+    // Verificación rápida: si ya tiene columnas, tabla promos, precios decimales nuevos e imágenes locales de los 46 platos, salir en < 2 ms
     const check = await client.query(`
       SELECT
         EXISTS(SELECT 1 FROM information_schema.columns WHERE table_name = 'productos' AND column_name = 'dias_disponibles') AS has_cols,
         EXISTS(SELECT 1 FROM information_schema.tables WHERE table_name = 'promociones_carta') AS has_promos,
         (SELECT COUNT(*)::int FROM productos WHERE id_producto IN (28, 29, 40, 44, 45, 46)) AS new_prods,
-        (SELECT COUNT(*)::int FROM productos WHERE id_producto IN (1, 4, 6, 7) AND (precio - FLOOR(precio)) > 0) AS dec_ok
+        (SELECT COUNT(*)::int FROM productos WHERE id_producto IN (1, 4, 6, 7) AND (precio - FLOOR(precio)) > 0) AS dec_ok,
+        (SELECT COUNT(*)::int FROM productos WHERE imagen_url LIKE '/img/platos/plato_%.jpg') AS local_imgs
     `);
     const st = check.rows[0];
-    if (st.has_cols && st.has_promos && st.new_prods === 6 && st.dec_ok === 4) {
+    if (st.has_cols && st.has_promos && st.new_prods === 6 && st.dec_ok === 4 && st.local_imgs === 46) {
       return { migrated: false };
     }
 

@@ -1,4 +1,4 @@
-const CACHE = 'melidan-shell-v11';
+const CACHE = 'melidan-shell-v12';
 const SHELL = [
   '/',
   '/login',
