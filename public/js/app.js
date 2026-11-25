@@ -66,8 +66,8 @@ class AppController {
     this.staffIncludeDeleted = false;
 
     this.cart = [
-      { id: 1, id_producto: 1, name: 'Lechón a Fuego Lento', price: 48.00, precio: 48.00, qty: 1, cantidad: 1 },
-      { id: 5, id_producto: 5, name: 'Chicha Morada Artesanal (1L)', price: 14.00, precio: 14.00, qty: 1, cantidad: 1 }
+      { id: 1, id_producto: 1, name: 'Lechón a Fuego Lento', price: 47.90, precio: 47.90, qty: 1, cantidad: 1 },
+      { id: 5, id_producto: 5, name: 'Jarra de Chicha Morada Artesanal (1L)', price: 14.90, precio: 14.90, qty: 1, cantidad: 1 }
     ];
     this.activeKdsTab = 'cocinando';
     this.activeCategory = 'Todos';
@@ -128,8 +128,11 @@ class AppController {
     const nameEl = document.getElementById('admin-user-name') || document.querySelector('.user-name');
     const avatarEl = document.getElementById('admin-user-avatar');
     const adminRoleBadge = document.getElementById('admin-role-badge');
+    const resolvedAvatar = window.MelidanDishImages?.resolveAvatar
+      ? window.MelidanDishImages.resolveAvatar(user.avatar, user.name)
+      : user.avatar;
     if (nameEl) nameEl.textContent = user.name;
-    if (avatarEl && user.avatar) avatarEl.src = user.avatar;
+    if (avatarEl && resolvedAvatar) avatarEl.src = resolvedAvatar;
     if (adminRoleBadge) {
       adminRoleBadge.textContent = `${roleConfig.icon} ${roleConfig.label}`;
       adminRoleBadge.className = `badge ${roleConfig.badgeClass} border`;
@@ -138,7 +141,7 @@ class AppController {
     const staffUserName = document.getElementById('staff-header-user-name');
     const staffUserAvatar = document.getElementById('staff-user-avatar');
     if (staffUserName) staffUserName.textContent = user.name;
-    if (staffUserAvatar && user.avatar) staffUserAvatar.src = user.avatar;
+    if (staffUserAvatar && resolvedAvatar) staffUserAvatar.src = resolvedAvatar;
 
     const kdsBadge = document.getElementById('kds-user-badge');
     if (kdsBadge) kdsBadge.textContent = `${roleConfig.icon} ${user.name}`;
@@ -1230,11 +1233,13 @@ class AppController {
     container.innerHTML = dishes.map(d => {
       const price = parseFloat(d.price).toFixed(2);
       const isPopular = d.destacado_menu || d.popular;
-      const imgUrl = d.image || d.imagen_url || 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=400&q=80';
+      const imgUrl = window.MelidanDishImages?.resolve
+        ? window.MelidanDishImages.resolve(d)
+        : (d.image || d.imagen_url || '');
 
       return `
         <div class="dish-item-card">
-          <img src="${this.escapeHtml(imgUrl)}" alt="${this.escapeHtml(d.name)}" class="dish-img-thumb" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=400&q=80'">
+          <img src="${this.escapeHtml(imgUrl)}" alt="${this.escapeHtml(d.name)}" class="dish-img-thumb" loading="lazy" referrerpolicy="no-referrer" data-dish-id="${Number(d.id)}" data-dish-name="${this.escapeHtml(d.name)}" data-dish-cat="${this.escapeHtml(d.category || 'Melidan')}" onerror="window.MelidanDishImages && window.MelidanDishImages.handleError(this)">
           <div class="flex-grow-1">
             <div class="d-flex align-items-center justify-content-between gap-2">
               <h4 class="dish-name-title mb-1">${this.escapeHtml(d.name)}</h4>

@@ -55,10 +55,26 @@ const cartaApp = {
     );
   },
 
-  highResImage(url) {
-    const fallback = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=900&q=80';
-    if (!url) return fallback;
-    return String(url).replace(/([?&])w=\d+/i, '$1w=900');
+  resolveDishImage(dish) {
+    if (window.MelidanDishImages?.resolve) {
+      return window.MelidanDishImages.resolve(dish);
+    }
+    return dish?.image || dish?.imagen_url || '';
+  },
+
+  highResImage(dishOrUrl) {
+    const resolved = (dishOrUrl && typeof dishOrUrl === 'object')
+      ? this.resolveDishImage(dishOrUrl)
+      : (window.MelidanDishImages?.isBlockedHost?.(dishOrUrl)
+          ? window.MelidanDishImages.buildPlaceholderSvg('Melidan', 'Carta')
+          : String(dishOrUrl || ''));
+    if (!resolved) {
+      return window.MelidanDishImages?.buildPlaceholderSvg?.('Melidan', 'Carta') || '';
+    }
+    if (/images\.unsplash\.com/i.test(resolved)) {
+      return resolved.replace(/([?&])w=\d+/i, '$1w=900');
+    }
+    return resolved;
   },
 
   formatPriceHtml(amount) {
@@ -425,16 +441,18 @@ const cartaApp = {
       return;
     }
 
-    const fallbackImg = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=900&q=80';
-
     track.innerHTML = slides.map((dish, idx) => `
       <div class="carta-carousel-slide ${idx === this.carouselIndex ? 'active' : ''}" data-slide-index="${idx}">
         <img
-          src="${this.escapeHtml(this.highResImage(dish.image))}"
+          src="${this.escapeHtml(this.highResImage(dish))}"
           alt="${this.escapeHtml(dish.name)}"
           class="carta-carousel-img"
           draggable="false"
-          onerror="this.onerror=null;this.src='${fallbackImg}'"
+          referrerpolicy="no-referrer"
+          data-dish-id="${Number(dish.id)}"
+          data-dish-name="${this.escapeHtml(dish.name)}"
+          data-dish-cat="${this.escapeHtml(dish.category || 'Melidan')}"
+          onerror="window.MelidanDishImages && window.MelidanDishImages.handleError(this)"
         >
         <div class="carta-carousel-scrim" aria-hidden="true"></div>
         <span class="carta-carousel-cat-tag">${this.escapeHtml(dish.badge_label || dish.category || 'Plato de la Casa')}</span>
@@ -468,9 +486,13 @@ const cartaApp = {
           title="Ver ${this.escapeHtml(dish.name)}"
         >
           <img
-            src="${this.escapeHtml(dish.image || fallbackImg)}"
+            src="${this.escapeHtml(this.resolveDishImage(dish))}"
             alt="${this.escapeHtml(dish.name)}"
-            onerror="this.onerror=null;this.src='${fallbackImg}'"
+            referrerpolicy="no-referrer"
+            data-dish-id="${Number(dish.id)}"
+            data-dish-name="${this.escapeHtml(dish.name)}"
+            data-dish-cat="${this.escapeHtml(dish.category || 'Melidan')}"
+            onerror="window.MelidanDishImages && window.MelidanDishImages.handleError(this)"
           >
           <span class="carta-carousel-thumb-name">${this.escapeHtml(dish.name)}</span>
         </button>
@@ -552,7 +574,6 @@ const cartaApp = {
       return;
     }
 
-    const fallbackImg = 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=900&q=80';
     const origPrice = Number(dish.original_price ?? dish.price);
     const promoPrice = Number(dish.special_price ?? dish.price);
     const savings = Number(dish.savings_amount ?? Math.max(0, origPrice - promoPrice));
@@ -568,9 +589,13 @@ const cartaApp = {
 
       <div class="carta-special-media">
         <img
-          src="${this.escapeHtml(this.highResImage(dish.image))}"
+          src="${this.escapeHtml(this.highResImage(dish))}"
           alt="${this.escapeHtml(dish.name)}"
-          onerror="this.onerror=null;this.src='${fallbackImg}'"
+          referrerpolicy="no-referrer"
+          data-dish-id="${Number(dish.id)}"
+          data-dish-name="${this.escapeHtml(dish.name)}"
+          data-dish-cat="${this.escapeHtml(dish.category || 'Especialidad Melidan')}"
+          onerror="window.MelidanDishImages && window.MelidanDishImages.handleError(this)"
         >
         <span class="carta-special-ribbon">
           <i class="bi bi-stars me-1"></i>Precio Rebajado Solo Hoy
@@ -802,8 +827,6 @@ const cartaApp = {
       return;
     }
 
-    const fallbackImg = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=400&q=80';
-
     grid.innerHTML = filtered.map((dish) => {
       const id = Number(dish.id);
       const inCart = this.cart.find((item) => Number(item.id) === id);
@@ -868,11 +891,15 @@ const cartaApp = {
       return `
         <article class="${cardClasses}">
           <img
-            src="${this.escapeHtml(dish.image || fallbackImg)}"
+            src="${this.escapeHtml(this.resolveDishImage(dish))}"
             alt="${this.escapeHtml(dish.name)}"
             class="carta-dish-thumb"
             loading="lazy"
-            onerror="this.onerror=null;this.src='${fallbackImg}'"
+            referrerpolicy="no-referrer"
+            data-dish-id="${id}"
+            data-dish-name="${this.escapeHtml(dish.name)}"
+            data-dish-cat="${this.escapeHtml(dish.category || 'Melidan')}"
+            onerror="window.MelidanDishImages && window.MelidanDishImages.handleError(this)"
           >
           <div class="carta-dish-content">
             <div class="d-flex align-items-center gap-1 flex-wrap mb-1">
@@ -1146,7 +1173,6 @@ const cartaApp = {
       return;
     }
 
-    const fallbackImg = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=240&q=80';
     const discPct = Number(this.complementDiscountPercent || 20);
     const canShuffle = this.complementPool.filter((c) => !cartIds.has(Number(c.id))).length > suggestions.length;
 
@@ -1173,11 +1199,15 @@ const cartaApp = {
           return `
             <div class="carta-upsell-item">
               <img
-                src="${this.escapeHtml(s.image || fallbackImg)}"
+                src="${this.escapeHtml(this.resolveDishImage(s))}"
                 alt="${this.escapeHtml(s.name)}"
                 class="carta-upsell-thumb"
                 loading="lazy"
-                onerror="this.onerror=null;this.src='${fallbackImg}'"
+                referrerpolicy="no-referrer"
+                data-dish-id="${Number(s.id)}"
+                data-dish-name="${this.escapeHtml(s.name)}"
+                data-dish-cat="${this.escapeHtml(s.category || 'Complemento')}"
+                onerror="window.MelidanDishImages && window.MelidanDishImages.handleError(this)"
               >
               <div class="carta-upsell-info">
                 <div class="carta-upsell-meta">

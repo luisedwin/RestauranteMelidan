@@ -492,11 +492,15 @@ const adminApp = {
       const tel = this.escapeHtml(u.telefono || '-');
       const shift = this.escapeHtml(u.shift || u.turno || 'Turno Regular');
       const isActive = (u.status || u.estado || 'Activo') === 'Activo';
-      const avatar = this.escapeHtml(u.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80');
+      const avatar = this.escapeHtml(
+        window.MelidanDishImages?.resolveAvatar
+          ? window.MelidanDishImages.resolveAvatar(u.avatar, rawName)
+          : (u.avatar || '')
+      );
 
       return `
         <div class="staff-card-item ${isDel ? 'soft-deleted' : ''}">
-          <img src="${avatar}" class="staff-user-avatar" alt="${name}" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'">
+          <img src="${avatar}" class="staff-user-avatar" alt="${name}" loading="lazy" referrerpolicy="no-referrer" onerror="window.MelidanDishImages && window.MelidanDishImages.handleAvatarError(this, this.alt)">
           <div class="staff-info-col">
             <div class="d-flex align-items-center gap-2 flex-wrap">
               <h5 class="staff-user-name">${name}</h5>

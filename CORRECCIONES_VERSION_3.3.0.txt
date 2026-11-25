@@ -1,13 +1,71 @@
 ================================================================================
 RESTAURANTE MELIDAN - REPORTE DE CORRECCIONES, AUDITORÍA Y NOTAS DE VERSIÓN
 ================================================================================
-Versión actual      : v3.3.0 (Estable - Producción / Demo Shark Tank)
-Fecha de liberación : 23/11/2026
+Versión actual      : v3.4.0 (Estable - Producción / Demo Shark Tank)
+Fecha actualización : 25/11/2026 (incluye historial completo v3.3.0 + v3.4.0)
 Stack Tecnológico   : Node.js + Express 5 + PostgreSQL 18 (melidan_db) + PWA
-Caché Service Worker: melidan-shell-v11
+Caché Service Worker: melidan-shell-v13
 
 --------------------------------------------------------------------------------
-1. RESUMEN DE ESTA VERSIÓN (v3.3.0)
+0. ACTUALIZACIÓN v3.4.0 (25/11/2026) — IMÁGENES REALES, DICCIONARIO JSON/JS Y SW
+--------------------------------------------------------------------------------
+[Diagnóstico de imágenes rotas en Carta Digital]
+- Causa raíz #1: Todas las URLs anteriores de los 46 platillos (y sus respaldos
+  onerror + avatares) apuntaban a images.unsplash.com, dominio que en redes
+  restringidas/universitarias cierra conexiones con ECONNRESET (al igual que
+  pexels.com y pixabay.com).
+- Causa raíz #2 (bug crítico en Service Worker): public/sw.js interceptaba
+  peticiones cross-origin (imágenes externas) y, al fallar el fetch, devolvía
+  caches.match('/index.html') como respuesta a etiquetas <img>, rompiendo la
+  carga y el mecanismo de recuperación.
+
+[Correcciones y mejoras implementadas en v3.4.0]
+1) Diccionario JSON + JavaScript para los 46 productos de la Carta:
+   - Creado public/data/carta-imagenes.json con 46 direcciones HTTPS directas
+     únicas y verificadas (46/46 HTTP 200 image/* en carga paralela, <= 111
+     caracteres, sin dependencias locales) + 46 URLs secundarias de respaldo
+     de gastronomía peruana real.
+   - Creado public/js/dishImages.js (window.MELIDAN_DISH_IMAGES y
+     window.MelidanDishImages) conectado a carta.html, mozo.html, admin.html e
+     index.html:
+       * Resolución instantánea por ID o nombre normalizado.
+       * Sustitución automática de URLs legacy bloqueadas (unsplash/pexels/pixabay).
+       * Recuperación progresiva en onerror: URL principal -> URL secundaria ->
+         tarjeta SVG inline (garantiza 0 íconos rotos incluso 100% offline).
+       * Sincronización en vivo desde /data/carta-imagenes.json si se edita el JSON.
+       * Generación de avatares SVG con iniciales para eliminar avatares rotos de
+         Unsplash en Admin y Portal.
+
+2) Corrección crítica del Service Worker (public/sw.js):
+   - Ignora explícitamente peticiones cross-origin (url.origin !== self.location.origin).
+   - Fallback a /index.html restringido solo a navegaciones de página
+     (event.request.mode === 'navigate'), devolviendo 503 limpio para otros assets.
+   - Precachea /js/dishImages.js y /data/carta-imagenes.json y actualiza caché a
+     "melidan-shell-v12".
+
+3) Correcciones adicionales en Frontend, Backend y SQL:
+   - public/js/carta.js: highResImage() ya no altera parámetros (?w=...) de URLs
+     externas que no pertenecen a Unsplash; las 5 zonas de imágenes (carrusel,
+     miniaturas, especial del día, grilla y complementos) usan MelidanDishImages
+     con referrerpolicy="no-referrer".
+   - public/js/mozo.js, public/js/admin.js, public/js/app.js y public/index.html:
+     eliminadas todas las referencias fijas a images.unsplash.com y corregidos
+     precios decimales de respaldo en el carrito legacy de app.js (47.90 / 14.90).
+   - src/utils/syncCartaMarketing.js: lee directamente desde
+     public/data/carta-imagenes.json como fuente única de verdad y valida en su
+     comprobación rápida que no queden URLs de Unsplash y existan 46 imágenes
+     únicas para migrar melidan_db automáticamente al iniciar el servidor.
+   - database/init.sql: actualizadas las 46 filas de productos con las URLs
+     verificadas.
+   - tests/test_crud_validations.js: agregadas aserciones automatizadas para el
+     diccionario JSON/JS (46 URLs únicas <=255 chars sin Unsplash) y el guardado
+     cross-origin de public/sw.js.
+   - README.md y package.json: actualizados a v3.4.0 con tabla completa de
+     usuarios y credenciales para los 6 roles (administrador, mozo, cajero,
+     cocina, recepcionista y cliente).
+
+--------------------------------------------------------------------------------
+1. RESUMEN DE LA VERSIÓN BASE ANTERIOR (v3.3.0)
 --------------------------------------------------------------------------------
 La versión 3.3.0 consolida la evolución operativa, comercial y de estabilidad
 visual del sistema gastronómico Restaurante Melidan. Además de incorporar las
@@ -223,6 +281,11 @@ eliminar parpadeos (flickers), glitches de scroll/layout, condiciones de carrera
   25 platos), Excel (con datos y vacío), validadores, RBAC y rutas Express HTTP
   (200 en vistas, 400 en IDs inválidos y JSON malformado, 401/403 en Excel).
 
+- Validación v3.4.0: 46/46 URLs verificadas HTTP 200 image/* en paralelo con
+  Referer y 46/46 URLs de respaldo verificadas; 16/16 archivos JS sin errores
+  de sintaxis; paridad exacta 46/46 entre JSON, JS, syncCartaMarketing y
+  init.sql; cero URLs de Unsplash en public/; smoke test Express HTTP 200 OK.
+
 ================================================================================
-Fin del reporte - Restaurante Melidan v3.3.0
+Fin del reporte - Restaurante Melidan v3.4.0
 ================================================================================

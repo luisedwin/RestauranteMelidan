@@ -1,4 +1,4 @@
-const CACHE = 'melidan-shell-v11';
+const CACHE = 'melidan-shell-v13';
 const SHELL = [
   '/',
   '/login',
@@ -19,6 +19,7 @@ const SHELL = [
   '/css/dark-mode.css',
   '/js/theme.js',
   '/js/rbac.js',
+  '/js/dishImages.js',
   '/js/db.js',
   '/js/auth.js',
   '/js/app.js',
@@ -27,6 +28,7 @@ const SHELL = [
   '/js/carta.js',
   '/js/cocina.js',
   '/js/cajero.js',
+  '/data/carta-imagenes.json',
   '/manifest.webmanifest'
 ];
 
@@ -46,21 +48,29 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Estrategia Network-First para servir siempre la última versión web con fallback offline
+// Estrategia Network-First solo para recursos del mismo origen (nunca interceptar imágenes externas ni devolver HTML a un <img>)
 self.addEventListener('fetch', (event) => {
-  const url = new URL(event.request.url);
-  if (url.pathname.startsWith('/api/')) return;
   if (event.request.method !== 'GET') return;
+
+  const url = new URL(event.request.url);
+  if (url.origin !== self.location.origin) return;
+  if (url.pathname.startsWith('/api/')) return;
 
   event.respondWith(
     fetch(event.request)
       .then((response) => {
-        if (response && response.ok && url.origin === self.location.origin) {
+        if (response && response.ok) {
           const copy = response.clone();
           caches.open(CACHE).then((cache) => cache.put(event.request, copy));
         }
         return response;
       })
-      .catch(() => caches.match(event.request).then((cached) => cached || caches.match('/index.html')))
+      .catch(() => caches.match(event.request).then((cached) => {
+        if (cached) return cached;
+        if (event.request.mode === 'navigate') {
+          return caches.match('/index.html');
+        }
+        return new Response('', { status: 503, statusText: 'Offline' });
+      }))
   );
 });

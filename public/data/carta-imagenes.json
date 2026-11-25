@@ -1,0 +1,471 @@
+{
+  "version": "3.4.0",
+  "description": "Diccionario oficial de direcciones directas de imágenes para los 46 platillos, bebidas, combos y menús del día de Restaurante Melidan.",
+  "total": 46,
+  "items": [
+    {
+      "id": 1,
+      "nombre": "Lechón a Fuego Lento",
+      "categoria": "Platos Especiales",
+      "url": "https://cdn0.recetasgratis.net/es/posts/7/8/8/lechon_al_horno_11887_600.jpg",
+      "backupUrl": "https://cdn0.recetasgratis.net/es/posts/7/2/3/lechonchito_al_horno_8327_600.jpg",
+      "fuente": "recetasgratis.net"
+    },
+    {
+      "id": 2,
+      "nombre": "Costillar Glaseado a la Leña",
+      "categoria": "Platos Especiales",
+      "url": "https://cdn0.recetasgratis.net/es/posts/3/4/8/costillas_de_cerdo_a_la_bbq_41843_600.jpg",
+      "backupUrl": "https://comedera.com/wp-content/uploads/sites/9/2026/09/recetas-de-costillas-de-cerdo.webp?w=1200",
+      "fuente": "recetasgratis.net"
+    },
+    {
+      "id": 3,
+      "nombre": "Lomo Saltado Tradicional",
+      "categoria": "Platos Criollos",
+      "url": "https://cdn0.recetasgratis.net/es/posts/1/7/1/lomito_saltado_de_carne_78171_600.jpg",
+      "backupUrl": "https://cdn0.recetasgratis.net/es/posts/4/3/3/lomo_saltado_a_lo_pobre_77334_600.jpg",
+      "fuente": "recetasgratis.net"
+    },
+    {
+      "id": 4,
+      "nombre": "Ají de Gallina",
+      "categoria": "Platos Criollos",
+      "url": "https://cdn0.recetasgratis.net/es/posts/4/3/0/aji_de_gallina_peruano_78034_600.jpg",
+      "backupUrl": "https://cdn0.recetasgratis.net/es/posts/3/8/7/aji_de_pollo_16783_600.jpg",
+      "fuente": "recetasgratis.net"
+    },
+    {
+      "id": 5,
+      "nombre": "Jarra de Chicha Morada Artesanal (1L)",
+      "categoria": "Bebidas y Jarras",
+      "url": "https://cdn0.recetasgratis.net/es/posts/0/0/2/chicha_morada_75200_600.jpg",
+      "backupUrl": "https://www.eatperu.com/wp-content/uploads/2020/07/peruvian-chicha-morada-with-corn-and-lime-683x1024.jpg",
+      "fuente": "recetasgratis.net"
+    },
+    {
+      "id": 6,
+      "nombre": "Lomo Saltado Clásico",
+      "categoria": "Platos Criollos",
+      "url": "https://cdn0.recetasgratis.net/es/posts/4/3/3/lomo_saltado_a_lo_pobre_77334_600.jpg",
+      "backupUrl": "https://cdn0.recetasgratis.net/es/posts/1/7/1/lomito_saltado_de_carne_78171_600.jpg",
+      "fuente": "recetasgratis.net"
+    },
+    {
+      "id": 7,
+      "nombre": "Limonada Frozen Clásica",
+      "categoria": "Bebidas y Jarras",
+      "url": "https://cdn0.recetasgratis.net/es/posts/7/8/3/limonada_frozen_34387_600.jpg",
+      "backupUrl": "https://cdn0.recetasgratis.net/es/posts/2/3/2/limonada_con_miel_61232_600.jpg",
+      "fuente": "recetasgratis.net"
+    },
+    {
+      "id": 8,
+      "nombre": "Causa Limeña de Cangrejo",
+      "categoria": "Entradas",
+      "url": "https://cdn0.recetasgratis.net/es/posts/5/5/1/causa_de_pulpa_de_cangrejo_77155_600.jpg",
+      "backupUrl": "https://www.laylita.com/recetas/wp-content/uploads/2025/02/Causa-de-camaron-receta-facil-1024x768.jpg",
+      "fuente": "recetasgratis.net"
+    },
+    {
+      "id": 9,
+      "nombre": "Anticuchos de Corazón a la Brasa",
+      "categoria": "Entradas",
+      "url": "https://cdn0.recetasgratis.net/es/posts/3/8/8/anticuchos_peruanos_77883_600.jpg",
+      "backupUrl": "https://www.eatperu.com/wp-content/uploads/2022/01/peruvian-beed-heart-kebab-recipe-1200x1800.jpg",
+      "fuente": "recetasgratis.net"
+    },
+    {
+      "id": 10,
+      "nombre": "Papa a la Huancaína Artesanal",
+      "categoria": "Entradas",
+      "url": "https://cdn0.recetasgratis.net/es/posts/8/1/0/papa_a_la_huancaina_peruana_11018_600.jpg",
+      "backupUrl": "https://www.perudelights.com/wp-content/uploads/2018/05/ulpGK1W2-720.jpg",
+      "fuente": "recetasgratis.net"
+    },
+    {
+      "id": 11,
+      "nombre": "Tequeños de Lomo y Queso (6 und.)",
+      "categoria": "Entradas",
+      "url": "https://cdn0.recetasgratis.net/es/posts/6/1/6/tequenos_de_lomo_saltado_75616_600.jpg",
+      "backupUrl": "https://www.perudelights.com/wp-content/uploads/2016/09/P1015338.jpg",
+      "fuente": "recetasgratis.net"
+    },
+    {
+      "id": 12,
+      "nombre": "Pulpo al Olivo",
+      "categoria": "Entradas",
+      "url": "https://cdn0.recetasgratis.net/es/posts/1/0/3/pulpo_al_olivo_17301_600.jpg",
+      "backupUrl": "https://cdn0.recetasgratis.net/es/posts/8/2/8/pulpo_al_olivo_gourmet_14828_600.jpg",
+      "fuente": "recetasgratis.net"
+    },
+    {
+      "id": 13,
+      "nombre": "Panceta Crocante al Horno de Barro",
+      "categoria": "Platos Especiales",
+      "url": "https://decomidaperuana.com/wp-content/uploads/2018/11/chancho-a-la-china-receta.jpg",
+      "backupUrl": "https://cdn0.recetasgratis.net/es/posts/8/5/2/panceta_en_freidora_de_aire_77258_600.jpg",
+      "fuente": "decomidaperuana.com"
+    },
+    {
+      "id": 14,
+      "nombre": "Osobuco Braseado 8 Horas",
+      "categoria": "Platos Especiales",
+      "url": "https://cdn0.recetasgratis.net/es/posts/7/1/4/osobuco_de_ternera_77417_600.jpg",
+      "backupUrl": "https://cdn0.recetasgratis.net/es/posts/1/6/7/estofado_de_osobuco_76761_600.jpg",
+      "fuente": "recetasgratis.net"
+    },
+    {
+      "id": 15,
+      "nombre": "Pato Asado a la Leña Norteña",
+      "categoria": "Platos Especiales",
+      "url": "https://cdn0.recetasgratis.net/es/posts/9/7/8/pato_asado_al_horno_46879_600.jpg",
+      "backupUrl": "https://cdn0.recetasgratis.net/es/posts/8/5/3/magret_de_pato_al_horno_53358_600.jpg",
+      "fuente": "recetasgratis.net"
+    },
+    {
+      "id": 16,
+      "nombre": "Arroz con Pato a la Chiclayana",
+      "categoria": "Platos Criollos",
+      "url": "https://cdn0.recetasgratis.net/es/posts/8/2/3/arroz_con_pato_a_la_nortena_35328_600.jpg",
+      "backupUrl": "https://cdn0.recetasgratis.net/es/posts/9/7/8/pato_asado_al_horno_46879_600.jpg",
+      "fuente": "recetasgratis.net"
+    },
+    {
+      "id": 17,
+      "nombre": "Seco de Res con Frejoles",
+      "categoria": "Platos Criollos",
+      "url": "https://www.laylita.com/recetas/wp-content/uploads/2025/11/Receta-del-seco-de-carne-de-res-peruano-1024x769.jpg",
+      "backupUrl": "https://cdn0.recetasgratis.net/es/posts/3/4/9/frejoles_con_seco_de_pollo_77943_600.jpg",
+      "fuente": "laylita.com"
+    },
+    {
+      "id": 18,
+      "nombre": "Tallarines Verdes con Bife Angosto",
+      "categoria": "Platos Criollos",
+      "url": "https://cdn0.recetasgratis.net/es/posts/6/5/7/tallarines_verdes_peruanos_14756_600.jpg",
+      "backupUrl": "https://cdn0.recetasgratis.net/es/posts/0/1/3/tallarines_verdes_32310_600.jpg",
+      "fuente": "recetasgratis.net"
+    },
+    {
+      "id": 19,
+      "nombre": "Chaufa Amazónico al Wok",
+      "categoria": "Platos Criollos",
+      "url": "https://www.laylita.com/recetas/wp-content/uploads/2022/12/Receta-del-arroz-chaufa-peruano-1024x683.jpg",
+      "backupUrl": "https://cdn0.recetasgratis.net/es/posts/5/1/3/chaufa_de_chancho_78315_600.jpg",
+      "fuente": "laylita.com"
+    },
+    {
+      "id": 20,
+      "nombre": "Maracuyá Sour de la Casa",
+      "categoria": "Bebidas y Jarras",
+      "url": "https://cdn0.recetasgratis.net/es/posts/3/6/3/maracuya_sour_77363_600.jpg",
+      "backupUrl": "https://www.eatperu.com/wp-content/uploads/2021/01/maracuya-sour-recipe-683x1024.jpg",
+      "fuente": "recetasgratis.net"
+    },
+    {
+      "id": 21,
+      "nombre": "Jarra de Maracuyá Natural (1L)",
+      "categoria": "Bebidas y Jarras",
+      "url": "https://cdn0.recetasgratis.net/es/posts/2/5/1/jugo_de_parchita_77152_600.jpg",
+      "backupUrl": "https://www.laylita.com/recetas/wp-content/uploads/2022/07/Receta-del-mojito-de-maracuya-chinola-parchita-1024x768.jpg",
+      "fuente": "recetasgratis.net"
+    },
+    {
+      "id": 22,
+      "nombre": "Suspiro a la Limeña Clásico",
+      "categoria": "Postres",
+      "url": "https://cdn0.recetasgratis.net/es/posts/2/6/2/suspiro_limeno_78262_600.jpg",
+      "backupUrl": "https://comedera.com/wp-content/uploads/sites/9/2022/11/suspiro-limeno.jpeg?w=768",
+      "fuente": "recetasgratis.net"
+    },
+    {
+      "id": 23,
+      "nombre": "Picarones con Miel de Chancaca",
+      "categoria": "Postres",
+      "url": "https://cdn0.recetasgratis.net/es/posts/1/5/4/picarones_con_chancaca_77451_600.jpg",
+      "backupUrl": "https://decomidaperuana.com/wp-content/uploads/2020/05/picarones.jpg",
+      "fuente": "recetasgratis.net"
+    },
+    {
+      "id": 24,
+      "nombre": "Tres Leches de Lúcuma",
+      "categoria": "Postres",
+      "url": "https://cdn0.recetasgratis.net/es/posts/9/5/2/torta_tres_leches_de_lucuma_45259_600.jpg",
+      "backupUrl": "https://www.perudelights.com/wp-content/uploads/2013/07/Tres-leches.-jpg-2-PD.jpg",
+      "fuente": "recetasgratis.net"
+    },
+    {
+      "id": 25,
+      "nombre": "Maracuyá Sour sin Alcohol",
+      "categoria": "Bebidas y Jarras",
+      "url": "https://www.perudelights.com/wp-content/uploads/2013/09/PassionFruitSour.R..jpg",
+      "backupUrl": "https://www.eatperu.com/wp-content/uploads/2021/01/maracuya-sour-recipe-683x1024.jpg",
+      "fuente": "perudelights.com"
+    },
+    {
+      "id": 26,
+      "nombre": "Emoliente Frutal Helado",
+      "categoria": "Bebidas y Jarras",
+      "url": "https://cdn0.recetasgratis.net/es/posts/7/1/8/emoliente_peruano_76817_600.jpg",
+      "backupUrl": "https://decomidaperuana.com/wp-content/uploads/2020/04/emoliente.jpg",
+      "fuente": "recetasgratis.net"
+    },
+    {
+      "id": 27,
+      "nombre": "Combinado Clásico Limeño",
+      "categoria": "Postres",
+      "url": "https://cdn0.recetasgratis.net/es/posts/9/8/4/mazamorra_con_arroz_con_leche_76489_600.jpg",
+      "backupUrl": "https://cdn0.recetasgratis.net/es/posts/1/9/6/mazamorra_morada_facil_16691_600.jpg",
+      "fuente": "recetasgratis.net"
+    },
+    {
+      "id": 28,
+      "nombre": "Pachamanca a la Olla Tradicional",
+      "categoria": "Platos Especiales",
+      "url": "https://cdn0.recetasgratis.net/es/posts/0/1/7/pachamanca_a_la_olla_75710_600.jpg",
+      "backupUrl": "https://decomidaperuana.com/wp-content/uploads/2019/09/pachamanca-a-la-olla.jpg",
+      "fuente": "recetasgratis.net"
+    },
+    {
+      "id": 29,
+      "nombre": "Carapulcra con Sopa Seca Chinchana",
+      "categoria": "Platos Criollos",
+      "url": "https://cdn0.recetasgratis.net/es/posts/8/8/0/carapulcra_chinchana_78088_600.jpg",
+      "backupUrl": "https://decomidaperuana.com/wp-content/uploads/2019/04/receta-de-sopa-seca.jpg",
+      "fuente": "recetasgratis.net"
+    },
+    {
+      "id": 30,
+      "nombre": "Arroz con Mariscos a la Criolla",
+      "categoria": "Platos Criollos",
+      "url": "https://cdn0.recetasgratis.net/es/posts/4/9/7/arroz_con_mariscos_peruano_75794_600.jpg",
+      "backupUrl": "https://decomidaperuana.com/wp-content/uploads/2020/04/arroz-con-mariscos-receta.jpg",
+      "fuente": "recetasgratis.net"
+    },
+    {
+      "id": 31,
+      "nombre": "Tacu Tacu con Lomo al Jugo",
+      "categoria": "Platos Criollos",
+      "url": "https://cdn0.recetasgratis.net/es/posts/9/5/5/tacu_tacu_con_lomo_76559_600.jpg",
+      "backupUrl": "https://cdn0.recetasgratis.net/es/posts/1/1/3/tacu_tacu_a_lo_pobre_75311_600.jpg",
+      "fuente": "recetasgratis.net"
+    },
+    {
+      "id": 32,
+      "nombre": "Cau Cau Criollo de Mondongo",
+      "categoria": "Platos Criollos",
+      "url": "https://cdn0.recetasgratis.net/es/posts/4/1/1/cau_cau_de_mondongo_75114_600.jpg",
+      "backupUrl": "https://decomidaperuana.com/wp-content/uploads/2020/05/cau-cau-de-pollo.jpg",
+      "fuente": "recetasgratis.net"
+    },
+    {
+      "id": 33,
+      "nombre": "Choritos a la Chalaca (8 und.)",
+      "categoria": "Entradas",
+      "url": "https://cdn0.recetasgratis.net/es/posts/7/8/2/choritos_a_la_chalaca_77287_600.jpg",
+      "backupUrl": "https://www.perudelights.com/wp-content/uploads/2012/04/3-1024x768.jpg",
+      "fuente": "recetasgratis.net"
+    },
+    {
+      "id": 34,
+      "nombre": "Jarra de Limonada de Hierbabuena (1L)",
+      "categoria": "Bebidas y Jarras",
+      "url": "https://cdn0.recetasgratis.net/es/posts/5/2/6/granizado_de_lima_y_menta_con_thermomix_30625_600.jpg",
+      "backupUrl": "https://comedera.com/wp-content/uploads/sites/9/2026/06/Agua-de-pepino-con-limon.webp?w=768",
+      "fuente": "recetasgratis.net"
+    },
+    {
+      "id": 35,
+      "nombre": "Jarra de Sangría Criolla (1L)",
+      "categoria": "Bebidas y Jarras",
+      "url": "https://cdn0.recetasgratis.net/es/posts/1/6/7/sangria_tradicional_41761_600.jpg",
+      "backupUrl": "https://cdn0.recetasgratis.net/es/posts/7/9/3/sangria_facil_41397_600.jpg",
+      "fuente": "recetasgratis.net"
+    },
+    {
+      "id": 36,
+      "nombre": "Vaso de Chicha Morada (450ml)",
+      "categoria": "Bebidas y Jarras",
+      "url": "https://comedera.com/wp-content/uploads/sites/9/2026/03/chicha-morada.webp?w=768",
+      "backupUrl": "https://www.eatperu.com/wp-content/uploads/2020/07/peruvian-chicha-morada-with-corn-and-lime-683x1024.jpg",
+      "fuente": "comedera.com"
+    },
+    {
+      "id": 37,
+      "nombre": "Pisco Sour Clásico Peruano",
+      "categoria": "Bebidas y Jarras",
+      "url": "https://cdn0.recetasgratis.net/es/posts/9/8/2/pisco_sour_peruano_casero_16289_600.jpg",
+      "backupUrl": "https://decomidaperuana.com/wp-content/uploads/2017/09/receta-de-pisco-sour.jpg",
+      "fuente": "recetasgratis.net"
+    },
+    {
+      "id": 38,
+      "nombre": "Chilcano de Maracuyá o Limón",
+      "categoria": "Bebidas y Jarras",
+      "url": "https://cdn0.recetasgratis.net/es/posts/2/8/6/chilcano_de_maracuya_77682_600.jpg",
+      "backupUrl": "https://cdn0.recetasgratis.net/es/posts/9/8/6/chilcano_de_pisco_77689_600.jpg",
+      "fuente": "recetasgratis.net"
+    },
+    {
+      "id": 39,
+      "nombre": "Inca Kola / Gaseosa Personal (500ml)",
+      "categoria": "Bebidas y Jarras",
+      "url": "https://www.papajohns.com.pe/media/catalog/product/1/4/14938.png?optimize=medium&bg-color=255,255,255&fit=bounds&height=700&width=700&canvas=700:700&format=jpeg",
+      "backupUrl": "https://plazavea.vteximg.com.br/arquivos/ids/33481461-418-418/497497.jpg",
+      "fuente": "papajohns.com.pe"
+    },
+    {
+      "id": 40,
+      "nombre": "Combo Criollo Para 2",
+      "categoria": "Combos",
+      "url": "https://comedera.com/wp-content/uploads/sites/9/2023/05/Lomo-en-su-jugo-peruano-shutterstock_1993679156.jpg",
+      "backupUrl": "https://cdn0.recetasgratis.net/es/posts/3/9/7/lomo_saltado_de_pollo_jugoso_75793_600.jpg",
+      "fuente": "comedera.com"
+    },
+    {
+      "id": 41,
+      "nombre": "Combo Horno & Brasa Familiar (4 pers.)",
+      "categoria": "Combos",
+      "url": "https://decomidaperuana.com/wp-content/uploads/2020/05/parrilla.jpg",
+      "backupUrl": "https://www.eatperu.com/wp-content/uploads/2019/10/pollo-a-la-brasa-with-salad-and-dipping-sauces-1024x683.jpg",
+      "fuente": "decomidaperuana.com"
+    },
+    {
+      "id": 42,
+      "nombre": "Combo Almuerzo Express Wok",
+      "categoria": "Combos",
+      "url": "https://cdn0.recetasgratis.net/es/posts/1/8/6/aeropuerto_chifa_76681_600.jpg",
+      "backupUrl": "https://cdn0.recetasgratis.net/es/posts/5/4/8/arroz_chaufa_de_pollo_76845_600.jpg",
+      "fuente": "recetasgratis.net"
+    },
+    {
+      "id": 43,
+      "nombre": "Combo Dúo Barra & Piqueo",
+      "categoria": "Combos",
+      "url": "https://www.perudelights.com/wp-content/uploads/2016/09/P1015338.jpg",
+      "backupUrl": "https://www.eatperu.com/wp-content/uploads/2021/02/peruvian-appetizer-blog-pinterest.jpg",
+      "fuente": "perudelights.com"
+    },
+    {
+      "id": 44,
+      "nombre": "Menú del Día (Lun · Mié · Vie)",
+      "categoria": "Menú del Día",
+      "url": "https://decomidaperuana.com/wp-content/uploads/2019/04/receta-de-sopa-seca.jpg",
+      "backupUrl": "https://cdn0.recetasgratis.net/es/posts/1/6/8/carapulcra_de_chancho_63861_600.jpg",
+      "fuente": "decomidaperuana.com"
+    },
+    {
+      "id": 45,
+      "nombre": "Menú del Día (Mar · Jue · Sáb)",
+      "categoria": "Menú del Día",
+      "url": "https://cdn0.recetasgratis.net/es/posts/3/8/7/aji_de_pollo_16783_600.jpg",
+      "backupUrl": "https://cdn0.recetasgratis.net/es/posts/1/1/3/tacu_tacu_a_lo_pobre_75311_600.jpg",
+      "fuente": "recetasgratis.net"
+    },
+    {
+      "id": 46,
+      "nombre": "Menú Especial de Domingo",
+      "categoria": "Menú del Día",
+      "url": "https://decomidaperuana.com/wp-content/uploads/2019/09/pachamanca-a-la-olla.jpg",
+      "backupUrl": "https://cdn0.recetasgratis.net/es/posts/9/0/1/rocoto_relleno_arequipeno_75109_600.jpg",
+      "fuente": "decomidaperuana.com"
+    }
+  ],
+  "byId": {
+    "1": "https://cdn0.recetasgratis.net/es/posts/7/8/8/lechon_al_horno_11887_600.jpg",
+    "2": "https://cdn0.recetasgratis.net/es/posts/3/4/8/costillas_de_cerdo_a_la_bbq_41843_600.jpg",
+    "3": "https://cdn0.recetasgratis.net/es/posts/1/7/1/lomito_saltado_de_carne_78171_600.jpg",
+    "4": "https://cdn0.recetasgratis.net/es/posts/4/3/0/aji_de_gallina_peruano_78034_600.jpg",
+    "5": "https://cdn0.recetasgratis.net/es/posts/0/0/2/chicha_morada_75200_600.jpg",
+    "6": "https://cdn0.recetasgratis.net/es/posts/4/3/3/lomo_saltado_a_lo_pobre_77334_600.jpg",
+    "7": "https://cdn0.recetasgratis.net/es/posts/7/8/3/limonada_frozen_34387_600.jpg",
+    "8": "https://cdn0.recetasgratis.net/es/posts/5/5/1/causa_de_pulpa_de_cangrejo_77155_600.jpg",
+    "9": "https://cdn0.recetasgratis.net/es/posts/3/8/8/anticuchos_peruanos_77883_600.jpg",
+    "10": "https://cdn0.recetasgratis.net/es/posts/8/1/0/papa_a_la_huancaina_peruana_11018_600.jpg",
+    "11": "https://cdn0.recetasgratis.net/es/posts/6/1/6/tequenos_de_lomo_saltado_75616_600.jpg",
+    "12": "https://cdn0.recetasgratis.net/es/posts/1/0/3/pulpo_al_olivo_17301_600.jpg",
+    "13": "https://decomidaperuana.com/wp-content/uploads/2018/11/chancho-a-la-china-receta.jpg",
+    "14": "https://cdn0.recetasgratis.net/es/posts/7/1/4/osobuco_de_ternera_77417_600.jpg",
+    "15": "https://cdn0.recetasgratis.net/es/posts/9/7/8/pato_asado_al_horno_46879_600.jpg",
+    "16": "https://cdn0.recetasgratis.net/es/posts/8/2/3/arroz_con_pato_a_la_nortena_35328_600.jpg",
+    "17": "https://www.laylita.com/recetas/wp-content/uploads/2025/11/Receta-del-seco-de-carne-de-res-peruano-1024x769.jpg",
+    "18": "https://cdn0.recetasgratis.net/es/posts/6/5/7/tallarines_verdes_peruanos_14756_600.jpg",
+    "19": "https://www.laylita.com/recetas/wp-content/uploads/2022/12/Receta-del-arroz-chaufa-peruano-1024x683.jpg",
+    "20": "https://cdn0.recetasgratis.net/es/posts/3/6/3/maracuya_sour_77363_600.jpg",
+    "21": "https://cdn0.recetasgratis.net/es/posts/2/5/1/jugo_de_parchita_77152_600.jpg",
+    "22": "https://cdn0.recetasgratis.net/es/posts/2/6/2/suspiro_limeno_78262_600.jpg",
+    "23": "https://cdn0.recetasgratis.net/es/posts/1/5/4/picarones_con_chancaca_77451_600.jpg",
+    "24": "https://cdn0.recetasgratis.net/es/posts/9/5/2/torta_tres_leches_de_lucuma_45259_600.jpg",
+    "25": "https://www.perudelights.com/wp-content/uploads/2013/09/PassionFruitSour.R..jpg",
+    "26": "https://cdn0.recetasgratis.net/es/posts/7/1/8/emoliente_peruano_76817_600.jpg",
+    "27": "https://cdn0.recetasgratis.net/es/posts/9/8/4/mazamorra_con_arroz_con_leche_76489_600.jpg",
+    "28": "https://cdn0.recetasgratis.net/es/posts/0/1/7/pachamanca_a_la_olla_75710_600.jpg",
+    "29": "https://cdn0.recetasgratis.net/es/posts/8/8/0/carapulcra_chinchana_78088_600.jpg",
+    "30": "https://cdn0.recetasgratis.net/es/posts/4/9/7/arroz_con_mariscos_peruano_75794_600.jpg",
+    "31": "https://cdn0.recetasgratis.net/es/posts/9/5/5/tacu_tacu_con_lomo_76559_600.jpg",
+    "32": "https://cdn0.recetasgratis.net/es/posts/4/1/1/cau_cau_de_mondongo_75114_600.jpg",
+    "33": "https://cdn0.recetasgratis.net/es/posts/7/8/2/choritos_a_la_chalaca_77287_600.jpg",
+    "34": "https://cdn0.recetasgratis.net/es/posts/5/2/6/granizado_de_lima_y_menta_con_thermomix_30625_600.jpg",
+    "35": "https://cdn0.recetasgratis.net/es/posts/1/6/7/sangria_tradicional_41761_600.jpg",
+    "36": "https://comedera.com/wp-content/uploads/sites/9/2026/03/chicha-morada.webp?w=768",
+    "37": "https://cdn0.recetasgratis.net/es/posts/9/8/2/pisco_sour_peruano_casero_16289_600.jpg",
+    "38": "https://cdn0.recetasgratis.net/es/posts/2/8/6/chilcano_de_maracuya_77682_600.jpg",
+    "39": "https://www.papajohns.com.pe/media/catalog/product/1/4/14938.png?optimize=medium&bg-color=255,255,255&fit=bounds&height=700&width=700&canvas=700:700&format=jpeg",
+    "40": "https://comedera.com/wp-content/uploads/sites/9/2023/05/Lomo-en-su-jugo-peruano-shutterstock_1993679156.jpg",
+    "41": "https://decomidaperuana.com/wp-content/uploads/2020/05/parrilla.jpg",
+    "42": "https://cdn0.recetasgratis.net/es/posts/1/8/6/aeropuerto_chifa_76681_600.jpg",
+    "43": "https://www.perudelights.com/wp-content/uploads/2016/09/P1015338.jpg",
+    "44": "https://decomidaperuana.com/wp-content/uploads/2019/04/receta-de-sopa-seca.jpg",
+    "45": "https://cdn0.recetasgratis.net/es/posts/3/8/7/aji_de_pollo_16783_600.jpg",
+    "46": "https://decomidaperuana.com/wp-content/uploads/2019/09/pachamanca-a-la-olla.jpg"
+  },
+  "byName": {
+    "Lechón a Fuego Lento": "https://cdn0.recetasgratis.net/es/posts/7/8/8/lechon_al_horno_11887_600.jpg",
+    "Costillar Glaseado a la Leña": "https://cdn0.recetasgratis.net/es/posts/3/4/8/costillas_de_cerdo_a_la_bbq_41843_600.jpg",
+    "Lomo Saltado Tradicional": "https://cdn0.recetasgratis.net/es/posts/1/7/1/lomito_saltado_de_carne_78171_600.jpg",
+    "Ají de Gallina": "https://cdn0.recetasgratis.net/es/posts/4/3/0/aji_de_gallina_peruano_78034_600.jpg",
+    "Jarra de Chicha Morada Artesanal (1L)": "https://cdn0.recetasgratis.net/es/posts/0/0/2/chicha_morada_75200_600.jpg",
+    "Lomo Saltado Clásico": "https://cdn0.recetasgratis.net/es/posts/4/3/3/lomo_saltado_a_lo_pobre_77334_600.jpg",
+    "Limonada Frozen Clásica": "https://cdn0.recetasgratis.net/es/posts/7/8/3/limonada_frozen_34387_600.jpg",
+    "Causa Limeña de Cangrejo": "https://cdn0.recetasgratis.net/es/posts/5/5/1/causa_de_pulpa_de_cangrejo_77155_600.jpg",
+    "Anticuchos de Corazón a la Brasa": "https://cdn0.recetasgratis.net/es/posts/3/8/8/anticuchos_peruanos_77883_600.jpg",
+    "Papa a la Huancaína Artesanal": "https://cdn0.recetasgratis.net/es/posts/8/1/0/papa_a_la_huancaina_peruana_11018_600.jpg",
+    "Tequeños de Lomo y Queso (6 und.)": "https://cdn0.recetasgratis.net/es/posts/6/1/6/tequenos_de_lomo_saltado_75616_600.jpg",
+    "Pulpo al Olivo": "https://cdn0.recetasgratis.net/es/posts/1/0/3/pulpo_al_olivo_17301_600.jpg",
+    "Panceta Crocante al Horno de Barro": "https://decomidaperuana.com/wp-content/uploads/2018/11/chancho-a-la-china-receta.jpg",
+    "Osobuco Braseado 8 Horas": "https://cdn0.recetasgratis.net/es/posts/7/1/4/osobuco_de_ternera_77417_600.jpg",
+    "Pato Asado a la Leña Norteña": "https://cdn0.recetasgratis.net/es/posts/9/7/8/pato_asado_al_horno_46879_600.jpg",
+    "Arroz con Pato a la Chiclayana": "https://cdn0.recetasgratis.net/es/posts/8/2/3/arroz_con_pato_a_la_nortena_35328_600.jpg",
+    "Seco de Res con Frejoles": "https://www.laylita.com/recetas/wp-content/uploads/2025/11/Receta-del-seco-de-carne-de-res-peruano-1024x769.jpg",
+    "Tallarines Verdes con Bife Angosto": "https://cdn0.recetasgratis.net/es/posts/6/5/7/tallarines_verdes_peruanos_14756_600.jpg",
+    "Chaufa Amazónico al Wok": "https://www.laylita.com/recetas/wp-content/uploads/2022/12/Receta-del-arroz-chaufa-peruano-1024x683.jpg",
+    "Maracuyá Sour de la Casa": "https://cdn0.recetasgratis.net/es/posts/3/6/3/maracuya_sour_77363_600.jpg",
+    "Jarra de Maracuyá Natural (1L)": "https://cdn0.recetasgratis.net/es/posts/2/5/1/jugo_de_parchita_77152_600.jpg",
+    "Suspiro a la Limeña Clásico": "https://cdn0.recetasgratis.net/es/posts/2/6/2/suspiro_limeno_78262_600.jpg",
+    "Picarones con Miel de Chancaca": "https://cdn0.recetasgratis.net/es/posts/1/5/4/picarones_con_chancaca_77451_600.jpg",
+    "Tres Leches de Lúcuma": "https://cdn0.recetasgratis.net/es/posts/9/5/2/torta_tres_leches_de_lucuma_45259_600.jpg",
+    "Maracuyá Sour sin Alcohol": "https://www.perudelights.com/wp-content/uploads/2013/09/PassionFruitSour.R..jpg",
+    "Emoliente Frutal Helado": "https://cdn0.recetasgratis.net/es/posts/7/1/8/emoliente_peruano_76817_600.jpg",
+    "Combinado Clásico Limeño": "https://cdn0.recetasgratis.net/es/posts/9/8/4/mazamorra_con_arroz_con_leche_76489_600.jpg",
+    "Pachamanca a la Olla Tradicional": "https://cdn0.recetasgratis.net/es/posts/0/1/7/pachamanca_a_la_olla_75710_600.jpg",
+    "Carapulcra con Sopa Seca Chinchana": "https://cdn0.recetasgratis.net/es/posts/8/8/0/carapulcra_chinchana_78088_600.jpg",
+    "Arroz con Mariscos a la Criolla": "https://cdn0.recetasgratis.net/es/posts/4/9/7/arroz_con_mariscos_peruano_75794_600.jpg",
+    "Tacu Tacu con Lomo al Jugo": "https://cdn0.recetasgratis.net/es/posts/9/5/5/tacu_tacu_con_lomo_76559_600.jpg",
+    "Cau Cau Criollo de Mondongo": "https://cdn0.recetasgratis.net/es/posts/4/1/1/cau_cau_de_mondongo_75114_600.jpg",
+    "Choritos a la Chalaca (8 und.)": "https://cdn0.recetasgratis.net/es/posts/7/8/2/choritos_a_la_chalaca_77287_600.jpg",
+    "Jarra de Limonada de Hierbabuena (1L)": "https://cdn0.recetasgratis.net/es/posts/5/2/6/granizado_de_lima_y_menta_con_thermomix_30625_600.jpg",
+    "Jarra de Sangría Criolla (1L)": "https://cdn0.recetasgratis.net/es/posts/1/6/7/sangria_tradicional_41761_600.jpg",
+    "Vaso de Chicha Morada (450ml)": "https://comedera.com/wp-content/uploads/sites/9/2026/03/chicha-morada.webp?w=768",
+    "Pisco Sour Clásico Peruano": "https://cdn0.recetasgratis.net/es/posts/9/8/2/pisco_sour_peruano_casero_16289_600.jpg",
+    "Chilcano de Maracuyá o Limón": "https://cdn0.recetasgratis.net/es/posts/2/8/6/chilcano_de_maracuya_77682_600.jpg",
+    "Inca Kola / Gaseosa Personal (500ml)": "https://www.papajohns.com.pe/media/catalog/product/1/4/14938.png?optimize=medium&bg-color=255,255,255&fit=bounds&height=700&width=700&canvas=700:700&format=jpeg",
+    "Combo Criollo Para 2": "https://comedera.com/wp-content/uploads/sites/9/2023/05/Lomo-en-su-jugo-peruano-shutterstock_1993679156.jpg",
+    "Combo Horno & Brasa Familiar (4 pers.)": "https://decomidaperuana.com/wp-content/uploads/2020/05/parrilla.jpg",
+    "Combo Almuerzo Express Wok": "https://cdn0.recetasgratis.net/es/posts/1/8/6/aeropuerto_chifa_76681_600.jpg",
+    "Combo Dúo Barra & Piqueo": "https://www.perudelights.com/wp-content/uploads/2016/09/P1015338.jpg",
+    "Menú del Día (Lun · Mié · Vie)": "https://decomidaperuana.com/wp-content/uploads/2019/04/receta-de-sopa-seca.jpg",
+    "Menú del Día (Mar · Jue · Sáb)": "https://cdn0.recetasgratis.net/es/posts/3/8/7/aji_de_pollo_16783_600.jpg",
+    "Menú Especial de Domingo": "https://decomidaperuana.com/wp-content/uploads/2019/09/pachamanca-a-la-olla.jpg"
+  }
+}

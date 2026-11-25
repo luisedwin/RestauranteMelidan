@@ -337,6 +337,38 @@ async function runTests() {
     'carta.js implementa complementos aleatorios rebajados (-20%) con opción de mezclar en el carrito'
   );
 
+  // Diccionario JSON y JS de imágenes de platillos + corrección Service Worker
+  const dishImagesJsonPath = path.join(PROJECT_ROOT, 'public', 'data', 'carta-imagenes.json');
+  const dishImagesJsPath = path.join(PROJECT_ROOT, 'public', 'js', 'dishImages.js');
+  const swJsContent = fs.readFileSync(path.join(PROJECT_ROOT, 'public', 'sw.js'), 'utf8');
+  const dishImagesJson = JSON.parse(fs.readFileSync(dishImagesJsonPath, 'utf8'));
+  const dishImagesMod = require('../public/js/dishImages');
+  const uniqueJsonUrls = new Set((dishImagesJson.items || []).map((i) => i.url));
+  const allUrlsValid = (dishImagesJson.items || []).every(
+    (i) => /^https:\/\//i.test(i.url) && i.url.length <= 255 && !/unsplash\.com|pexels\.com|pixabay\.com/i.test(i.url)
+  );
+  assert(
+    fs.existsSync(dishImagesJsonPath) &&
+    fs.existsSync(dishImagesJsPath) &&
+    Array.isArray(dishImagesJson.items) &&
+    dishImagesJson.items.length === 46 &&
+    uniqueJsonUrls.size === 46 &&
+    allUrlsValid &&
+    dishImagesMod.resolve({ id: 29, image: 'https://images.unsplash.com/photo-old' }) === dishImagesJson.byId['29'] &&
+    dishImagesMod.buildPlaceholderSvg('Lomo Saltado').startsWith('data:image/svg+xml'),
+    'Diccionario JSON/JS de imágenes contiene 46 URLs HTTPS únicas (<=255 chars, sin Unsplash) con resolución y respaldo SVG'
+  );
+  assert(
+    cartaHtml.includes('/js/dishImages.js') &&
+    mozoHtml.includes('/js/dishImages.js') &&
+    adminHtml.includes('/js/dishImages.js') &&
+    swJsContent.includes('url.origin !== self.location.origin') &&
+    swJsContent.includes("event.request.mode === 'navigate'") &&
+    swJsContent.includes('/js/dishImages.js') &&
+    swJsContent.includes('/data/carta-imagenes.json'),
+    'HTML carga /js/dishImages.js y sw.js evita interceptar imágenes cross-origin o devolver HTML en fallos de imagen'
+  );
+
   const rbacSrc = fs.readFileSync(path.join(PROJECT_ROOT, 'public', 'js', 'rbac.js'), 'utf8');
   assert(
     rbacSrc.includes('injectRoleNavigationBar') && rbacSrc.includes('role-omni-bar'),

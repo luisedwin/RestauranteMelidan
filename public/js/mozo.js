@@ -322,9 +322,11 @@ const mozoApp = {
       return;
     }
 
-    container.innerHTML = filtered.map((d) => `
+    container.innerHTML = filtered.map((d) => {
+      const imgUrl = window.MelidanDishImages?.resolve ? window.MelidanDishImages.resolve(d) : (d.image || '');
+      return `
       <div class="menu-item-card">
-        <img src="${this.escapeHtml(d.image)}" class="menu-item-img" alt="${this.escapeHtml(d.name)}" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=400&q=80'">
+        <img src="${this.escapeHtml(imgUrl)}" class="menu-item-img" alt="${this.escapeHtml(d.name)}" loading="lazy" referrerpolicy="no-referrer" data-dish-id="${Number(d.id)}" data-dish-name="${this.escapeHtml(d.name)}" data-dish-cat="${this.escapeHtml(d.category || 'Carta')}" onerror="window.MelidanDishImages && window.MelidanDishImages.handleError(this)">
         <div class="menu-item-info">
           <h6 class="menu-item-title">${this.escapeHtml(d.name)}</h6>
           <span class="badge bg-light text-secondary border small mb-1">${this.escapeHtml(d.category || 'Carta')}</span>
@@ -334,7 +336,8 @@ const mozoApp = {
           <i class="bi bi-plus-lg"></i> Agregar
         </button>
       </div>
-    `).join('');
+    `;
+    }).join('');
   },
 
   async addToCart(dishId) {
