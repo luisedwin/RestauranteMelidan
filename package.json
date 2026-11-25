@@ -1,6 +1,6 @@
 {
   "name": "restaurante-melidan",
-  "version": "3.2.0",
+  "version": "3.4.0",
   "private": true,
   "description": "Restaurante Melidan - Frontend Web Responsive (PC & Móvil) + Node.js/Express + PostgreSQL 18",
   "main": "src/server.js",

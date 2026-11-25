@@ -1,6 +1,6 @@
 /**
  * auth.js - Servicio de Autenticación contra PostgreSQL 18 vía API Node.js.
- * LocalStorage solo conserva la sesión activa del navegador.
+ * LocalStorage conserva la sesión autenticada y el token firmado HMAC del rol activo.
  */
 class AuthService {
   static SESSION_KEY = 'melidan_auth_user';
@@ -12,6 +12,13 @@ class AuthService {
     } catch (_) {
       return {};
     }
+  }
+
+  static saveSession(user) {
+    if (!user) return;
+    try {
+      localStorage.setItem(this.SESSION_KEY, JSON.stringify(user));
+    } catch (_) {}
   }
 
   static async login(email, password) {
@@ -32,7 +39,7 @@ class AuthService {
       throw new Error(result.message || 'Error de autenticación');
     }
 
-    localStorage.setItem(this.SESSION_KEY, JSON.stringify(result.user));
+    this.saveSession(result.user);
     if (window.db) {
       window.db.isPostgresConnected = true;
       window.db.updateConnectionBadge(true);
@@ -52,6 +59,7 @@ class AuthService {
   static logout() {
     try {
       localStorage.removeItem(this.SESSION_KEY);
+      localStorage.removeItem('melidan_session_user');
     } catch (_) {}
   }
 
@@ -110,4 +118,3 @@ class AuthService {
 }
 
 window.AuthService = AuthService;
-

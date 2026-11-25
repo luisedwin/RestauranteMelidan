@@ -1,6 +1,39 @@
 /**
  * cajero.css - Estilos Responsivos del Módulo Cajero y Facturación Electrónica (Melidan)
+ * Soporte completo para Yape, Plin, Efectivo, Tarjeta POS, Boleta Profesional y Promo.
  */
+
+.post-payment-banner {
+  margin: 1rem 1.35rem 0;
+  padding: 0.95rem 1.15rem;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(0, 155, 119, 0.08) 100%);
+  border: 1.5px solid rgba(16, 185, 129, 0.45);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+  animation: fadeInBanner 0.28s ease;
+}
+
+@keyframes fadeInBanner {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.post-payment-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #10B981;
+  color: #FFFFFF;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
 
 .pos-container {
   display: grid;
@@ -16,12 +49,28 @@
     padding: 1rem;
     gap: 1.15rem;
   }
+  .post-payment-banner {
+    margin: 0.85rem 1rem 0;
+  }
 }
 
-.pending-bills-list {
+@media (orientation: landscape) and (max-height: 540px) {
+  .pos-container {
+    grid-template-columns: 1.1fr 1fr;
+    padding: 0.75rem max(1rem, env(safe-area-inset-right)) 1rem max(1rem, env(safe-area-inset-left));
+    gap: 0.9rem;
+  }
+  .checkout-panel {
+    position: static;
+    padding: 0.95rem;
+  }
+}
+
+.pending-bills-list,
+.recent-receipts-list {
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
+  gap: 0.75rem;
 }
 
 .bill-card-item {
@@ -53,6 +102,18 @@
   font-weight: 800;
   font-size: 1.25rem;
   color: var(--text-primary);
+}
+
+.recent-receipt-row {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 0.95rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
 .checkout-panel {
@@ -97,48 +158,59 @@
   border-top: 2px solid var(--border-color);
 }
 
+/* 4 Opciones de Pago: Efectivo, Tarjeta POS, Yape, Plin */
 .payment-methods-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.65rem;
-  margin: 0.85rem 0 1rem;
-}
-
-@container melidan-shell (max-width: 360px) {
-  .payment-methods-grid {
-    grid-template-columns: 1fr;
-  }
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.6rem;
+  margin: 0.55rem 0 1rem;
 }
 
 .payment-method-btn {
   background: var(--bg-surface);
   border: 1.5px solid var(--border-color);
   border-radius: var(--radius-md);
-  padding: 0.75rem 0.5rem;
+  padding: 0.7rem 0.5rem;
   text-align: center;
   cursor: pointer;
   font-weight: 700;
-  font-size: 0.82rem;
+  font-size: 0.84rem;
   color: var(--text-primary);
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 0.35rem;
+  justify-content: center;
+  gap: 0.45rem;
   transition: var(--transition);
 }
 
 .payment-method-btn i {
-  font-size: 1.35rem;
+  font-size: 1.2rem;
 }
 
 .payment-method-btn:hover,
 .payment-method-btn.active {
   border-color: var(--melidan-teal);
-  background: rgba(0, 155, 119, 0.1);
+  background: rgba(0, 155, 119, 0.11);
   color: var(--melidan-teal);
 }
 
-.change-calculator-box {
+/* Colores de marca para Yape (morado) y Plin (turquesa) */
+.payment-method-btn.pay-yape:hover,
+.payment-method-btn.pay-yape.active {
+  border-color: #742284;
+  background: rgba(116, 34, 132, 0.13);
+  color: #742284;
+}
+
+.payment-method-btn.pay-plin:hover,
+.payment-method-btn.pay-plin.active {
+  border-color: #00B5D8;
+  background: rgba(0, 181, 216, 0.13);
+  color: #0284C7;
+}
+
+.change-calculator-box,
+.digital-payment-box {
   background: rgba(15, 23, 42, 0.025);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
@@ -146,7 +218,168 @@
   margin-bottom: 1rem;
 }
 
+.digital-qr-mini {
+  width: 54px;
+  height: 54px;
+  border-radius: 12px;
+  border: 1.5px dashed var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+.badge-yape {
+  background-color: #742284 !important;
+  color: #FFFFFF !important;
+}
+
+.badge-plin {
+  background-color: #00A8C6 !important;
+  color: #FFFFFF !important;
+}
+
+/* ==========================================================================
+   Boleta / Factura Profesional SUNAT en Modal + Cupón Promocional
+   ========================================================================== */
+.pro-receipt-paper {
+  background: #FFFFFF;
+  color: #0F172A;
+  border: 1px solid #CBD5E1;
+  border-radius: 14px;
+  padding: 1.25rem;
+  font-size: 0.84rem;
+  line-height: 1.45;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+}
+
+.pro-receipt-top-stripe {
+  height: 6px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #FF5722, #009B77);
+  margin-bottom: 0.9rem;
+}
+
+.pro-receipt-box-doc {
+  border: 1.5px solid #0F172A;
+  border-radius: 10px;
+  padding: 0.55rem 0.75rem;
+  text-align: center;
+  margin: 0.75rem 0;
+  background: #F8FAFC;
+}
+
+.pro-receipt-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.65rem 0;
+  font-size: 0.8rem;
+}
+
+.pro-receipt-table th {
+  border-top: 1.5px solid #0F172A;
+  border-bottom: 1px dashed #94A3B8;
+  padding: 0.35rem 0.25rem;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  color: #475569;
+}
+
+.pro-receipt-table td {
+  padding: 0.38rem 0.25rem;
+  border-bottom: 1px dotted #E2E8F0;
+  vertical-align: top;
+}
+
+.pro-receipt-totals {
+  border-top: 1.5px dashed #94A3B8;
+  padding-top: 0.6rem;
+  margin-top: 0.45rem;
+}
+
+.pro-receipt-grand-total {
+  background: #FFF7ED;
+  border: 1.5px solid #FF5722;
+  border-radius: 10px;
+  padding: 0.55rem 0.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-heading);
+  font-size: 1.08rem;
+  font-weight: 800;
+  color: #0F172A;
+  margin: 0.5rem 0;
+}
+
+.pro-receipt-promo-coupon {
+  margin-top: 0.85rem;
+  padding: 0.85rem 0.9rem;
+  border-radius: 12px;
+  border: 2px dashed #009B77;
+  background: #ECFDF5;
+  text-align: center;
+  color: #064E3B;
+}
+
+.pro-receipt-promo-code {
+  display: inline-block;
+  margin: 0.35rem 0;
+  padding: 0.28rem 0.85rem;
+  border-radius: 8px;
+  background: #FFFFFF;
+  border: 1px solid #009B77;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.98rem;
+  font-weight: 800;
+  color: #EA580C;
+  letter-spacing: 0.06em;
+}
+
 .text-melidan-orange {
   color: var(--melidan-orange) !important;
 }
 
+[data-theme="dark"] .payment-method-btn.pay-yape:hover,
+[data-theme="dark"] .payment-method-btn.pay-yape.active {
+  border-color: #C084FC;
+  background: rgba(168, 85, 247, 0.2);
+  color: #E9D5FF;
+}
+
+[data-theme="dark"] .payment-method-btn.pay-plin:hover,
+[data-theme="dark"] .payment-method-btn.pay-plin.active {
+  border-color: #38BDF8;
+  background: rgba(56, 189, 248, 0.18);
+  color: #BAE6FD;
+}
+
+[data-theme="dark"] .digital-payment-box,
+[data-theme="dark"] .change-calculator-box {
+  background: rgba(15, 23, 42, 0.5);
+  border-color: var(--border-color);
+}
+
+/* Impresión limpia solo del comprobante */
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+  #printable-receipt-sheet,
+  #printable-receipt-sheet * {
+    visibility: visible !important;
+  }
+  #printable-receipt-sheet {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding: 0 !important;
+    background: #FFFFFF !important;
+  }
+  .pro-receipt-paper {
+    box-shadow: none !important;
+    border: none !important;
+  }
+}

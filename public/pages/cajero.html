@@ -9,10 +9,11 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="manifest" href="/manifest.webmanifest">
   <title>Melidan - Caja y Facturación Electrónica</title>
-  <meta name="description" content="Punto de venta y caja para cobro de mesas y emisión de comprobantes digitales.">
+  <meta name="description" content="Punto de venta y caja con Yape, Plin, boletas electrónicas PDF y cupones promocionales.">
 
-  <!-- Controlador Anti-FOUC de Tema Oscuro y Vista Móvil -->
+  <!-- Controlador Anti-FOUC de Tema Oscuro y Guardián RBAC -->
   <script src="/js/theme.js"></script>
+  <script src="/js/rbac.js"></script>
 
   <!-- Fuentes Google: Outfit & Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -36,29 +37,16 @@
 
     <!-- Cabecera de Caja -->
     <header class="melidan-navbar">
-      <div class="d-flex align-items-center gap-2">
-        <a href="/login" class="brand-logo">Melidan<span class="dot">.</span></a>
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <span class="brand-logo" style="cursor: default;">Melidan<span class="dot">.</span></span>
         <span class="badge bg-warning text-dark rounded-pill px-2 py-1 small fw-bold">Caja & Facturación</span>
+        <span class="badge bg-light text-secondary border small d-none d-md-inline rbac-user-badge">Caja</span>
       </div>
 
-      <div class="d-flex align-items-center gap-2">
-        <!-- Selector Rápido de Módulos -->
-        <div class="dropdown">
-          <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-            <i class="bi bi-grid-fill"></i><span class="d-none d-sm-inline ms-1">Módulos</span>
-          </button>
-          <ul class="dropdown-menu dropdown-menu-end shadow">
-            <li><a class="dropdown-item" href="/admin.html"><i class="bi bi-speedometer2 me-2"></i>Dashboard Admin</a></li>
-            <li><a class="dropdown-item" href="/mozo.html"><i class="bi bi-grid-3x3-gap-fill text-success me-2"></i>Mozo (Mesas & Carta)</a></li>
-            <li><a class="dropdown-item" href="/cocina.html"><i class="bi bi-fire text-danger me-2"></i>Cocina (KDS)</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item text-danger" href="/login"><i class="bi bi-box-arrow-right me-2"></i>Salir</a></li>
-          </ul>
-        </div>
-
-        <!-- Botón de Demostración Móvil en PC -->
-        <button type="button" class="viewport-toggle-btn" title="Demostración Responsive Móvil" aria-label="Demostración Responsive Móvil">
-          <i class="bi bi-phone"></i><span class="d-none d-md-inline ms-1 small">Móvil</span>
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <button type="button" class="btn btn-sm btn-melidan-outline" onclick="cajeroApp.loadAll(true)" title="Actualizar cuentas">
+          <i class="bi bi-arrow-clockwise"></i>
+          <span class="d-none d-md-inline">Actualizar</span>
         </button>
 
         <!-- Botón de Modo Oscuro -->
@@ -66,23 +54,54 @@
           <i class="bi bi-moon-stars-fill"></i><span class="d-none d-sm-inline ms-1 small">Oscuro</span>
         </button>
 
-        <a href="/admin.html" class="btn btn-sm btn-outline-secondary" title="Volver al Dashboard">
-          <i class="bi bi-arrow-left"></i> Dashboard
+        <a href="/login" class="btn btn-sm btn-outline-danger btn-logout-melidan" title="Cerrar Sesión">
+          <i class="bi bi-box-arrow-right"></i>
+          <span class="d-none d-md-inline ms-1">Salir</span>
         </a>
       </div>
     </header>
 
+    <!-- Banner Post-Pago: Ver Boleta y Descargar Boleta (Aparece al Confirmar el Pago) -->
+    <div id="post-payment-banner" class="post-payment-banner d-none">
+      <div class="d-flex align-items-center gap-3 flex-wrap">
+        <div class="post-payment-icon"><i class="bi bi-check-circle-fill"></i></div>
+        <div>
+          <div class="fw-bold" id="post-pay-title">¡Pago confirmado exitosamente!</div>
+          <small class="text-secondary" id="post-pay-subtitle">Comprobante listo para visualizar o descargar en PDF.</small>
+        </div>
+      </div>
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <button type="button" class="btn btn-sm btn-melidan-teal px-3 fw-bold" id="btn-view-last-receipt" onclick="cajeroApp.openReceiptModal()">
+          <i class="bi bi-eye-fill me-1"></i> Ver Boleta
+        </button>
+        <button type="button" class="btn btn-sm btn-melidan-orange px-3 fw-bold" id="btn-download-last-receipt" onclick="cajeroApp.downloadReceiptPdf()">
+          <i class="bi bi-file-earmark-arrow-down-fill me-1"></i> Descargar Boleta
+        </button>
+      </div>
+    </div>
+
     <!-- Contenido del Módulo POS -->
     <div class="pos-container">
 
-      <!-- Columna Izquierda: Mesas con Cuenta Solicitada -->
+      <!-- Columna Izquierda: Mesas Pendientes + Últimos Comprobantes Emitidos -->
       <div>
         <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
           <h5 class="fw-bold mb-0">Mesas Pendientes de Cobro</h5>
-          <span class="badge bg-danger rounded-pill px-2 py-1 small">🔴 Cuenta Solicitada</span>
+          <span class="badge bg-danger rounded-pill px-2 py-1 small" id="pending-bills-badge">🔴 0 Pendientes</span>
         </div>
 
         <div class="pending-bills-list" id="pending-bills-list"></div>
+
+        <!-- Últimos Comprobantes Pagados (Ver / Descargar en cualquier momento) -->
+        <div class="mt-4 pt-3 border-top">
+          <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+            <h6 class="fw-bold mb-0"><i class="bi bi-receipt-cutoff text-success me-1"></i> Últimos Comprobantes Pagados</h6>
+            <small class="text-muted">Ver o descargar boleta PDF</small>
+          </div>
+          <div id="recent-receipts-list" class="recent-receipts-list">
+            <div class="text-muted small py-2">Cargando comprobantes emitidos...</div>
+          </div>
+        </div>
       </div>
 
       <!-- Columna Derecha: Panel de Liquidación y Cobro -->
@@ -96,7 +115,7 @@
         <!-- Subtotal, IGV y Total -->
         <div class="mb-3">
           <div class="ticket-row">
-            <span class="text-muted">Subtotal (Base Imponible):</span>
+            <span class="text-muted">Op. Gravada (Subtotal):</span>
             <span id="checkout-subtotal">S/ 0.00</span>
           </div>
           <div class="ticket-row">
@@ -118,33 +137,43 @@
           <label class="btn btn-outline-dark btn-sm fw-bold py-2" for="doc-factura">🏢 Factura Electrónica</label>
         </div>
 
-        <div class="mb-3">
-          <label class="form-label-melidan small" id="doc-client-label">DNI / Documento del Cliente</label>
-          <input type="text" id="doc-client-number" class="form-control form-control-melidan form-control-sm" value="74589632">
+        <div class="row g-2 mb-3">
+          <div class="col-5">
+            <label for="doc-client-number" class="form-label-melidan small" id="doc-client-label">DNI / Documento</label>
+            <input type="text" id="doc-client-number" class="form-control form-control-melidan form-control-sm" value="74589632">
+          </div>
+          <div class="col-7">
+            <label for="doc-client-name" class="form-label-melidan small">Cliente / Razón Social</label>
+            <input type="text" id="doc-client-name" class="form-control form-control-melidan form-control-sm" placeholder="Nombre del cliente">
+          </div>
         </div>
 
-        <!-- Método de Pago -->
+        <!-- Método de Pago (Efectivo, Tarjeta POS, Yape, Plin) -->
         <label class="form-label-melidan small">Método de Pago:</label>
         <div class="payment-methods-grid">
-          <div class="payment-method-btn active" data-method="efectivo">
+          <button type="button" class="payment-method-btn active" data-method="efectivo">
             <i class="bi bi-cash-stack"></i>
             <span>Efectivo</span>
-          </div>
-          <div class="payment-method-btn" data-method="tarjeta">
+          </button>
+          <button type="button" class="payment-method-btn" data-method="tarjeta">
             <i class="bi bi-credit-card-2-front"></i>
             <span>Tarjeta POS</span>
-          </div>
-          <div class="payment-method-btn" data-method="digital">
+          </button>
+          <button type="button" class="payment-method-btn pay-yape" data-method="yape">
+            <i class="bi bi-phone-fill"></i>
+            <span>Yape</span>
+          </button>
+          <button type="button" class="payment-method-btn pay-plin" data-method="plin">
             <i class="bi bi-qr-code-scan"></i>
-            <span>Yape / Plin</span>
-          </div>
+            <span>Plin</span>
+          </button>
         </div>
 
         <!-- Calculadora de Vuelto para Efectivo -->
         <div class="change-calculator-box" id="cash-calculator-container">
           <div class="row g-2 align-items-center">
             <div class="col-6">
-              <label class="form-label-melidan small mb-1">Monto Recibido (S/):</label>
+              <label for="cash-received-input" class="form-label-melidan small mb-1">Monto Recibido (S/):</label>
               <input type="number" id="cash-received-input" class="form-control form-control-melidan form-control-sm" value="100.00" step="1">
             </div>
             <div class="col-6 text-end">
@@ -154,44 +183,59 @@
           </div>
         </div>
 
+        <!-- Panel Informativo para Yape / Plin / Tarjeta -->
+        <div class="digital-payment-box d-none" id="digital-payment-container">
+          <div class="d-flex justify-content-between align-items-center gap-2 mb-2">
+            <div>
+              <span class="badge rounded-pill px-2 py-1 fw-bold" id="digital-pay-badge">Yape</span>
+              <div class="fw-bold small mt-1" id="digital-pay-title">Melidan Restaurante S.A.C.</div>
+              <small class="text-muted" id="digital-pay-number">Número / QR: +51 987 654 321</small>
+            </div>
+            <div class="digital-qr-mini" aria-hidden="true">
+              <i class="bi bi-qr-code fs-2"></i>
+            </div>
+          </div>
+          <div>
+            <label for="payment-ref-input" class="form-label-melidan small mb-1">N° de Operación / Referencia (Opcional):</label>
+            <input type="text" id="payment-ref-input" class="form-control form-control-melidan form-control-sm" placeholder="Ej. OP-482910">
+          </div>
+        </div>
+
         <!-- Botón de Pago -->
-        <button class="btn btn-melidan-orange w-100 py-3 fw-bold mt-auto" id="btn-process-payment" onclick="cajeroApp.processPayment()">
-          <i class="bi bi-printer me-2"></i> Emitir Comprobante y Cobrar S/ 0.00
+        <button type="button" class="btn btn-melidan-orange w-100 py-3 fw-bold mt-auto" id="btn-process-payment" onclick="cajeroApp.processPayment()">
+          <i class="bi bi-check2-circle me-2"></i> Pagar y Emitir Comprobante S/ 0.00
         </button>
       </div>
 
     </div>
 
     <!-- ====================================================================
-         MODAL DE COMPROBANTE EMITIDO
+         MODAL DE BOLETA / FACTURA ELECTRÓNICA PROFESIONAL + PROMOCIÓN
          ==================================================================== -->
     <div class="modal fade" id="receiptModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered modal-sm">
-        <div class="modal-content">
-          <div class="modal-header bg-success text-white py-2">
-            <h6 class="modal-title fw-bold"><i class="bi bi-check-circle-fill me-1"></i> Comprobante Electrónico</h6>
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content rounded-4 border-0 shadow-lg overflow-hidden">
+          <div class="modal-header bg-success text-white py-2 px-3">
+            <h6 class="modal-title fw-bold mb-0">
+              <i class="bi bi-patch-check-fill me-1"></i> Comprobante Electrónico Emitido
+            </h6>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
           </div>
-          <div class="modal-body text-center p-3 font-monospace small">
-            <h5 class="fw-bold mb-0">MELIDAN RESTAURANTE</h5>
-            <small class="text-muted">RUC: 20601234567</small>
-            <p class="text-muted small mb-2">Av. La Marina 2450, San Miguel</p>
-            <div class="border-top border-bottom py-2 my-2">
-              <div class="fw-bold fs-6" id="receipt-voucher-number">B001-0001025</div>
-              <div id="receipt-table-num">Mesa #08</div>
-              <small class="text-muted" id="receipt-meta-info">Fecha: Hoy - Cajero: María Salazar</small>
+          <div class="modal-body p-3 p-sm-4" id="printable-receipt-sheet">
+            <div class="pro-receipt-paper" id="receipt-paper-content">
+              <!-- Renderizado dinámicamente por cajeroApp.renderReceiptModal() -->
             </div>
-            <div class="d-flex justify-content-between fw-bold fs-5 my-2">
-              <span>TOTAL:</span>
-              <span class="text-melidan-orange" id="receipt-total-amount">S/ 0.00</span>
-            </div>
-            <small class="text-success fw-bold d-block">✓ PAGO COMPLETADO Y MESA LIBERADA</small>
           </div>
-          <div class="modal-footer justify-content-center p-2">
+          <div class="modal-footer justify-content-between p-2 px-3 flex-wrap gap-2">
             <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
-            <button type="button" class="btn btn-sm btn-melidan-teal" onclick="window.print()">
-              <i class="bi bi-printer me-1"></i> Imprimir
-            </button>
+            <div class="d-flex gap-2">
+              <button type="button" class="btn btn-sm btn-melidan-outline" onclick="window.print()">
+                <i class="bi bi-printer me-1"></i> Imprimir
+              </button>
+              <button type="button" class="btn btn-sm btn-melidan-orange fw-bold px-3" id="btn-modal-download-pdf" onclick="cajeroApp.downloadReceiptPdf()">
+                <i class="bi bi-file-earmark-arrow-down-fill me-1"></i> Descargar Boleta (PDF)
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -201,9 +245,9 @@
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/auth.js"></script>
   <script src="/js/db.js"></script>
   <script src="/js/cajero.js"></script>
   <script>if ("serviceWorker" in navigator) window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js").catch(() => {}));</script>
 </body>
 </html>
-

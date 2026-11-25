@@ -1,5 +1,5 @@
 /**
- * theme.js - Controlador Universal de Modo Oscuro Completo + Demostración Móvil/PC (Melidan)
+ * theme.js - Controlador Universal de Modo Oscuro Completo (Melidan)
  * Persiste preferencias en localStorage (melidan_theme) y sincroniza data-theme + data-bs-theme.
  */
 
@@ -7,7 +7,12 @@
   'use strict';
 
   const STORAGE_KEY = 'melidan_theme';
-  const VIEWPORT_KEY = 'melidan_viewport_demo';
+
+  // Limpiar cualquier estado residual de demo anterior para usar diseño 100% responsive nativo
+  try {
+    document.documentElement.removeAttribute('data-viewport');
+    sessionStorage.removeItem('melidan_viewport_demo');
+  } catch (_) {}
 
   function getPreferredTheme() {
     try {
@@ -17,18 +22,14 @@
     return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   }
 
-  function getSavedViewport() {
-    try {
-      return sessionStorage.getItem(VIEWPORT_KEY) === 'mobile' ? 'mobile' : 'desktop';
-    } catch (_) {
-      return 'desktop';
-    }
-  }
-
-  function applyTheme(theme) {
+  function applyTheme(theme, animateIcon = false) {
     const cleanTheme = theme === 'dark' ? 'dark' : 'light';
-    document.documentElement.setAttribute('data-theme', cleanTheme);
-    document.documentElement.setAttribute('data-bs-theme', cleanTheme);
+    const root = document.documentElement;
+    if (animateIcon) {
+      root.classList.add('theme-switching');
+    }
+    root.setAttribute('data-theme', cleanTheme);
+    root.setAttribute('data-bs-theme', cleanTheme);
     try {
       localStorage.setItem(STORAGE_KEY, cleanTheme);
     } catch (_) {}
@@ -48,66 +49,33 @@
         btn.setAttribute('title', 'Cambiar a Modo Oscuro');
         btn.setAttribute('aria-label', 'Cambiar a Modo Oscuro');
       }
-    });
-  }
-
-  function applyViewport(mode) {
-    const cleanMode = mode === 'mobile' ? 'mobile' : 'desktop';
-    document.documentElement.setAttribute('data-viewport', cleanMode);
-    try {
-      sessionStorage.setItem(VIEWPORT_KEY, cleanMode);
-    } catch (_) {}
-
-    document.querySelectorAll('.viewport-toggle-btn').forEach((btn) => {
-      const isMobile = cleanMode === 'mobile';
-      btn.classList.toggle('is-mobile-active', isMobile);
-      if (isMobile) {
-        btn.innerHTML = '<i class="bi bi-laptop"></i><span class="d-none d-md-inline ms-1 small">Vista PC</span>';
-        btn.setAttribute('title', 'Volver a Vista Web de Escritorio');
-        btn.setAttribute('aria-label', 'Volver a Vista Web de Escritorio');
-      } else {
-        btn.innerHTML = '<i class="bi bi-phone"></i><span class="d-none d-md-inline ms-1 small">Móvil</span>';
-        btn.setAttribute('title', 'Demostración Responsive Móvil');
-        btn.setAttribute('aria-label', 'Demostración Responsive Móvil');
+      if (animateIcon) {
+        btn.classList.remove('theme-spin-active');
+        void btn.offsetWidth;
+        btn.classList.add('theme-spin-active');
       }
     });
+
+    if (animateIcon) {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => root.classList.remove('theme-switching'));
+      });
+    }
   }
 
   window.toggleDarkMode = function () {
     const current = document.documentElement.getAttribute('data-theme') || 'light';
-    applyTheme(current === 'dark' ? 'light' : 'dark');
-  };
-
-  window.toggleViewportDemo = function () {
-    const current = document.documentElement.getAttribute('data-viewport') || 'desktop';
-    applyViewport(current === 'mobile' ? 'desktop' : 'mobile');
+    applyTheme(current === 'dark' ? 'light' : 'dark', true);
   };
 
   // Aplicar inmediatamente antes del renderizado del body para evitar parpadeos (FOUC)
-  applyTheme(getPreferredTheme());
-  applyViewport(getSavedViewport());
+  applyTheme(getPreferredTheme(), false);
 
   document.addEventListener('DOMContentLoaded', () => {
-    // Asegurar que exista el botón de demostración móvil junto al selector de tema
     document.querySelectorAll('.theme-toggle-btn').forEach((themeBtn) => {
-      const parent = themeBtn.parentElement;
-      if (parent && !parent.querySelector('.viewport-toggle-btn')) {
-        const vpBtn = document.createElement('button');
-        vpBtn.type = 'button';
-        vpBtn.className = 'viewport-toggle-btn';
-        parent.insertBefore(vpBtn, themeBtn);
-      }
       themeBtn.removeEventListener('click', window.toggleDarkMode);
       themeBtn.addEventListener('click', window.toggleDarkMode);
     });
-
-    document.querySelectorAll('.viewport-toggle-btn').forEach((vpBtn) => {
-      vpBtn.removeEventListener('click', window.toggleViewportDemo);
-      vpBtn.addEventListener('click', window.toggleViewportDemo);
-    });
-
-    applyTheme(getPreferredTheme());
-    applyViewport(getSavedViewport());
+    applyTheme(getPreferredTheme(), false);
   });
 })();
-

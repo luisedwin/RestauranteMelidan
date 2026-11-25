@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#FF5722">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <title>Melidan - Carta Digital y Especial del Día</title>
+  <meta name="description" content="Carta gastronómica interactiva con carrusel de platos destacados y Platillo Especial del Día con precio rebajado de Restaurante Melidan.">
+
+  <!-- Controlador Anti-FOUC de Tema Oscuro y Guardián de Roles RBAC -->
+  <script src="/js/theme.js"></script>
+  <script src="/js/rbac.js"></script>
+
+  <!-- Fuentes Google: Outfit & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5.3.3 CSS & Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <!-- Estilos Modulares -->
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/carta.css">
+  <link rel="stylesheet" href="/css/animations.css">
+  <link rel="stylesheet" href="/css/dark-mode.css">
+</head>
+<body>
+
+  <main class="app-container app-container-wide carta-shell">
+
+    <!-- Cabecera Melidan + Mesa #04 + Tema + Salir -->
+    <header class="carta-header">
+      <div class="d-flex align-items-center gap-2">
+        <span class="brand-logo" style="cursor: default;">Melidan<span class="dot">.</span></span>
+        <span class="badge bg-light text-secondary border small d-none d-md-inline rbac-user-badge">Carta</span>
+      </div>
+
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <button type="button" class="carta-mesa-pill" id="carta-mesa-btn" onclick="cartaApp.openMesaSelector()" title="Cambiar mesa asignada">
+          <span id="carta-mesa-label">Mesa #04</span>
+        </button>
+
+        <button type="button" class="theme-toggle-btn" title="Alternar Modo Oscuro" aria-label="Alternar Modo Oscuro">
+          <i class="bi bi-moon-stars-fill"></i><span class="d-none d-sm-inline ms-1 small">Oscuro</span>
+        </button>
+
+        <a href="/login" class="btn btn-sm btn-outline-danger btn-logout-melidan" title="Cerrar Sesión">
+          <i class="bi bi-box-arrow-right"></i>
+          <span class="d-none d-md-inline ms-1">Salir</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- Cuerpo Principal de la Carta -->
+    <div class="carta-body">
+
+      <!-- ==================================================================
+           CARRUSEL DE PLATOS (4 IMÁGENES) + APARTADO PLATILLO ESPECIAL DEL DÍA
+           ================================================================== -->
+      <section class="carta-showcase-grid" id="carta-showcase-section" aria-label="Platos destacados y especial del día">
+
+        <!-- 1. Carrusel Visual de Platos (Exactamente 4 imágenes) -->
+        <div class="carta-carousel-card" id="carta-carousel-card">
+          <div class="carta-carousel-topbar">
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+              <span class="carta-showcase-badge"><i class="bi bi-images"></i> Galería de Platos</span>
+              <span class="carta-showcase-date" id="carta-showcase-date">Cargando selección...</span>
+            </div>
+            <span class="carta-carousel-counter" id="carta-carousel-counter">1 / 4</span>
+          </div>
+
+          <div class="carta-carousel-viewport" id="carta-carousel-viewport" tabindex="0" aria-label="Carrusel de 4 platos deslizable">
+            <div class="carta-carousel-track" id="carta-carousel-track">
+              <div class="carta-carousel-placeholder">
+                <div class="spinner-border spinner-border-sm text-warning mb-2" role="status"></div>
+                <div class="small text-muted">Cargando imágenes de nuestros platos...</div>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              class="carta-carousel-nav prev"
+              id="btn-carousel-prev"
+              onclick="cartaApp.prevSlide()"
+              aria-label="Plato anterior"
+            >
+              <i class="bi bi-chevron-left"></i>
+            </button>
+            <button
+              type="button"
+              class="carta-carousel-nav next"
+              id="btn-carousel-next"
+              onclick="cartaApp.nextSlide()"
+              aria-label="Siguiente plato"
+            >
+              <i class="bi bi-chevron-right"></i>
+            </button>
+          </div>
+
+          <!-- Selector visual de las 4 imágenes -->
+          <div class="carta-carousel-thumbs" id="carta-carousel-thumbs" role="tablist" aria-label="Seleccionar plato del carrusel"></div>
+        </div>
+
+        <!-- 2. Apartado Llamativo: Platillo Especial del Día con Precio Reducido -->
+        <aside class="carta-special-card" id="carta-special-card" aria-label="Platillo Especial del Día">
+          <div class="carta-special-loading">
+            <div class="spinner-border spinner-border-sm text-warning mb-2" role="status"></div>
+            <div class="small text-muted">Cargando Platillo Especial del Día...</div>
+          </div>
+        </aside>
+
+      </section>
+
+      <!-- ==================================================================
+           FRANJA COMPACTA DE PROMOS Y PROGRAMACIÓN POR DÍAS (SIN SATURAR)
+           ================================================================== -->
+      <section class="carta-promos-section" id="carta-promos-section" aria-label="Promociones y programación semanal">
+        <div class="carta-promos-header">
+          <div class="d-flex align-items-center gap-2">
+            <span class="carta-promos-title"><i class="bi bi-stars text-melidan-orange"></i> Promos y Menú por Día</span>
+          </div>
+          <div class="carta-day-tabs" id="carta-day-tabs" role="tablist" aria-label="Ver programación por día">
+            <button type="button" class="carta-day-tab active" data-day="" onclick="cartaApp.setScheduleDay('')">Hoy</button>
+            <button type="button" class="carta-day-tab" data-day="LUN" onclick="cartaApp.setScheduleDay('LUN')">Lun · Mié · Vie</button>
+            <button type="button" class="carta-day-tab" data-day="MAR" onclick="cartaApp.setScheduleDay('MAR')">Mar · Jue · Sáb</button>
+            <button type="button" class="carta-day-tab" data-day="DOM" onclick="cartaApp.setScheduleDay('DOM')">Domingo</button>
+          </div>
+        </div>
+        <div class="carta-promos-carousel-wrap" id="carta-promos-carousel-wrap">
+          <button
+            type="button"
+            class="carta-promos-nav prev"
+            id="btn-promos-prev"
+            onclick="cartaApp.slidePromos(-1)"
+            aria-label="Promoción anterior"
+          >
+            <i class="bi bi-chevron-left"></i>
+          </button>
+
+          <div
+            class="carta-promos-strip"
+            id="carta-promos-strip"
+            tabindex="0"
+            aria-label="Carrusel de promociones y menú por día deslizable"
+          ></div>
+
+          <button
+            type="button"
+            class="carta-promos-nav next"
+            id="btn-promos-next"
+            onclick="cartaApp.slidePromos(1)"
+            aria-label="Siguiente promoción"
+          >
+            <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
+        <div class="carta-promos-dots" id="carta-promos-dots" aria-label="Indicadores de promociones"></div>
+      </section>
+
+      <!-- Buscador -->
+      <div class="carta-search-wrap">
+        <i class="bi bi-search"></i>
+        <input
+          type="search"
+          id="carta-search-input"
+          class="carta-search-input"
+          placeholder="Buscar plato, combo, menú o jarra..."
+          autocomplete="off"
+        >
+      </div>
+
+      <!-- Categorías -->
+      <div class="carta-categories-bar" id="carta-categories-bar">
+        <button type="button" class="carta-cat-pill active" data-category="Todos">Todos</button>
+        <button type="button" class="carta-cat-pill" data-category="Menú del Día">Menú del Día</button>
+        <button type="button" class="carta-cat-pill" data-category="Combos">Combos</button>
+        <button type="button" class="carta-cat-pill" data-category="Platos Criollos">Platos Criollos</button>
+        <button type="button" class="carta-cat-pill" data-category="Platos Especiales">Platos Especiales</button>
+        <button type="button" class="carta-cat-pill" data-category="Entradas">Entradas</button>
+        <button type="button" class="carta-cat-pill" data-category="Bebidas y Jarras">Bebidas y Jarras</button>
+        <button type="button" class="carta-cat-pill" data-category="Postres">Postres</button>
+      </div>
+
+      <!-- Título Dinámico -->
+      <div class="carta-section-header">
+        <h2 class="carta-section-title" id="carta-section-title">Populares hoy</h2>
+        <small class="text-muted fw-semibold" id="carta-results-count"></small>
+      </div>
+
+      <!-- Lista / Grilla de Platos -->
+      <div class="carta-dishes-grid" id="carta-dishes-grid">
+        <div class="text-center py-5 text-muted" style="grid-column: 1 / -1;">
+          <div class="spinner-border spinner-border-sm text-warning mb-2" role="status"></div>
+          <div>Cargando carta gastronómica...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Barra Inferior Fija: "X items | Ver Carrito | S/ XX.XX" -->
+    <div class="carta-bottom-bar" id="carta-bottom-bar" onclick="cartaApp.openCartModal()" role="button" tabindex="0">
+      <div class="carta-cart-left">
+        <span class="carta-items-pill" id="carta-items-pill">0 items</span>
+        <span class="carta-cart-label">Ver Carrito</span>
+      </div>
+      <span class="carta-cart-total" id="carta-cart-total">S/ 0.00</span>
+    </div>
+
+    <!-- Modal: Detalle del Carrito y Envío de Pedido -->
+    <div class="modal fade" id="cartaCartModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable carta-cart-dialog">
+        <div class="modal-content rounded-4 border-0 shadow-lg">
+          <div class="modal-header">
+            <div>
+              <h5 class="modal-title fw-bold mb-0">Tu Pedido en Carta</h5>
+              <small class="text-muted">Revisa tus platos y envíalos directo a cocina</small>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row g-2 mb-3">
+              <div class="col-5">
+                <label for="cart-modal-mesa" class="form-label-melidan small">Mesa *</label>
+                <select id="cart-modal-mesa" class="form-select form-select-melidan form-select-sm"></select>
+              </div>
+              <div class="col-7">
+                <label for="cart-modal-client" class="form-label-melidan small">Comensal / Referencia</label>
+                <input type="text" id="cart-modal-client" class="form-control form-control-melidan form-control-sm" placeholder="Ej. Camila Torres">
+              </div>
+            </div>
+
+            <div id="carta-cart-modal-items"></div>
+
+            <!-- Sugerencia Inteligente (Upselling limpio solo cuando falta bebida o postre) -->
+            <div id="carta-cart-upsell" class="carta-cart-upsell d-none"></div>
+
+            <!-- Comentario General Opcional (Solo si el cliente lo requiere) -->
+            <div class="carta-optional-comment-wrap mt-2 pt-2 border-top">
+              <div class="form-check form-switch mb-0">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  id="carta-comment-toggle"
+                  onchange="cartaApp.toggleOrderComment(this.checked)"
+                >
+                <label class="form-check-label small fw-semibold text-secondary" for="carta-comment-toggle">
+                  <i class="bi bi-chat-left-text me-1"></i>¿Deseas agregar un comentario para cocina? (Opcional)
+                </label>
+              </div>
+              <div id="carta-order-comment-box" class="mt-2 d-none">
+                <textarea
+                  id="carta-order-comment"
+                  rows="2"
+                  maxlength="350"
+                  class="form-control form-control-melidan form-control-sm"
+                  placeholder="Ej. Alergia a frutos secos, salsa aparte, servir bebidas primero..."
+                ></textarea>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center pt-3 mt-2 border-top">
+              <span class="fw-bold text-secondary">Total del Pedido:</span>
+              <span class="fw-bold fs-4 text-melidan-orange" id="carta-modal-total">S/ 0.00</span>
+            </div>
+          </div>
+          <div class="modal-footer justify-content-between">
+            <button type="button" class="btn btn-sm btn-outline-danger" onclick="cartaApp.clearCart()">
+              <i class="bi bi-trash3 me-1"></i> Vaciar
+            </button>
+            <button type="button" class="btn btn-melidan-orange px-4 fw-bold" id="btn-carta-submit-order" onclick="cartaApp.submitOrder()">
+              <i class="bi bi-send-fill me-1"></i> Confirmar Pedido
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Selector de Mesa -->
+    <div class="modal fade" id="cartaMesaModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content rounded-4 border-0 shadow-lg">
+          <div class="modal-header py-2">
+            <h6 class="modal-title fw-bold mb-0">Seleccionar Mesa</h6>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            <div class="carta-mesa-grid" id="carta-mesa-grid"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/dishImages.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/db.js"></script>
+  <script src="/js/carta.js"></script>
+  <script>if ("serviceWorker" in navigator) window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js").catch(() => {}));</script>
+</body>
+</html>

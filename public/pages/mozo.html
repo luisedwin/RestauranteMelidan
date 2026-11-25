@@ -11,8 +11,9 @@
   <title>Melidan - Control de Mesas y Mozo</title>
   <meta name="description" content="Control de mesas, aforo en tiempo real y toma de pedidos para mozos de Melidan.">
 
-  <!-- Controlador Anti-FOUC de Tema Oscuro y Vista Móvil -->
+  <!-- Controlador Anti-FOUC de Tema Oscuro y Guardián RBAC -->
   <script src="/js/theme.js"></script>
+  <script src="/js/rbac.js"></script>
 
   <!-- Fuentes Google: Outfit & Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -31,148 +32,207 @@
 </head>
 <body>
 
-  <!-- Contenedor Principal Web Responsive + Demo Móvil -->
+  <!-- Contenedor Principal Web Responsive -->
   <main class="app-container app-container-wide">
 
+    <!-- Cabecera Unificada de Salón / Mesas -->
+    <header class="melidan-navbar">
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <span class="brand-logo" style="cursor: default;">Melidan<span class="dot">.</span></span>
+        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-1 small fw-bold">Salón & Mesas</span>
+        <span class="badge bg-light text-secondary border small d-none d-md-inline rbac-user-badge">Mozo</span>
+      </div>
+
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <button type="button" class="btn btn-sm btn-melidan-outline" onclick="mozoApp.loadTables(true)" title="Actualizar plano de mesas">
+          <i class="bi bi-arrow-clockwise"></i>
+          <span class="d-none d-md-inline">Actualizar</span>
+        </button>
+
+        <button type="button" class="theme-toggle-btn" title="Alternar Modo Oscuro" aria-label="Alternar Modo Oscuro">
+          <i class="bi bi-moon-stars-fill"></i><span class="d-none d-sm-inline ms-1 small">Oscuro</span>
+        </button>
+
+        <a href="/login" class="btn btn-sm btn-outline-danger btn-logout-melidan" title="Cerrar Sesión">
+          <i class="bi bi-box-arrow-right"></i>
+          <span class="d-none d-md-inline ms-1">Salir</span>
+        </a>
+      </div>
+    </header>
+
     <!-- ====================================================================
-         VISTA 1: CONTROL DE MESAS Y AFORO
+         VISTA PRINCIPAL: CONTROL DE MESAS Y AFORO (15 MESAS)
          ==================================================================== -->
-    <div id="mozo-view-tables" class="mozo-view-tab active">
-      <div class="tables-screen">
-
-        <!-- Fila Superior de Marca, Tema, Demo Móvil y Dashboard -->
-        <div class="tables-top-bar">
-          <a href="/login" class="brand-logo">Melidan<span class="dot">.</span></a>
-          <div class="d-flex align-items-center gap-2 flex-wrap">
-            <button type="button" class="viewport-toggle-btn" title="Demostración Responsive Móvil" aria-label="Demostración Responsive Móvil">
-              <i class="bi bi-phone"></i><span class="d-none d-md-inline ms-1 small">Móvil</span>
-            </button>
-            <button type="button" class="theme-toggle-btn" title="Alternar Modo Oscuro" aria-label="Alternar Modo Oscuro">
-              <i class="bi bi-moon-stars-fill"></i><span class="d-none d-sm-inline ms-1 small">Oscuro</span>
-            </button>
-            <a href="/admin.html" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1" id="btn-back-dashboard">
-              <i class="bi bi-arrow-left"></i> Dashboard
-            </a>
-          </div>
+    <div id="mozo-view-tables" class="tables-screen">
+      <div class="d-flex justify-content-between align-items-end flex-wrap gap-2 mb-2">
+        <div>
+          <h1 class="tables-header-title">Control de Mesas y Aforo</h1>
+          <p class="tables-header-subtitle mb-0">Rotación en tiempo real para optimizar horas punta. Haz clic en cualquier mesa para gestionarla o haz clic fuera para cerrar.</p>
         </div>
-
-        <!-- Títulos de la Sección -->
-        <h1 class="tables-header-title">Control de Mesas y Aforo</h1>
-        <p class="tables-header-subtitle">Rotación en tiempo real para optimizar horas punta.</p>
-
-        <!-- Leyenda con Contadores en Vivo -->
-        <div class="tables-legend">
-          <div class="legend-item">
-            <span class="legend-dot dot-libre"></span> Libre (<span id="count-libre">15</span>)
-          </div>
-          <div class="legend-item">
-            <span class="legend-dot dot-ocupada"></span> Ocupada (<span id="count-ocupada">0</span>)
-          </div>
-          <div class="legend-item">
-            <span class="legend-dot dot-limpiar"></span> Por Limpiar (<span id="count-limpiar">0</span>)
-          </div>
-          <div class="legend-item">
-            <span class="legend-dot dot-cuenta"></span> Cuenta (<span id="count-cuenta">0</span>)
-          </div>
-        </div>
-
-        <!-- Cuadrícula de 15 Mesas (5 Columnas en PC / 3 Columnas en Móvil) -->
-        <div class="tables-grid" id="tables-grid-container"></div>
-
-        <!-- Barra Rápida de Acciones del Mozo -->
-        <div class="d-flex gap-2 mt-2 flex-wrap">
-          <button class="btn btn-melidan-orange flex-fill" onclick="mozoApp.switchTab('menu')">
+        <div class="d-flex gap-2 flex-wrap">
+          <button type="button" class="btn btn-melidan-orange btn-sm px-3 py-2" onclick="mozoApp.openOrderDrawer()">
             <i class="bi bi-receipt me-1"></i> Tomar Comanda
           </button>
-          <a href="/cocina.html" class="btn btn-melidan-outline" title="Ver Cocina KDS">
-            <i class="bi bi-fire"></i> KDS
-          </a>
-          <a href="/cajero.html" class="btn btn-melidan-outline" title="Ver Caja">
-            <i class="bi bi-cash-stack"></i> Caja
+          <a href="/carta.html" class="btn btn-melidan-teal btn-sm px-3 py-2">
+            <i class="bi bi-journal-richtext me-1"></i> Ir a Carta
           </a>
         </div>
       </div>
+
+      <!-- Leyenda con Contadores en Vivo -->
+      <div class="tables-legend">
+        <div class="legend-item">
+          <span class="legend-dot dot-libre"></span> Libre (<span id="count-libre">15</span>)
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot dot-ocupada"></span> Ocupada (<span id="count-ocupada">0</span>)
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot dot-limpiar"></span> Por Limpiar (<span id="count-limpiar">0</span>)
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot dot-cuenta"></span> Cuenta (<span id="count-cuenta">0</span>)
+        </div>
+      </div>
+
+      <!-- Cuadrícula de 15 Mesas (5 Columnas en PC / 3 Columnas en Móvil) -->
+      <div class="tables-grid" id="tables-grid-container"></div>
     </div>
 
     <!-- ====================================================================
-         VISTA 2: CARTA DIGITAL / TOMAR PEDIDO
+         PANEL DESLIZABLE DE TOMA DE COMANDA (CLICK FUERA O EN X PARA CERRAR)
          ==================================================================== -->
-    <div id="mozo-view-menu" class="mozo-view-tab" style="display: none; padding: 1.25rem;">
-      <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-        <div>
-          <button class="btn btn-sm btn-outline-secondary mb-1" onclick="mozoApp.switchTab('tables')">
-            <i class="bi bi-arrow-left"></i> Volver a Mesas
-          </button>
-          <h4 class="fw-bold mb-0">Tomar Comanda</h4>
-        </div>
-        <div class="d-flex align-items-center gap-2">
-          <span class="badge bg-melidan-orange text-white px-3 py-2 fs-6" id="mozo-cart-badge">0</span>
-        </div>
-      </div>
-
-      <div class="mozo-order-layout">
-        <!-- Columna Izquierda: Mesa + Carta -->
-        <div>
-          <div class="card p-3 mb-3 border shadow-sm">
-            <div class="row g-2 align-items-center">
-              <div class="col-6">
-                <label class="form-label-melidan small">Mesa Asignada *</label>
-                <select id="order-table-select" class="form-select form-select-melidan">
-                  <option value="1">Mesa 01</option>
-                  <option value="2">Mesa 02</option>
-                  <option value="3">Mesa 03</option>
-                  <option value="4" selected>Mesa 04</option>
-                  <option value="5">Mesa 05</option>
-                  <option value="6">Mesa 06</option>
-                  <option value="7">Mesa 07</option>
-                  <option value="8">Mesa 08</option>
-                  <option value="9">Mesa 09</option>
-                  <option value="10">Mesa 10</option>
-                  <option value="11">Mesa 11</option>
-                  <option value="12">Mesa 12</option>
-                  <option value="13">Mesa 13</option>
-                  <option value="14">Mesa 14</option>
-                  <option value="15">Mesa 15</option>
-                </select>
-              </div>
-              <div class="col-6">
-                <label class="form-label-melidan small">Nombre Comensal</label>
-                <input type="text" id="order-client-name" class="form-control form-control-melidan" placeholder="Ej. Familia Torres">
-              </div>
-            </div>
+    <div
+      id="mozo-order-overlay"
+      class="mozo-drawer-overlay"
+      onclick="mozoApp.handleOverlayBackdropClick(event)"
+      aria-hidden="true"
+    >
+      <section class="mozo-drawer-panel" role="dialog" aria-modal="true" aria-label="Tomar Comanda">
+        <div class="mozo-drawer-header">
+          <div>
+            <h4 class="fw-bold mb-0">Tomar Comanda</h4>
+            <small class="text-muted">Haz clic fuera del panel o en ✕ para cerrar y volver al plano de mesas</small>
           </div>
-
-          <h6 class="fw-bold mb-2">Especialidades de la Carta</h6>
-          <div id="mozo-menu-container"></div>
-        </div>
-
-        <!-- Columna Derecha: Resumen de Comanda Sticky -->
-        <div class="mozo-cart-sticky">
-          <div class="card p-3 border shadow-sm">
-            <h6 class="fw-bold mb-2"><i class="bi bi-bag-check-fill text-success me-1"></i> Resumen de Comanda</h6>
-            <div id="mozo-cart-items">
-              <p class="text-muted small text-center my-2">No has agregado platos a la comanda.</p>
-            </div>
-            <div class="d-flex justify-content-between align-items-center pt-2 border-top mt-2">
-              <span class="fw-bold">Total:</span>
-              <span class="fw-bold fs-5 text-melidan-orange" id="mozo-cart-total">S/ 0.00</span>
-            </div>
-            <button class="btn btn-melidan-orange w-100 mt-3 fw-bold" onclick="mozoApp.submitOrder()">
-              <i class="bi bi-send-fill me-1"></i> Enviar Comanda a Cocina
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-melidan-orange text-white px-3 py-2 fs-6" id="mozo-cart-badge">0</span>
+            <button
+              type="button"
+              class="mozo-close-circle"
+              onclick="mozoApp.closeOrderDrawer()"
+              title="Cerrar panel de comanda"
+              aria-label="Cerrar panel de comanda"
+            >
+              <i class="bi bi-x-lg"></i>
             </button>
           </div>
         </div>
-      </div>
+
+        <div class="mozo-drawer-body">
+          <div class="mozo-order-layout">
+            <!-- Columna Izquierda: Mesa + Búsqueda + Carta -->
+            <div>
+              <div class="card p-3 mb-3 border shadow-sm">
+                <div class="row g-2 align-items-center">
+                  <div class="col-5">
+                    <label for="order-table-select" class="form-label-melidan small">Mesa Asignada *</label>
+                    <select id="order-table-select" class="form-select form-select-melidan form-select-sm">
+                      <option value="1">Mesa 01</option>
+                      <option value="2">Mesa 02</option>
+                      <option value="3">Mesa 03</option>
+                      <option value="4" selected>Mesa 04</option>
+                      <option value="5">Mesa 05</option>
+                      <option value="6">Mesa 06</option>
+                      <option value="7">Mesa 07</option>
+                      <option value="8">Mesa 08</option>
+                      <option value="9">Mesa 09</option>
+                      <option value="10">Mesa 10</option>
+                      <option value="11">Mesa 11</option>
+                      <option value="12">Mesa 12</option>
+                      <option value="13">Mesa 13</option>
+                      <option value="14">Mesa 14</option>
+                      <option value="15">Mesa 15</option>
+                    </select>
+                  </div>
+                  <div class="col-7">
+                    <label for="order-client-name" class="form-label-melidan small">Nombre Comensal</label>
+                    <input type="text" id="order-client-name" class="form-control form-control-melidan form-control-sm" placeholder="Ej. Familia Torres">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Buscador rápido para mozo -->
+              <div class="position-relative mb-3">
+                <i class="bi bi-search position-absolute top-50 translate-middle-y ms-3 text-muted"></i>
+                <input
+                  type="search"
+                  id="mozo-menu-search"
+                  class="form-control form-control-melidan form-control-sm ps-5"
+                  placeholder="Buscar plato, entrada, bebida o postre..."
+                  oninput="mozoApp.filterMenu(this.value)"
+                >
+              </div>
+
+              <div id="mozo-menu-container"></div>
+            </div>
+
+            <!-- Columna Derecha: Resumen de Comanda Sticky + Comentario Opcional -->
+            <div class="mozo-cart-sticky">
+              <div class="card p-3 border shadow-sm">
+                <h6 class="fw-bold mb-2"><i class="bi bi-bag-check-fill text-success me-1"></i> Resumen de Comanda</h6>
+                <div id="mozo-cart-items">
+                  <p class="text-muted small text-center my-2">No has agregado platos a la comanda.</p>
+                </div>
+
+                <!-- Comentario Opcional General del Cliente (Solo si el cliente lo requiere) -->
+                <div class="optional-comment-box mt-2 pt-2 border-top">
+                  <div class="form-check form-switch mb-0">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="mozo-comment-toggle"
+                      onchange="mozoApp.toggleOrderComment(this.checked)"
+                    >
+                    <label class="form-check-label small fw-semibold text-secondary" for="mozo-comment-toggle">
+                      <i class="bi bi-chat-left-text me-1"></i>¿Agregar comentario del cliente? (Opcional)
+                    </label>
+                  </div>
+                  <div id="mozo-comment-wrap" class="mt-2 d-none">
+                    <textarea
+                      id="mozo-order-comment"
+                      rows="2"
+                      maxlength="350"
+                      class="form-control form-control-melidan form-control-sm"
+                      placeholder="Ej. Sin cebolla, alergia al maní, traer bebidas primero..."
+                    ></textarea>
+                  </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center pt-2 border-top mt-2">
+                  <span class="fw-bold">Total:</span>
+                  <span class="fw-bold fs-5 text-melidan-orange" id="mozo-cart-total">S/ 0.00</span>
+                </div>
+                <button type="button" class="btn btn-melidan-orange w-100 mt-3 fw-bold" onclick="mozoApp.submitOrder()">
+                  <i class="bi bi-send-fill me-1"></i> Enviar Comanda a Cocina
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
 
     <!-- ====================================================================
-         MODAL DE ACCIÓN Y DETALLE DE MESA
+         MODAL DE ACCIÓN Y DETALLE DE MESA (CLICK FUERA CIERRA AUTOMÁTICAMENTE)
          ==================================================================== -->
     <div class="modal fade" id="mesaActionModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
+        <div class="modal-content rounded-4 border-0 shadow-lg">
           <div class="modal-header">
-            <h5 class="modal-title fw-bold" id="modal-mesa-title">Mesa 01</h5>
+            <div>
+              <h5 class="modal-title fw-bold mb-0" id="modal-mesa-title">Mesa 01</h5>
+              <small class="text-muted">Haz clic fuera de esta ventana para cerrar</small>
+            </div>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
           </div>
           <div class="modal-body">
@@ -193,27 +253,33 @@
                 </div>
               </div>
               <small class="text-muted d-block mt-2">Mozo asignado: <span id="modal-mesa-waiter" class="fw-bold">-</span></small>
+              <div id="modal-mesa-kds-alert" class="mt-2 d-none"></div>
             </div>
 
             <label class="form-label-melidan small">Cambiar Estado de la Mesa:</label>
             <div class="d-grid gap-2 mb-3">
-              <button class="btn btn-outline-success text-start fw-bold" onclick="mozoApp.changeMesaStatus('libre')">
+              <button type="button" class="btn btn-outline-success text-start fw-bold" onclick="mozoApp.changeMesaStatus('libre')">
                 🟢 Marcar como Libre (Disponible)
               </button>
-              <button class="btn btn-outline-warning text-dark text-start fw-bold" onclick="mozoApp.changeMesaStatus('ocupada')">
+              <button type="button" class="btn btn-outline-warning text-dark text-start fw-bold" onclick="mozoApp.changeMesaStatus('ocupada')">
                 🟠 Ocupar Mesa (Comensales Sentados)
               </button>
-              <button class="btn btn-outline-danger text-start fw-bold" onclick="mozoApp.changeMesaStatus('cuenta')">
+              <button type="button" class="btn btn-outline-danger text-start fw-bold" onclick="mozoApp.changeMesaStatus('cuenta')">
                 🔴 Solicitar Cuenta (Mesa por Retirarse)
               </button>
-              <button class="btn btn-outline-primary text-start fw-bold" onclick="mozoApp.changeMesaStatus('por_limpiar')">
+              <button type="button" class="btn btn-outline-primary text-start fw-bold" onclick="mozoApp.changeMesaStatus('por_limpiar')">
                 🔵 Marcar Por Limpiar (Mesa Desocupada)
               </button>
             </div>
 
-            <button class="btn btn-melidan-orange w-100 fw-bold" onclick="mozoApp.goToOrderForMesa()">
-              <i class="bi bi-cart-plus me-1"></i> Tomar Pedido en esta Mesa
-            </button>
+            <div class="d-grid gap-2">
+              <button type="button" class="btn btn-melidan-orange w-100 fw-bold" onclick="mozoApp.goToOrderForMesa()">
+                <i class="bi bi-cart-plus me-1"></i> Tomar Pedido en esta Mesa
+              </button>
+              <button type="button" class="btn btn-melidan-outline w-100 fw-bold" onclick="mozoApp.openCartaForMesa()">
+                <i class="bi bi-journal-richtext me-1"></i> Abrir Carta Digital de esta Mesa
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -221,15 +287,12 @@
 
   </main>
 
-  <style>
-    .mozo-view-tab.active { display: block !important; }
-  </style>
-
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/dishImages.js"></script>
+  <script src="/js/auth.js"></script>
   <script src="/js/db.js"></script>
   <script src="/js/mozo.js"></script>
   <script>if ("serviceWorker" in navigator) window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js").catch(() => {}));</script>
 </body>
 </html>
-

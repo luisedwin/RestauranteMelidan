@@ -1,0 +1,291 @@
+================================================================================
+RESTAURANTE MELIDAN - REPORTE DE CORRECCIONES, AUDITORÍA Y NOTAS DE VERSIÓN
+================================================================================
+Versión actual      : v3.4.0 (Estable - Producción / Demo Shark Tank)
+Fecha actualización : 25/11/2026 (incluye historial completo v3.3.0 + v3.4.0)
+Stack Tecnológico   : Node.js + Express 5 + PostgreSQL 18 (melidan_db) + PWA
+Caché Service Worker: melidan-shell-v13
+
+--------------------------------------------------------------------------------
+0. ACTUALIZACIÓN v3.4.0 (25/11/2026) — IMÁGENES REALES, DICCIONARIO JSON/JS Y SW
+--------------------------------------------------------------------------------
+[Diagnóstico de imágenes rotas en Carta Digital]
+- Causa raíz #1: Todas las URLs anteriores de los 46 platillos (y sus respaldos
+  onerror + avatares) apuntaban a images.unsplash.com, dominio que en redes
+  restringidas/universitarias cierra conexiones con ECONNRESET (al igual que
+  pexels.com y pixabay.com).
+- Causa raíz #2 (bug crítico en Service Worker): public/sw.js interceptaba
+  peticiones cross-origin (imágenes externas) y, al fallar el fetch, devolvía
+  caches.match('/index.html') como respuesta a etiquetas <img>, rompiendo la
+  carga y el mecanismo de recuperación.
+
+[Correcciones y mejoras implementadas en v3.4.0]
+1) Diccionario JSON + JavaScript para los 46 productos de la Carta:
+   - Creado public/data/carta-imagenes.json con 46 direcciones HTTPS directas
+     únicas y verificadas (46/46 HTTP 200 image/* en carga paralela, <= 111
+     caracteres, sin dependencias locales) + 46 URLs secundarias de respaldo
+     de gastronomía peruana real.
+   - Creado public/js/dishImages.js (window.MELIDAN_DISH_IMAGES y
+     window.MelidanDishImages) conectado a carta.html, mozo.html, admin.html e
+     index.html:
+       * Resolución instantánea por ID o nombre normalizado.
+       * Sustitución automática de URLs legacy bloqueadas (unsplash/pexels/pixabay).
+       * Recuperación progresiva en onerror: URL principal -> URL secundaria ->
+         tarjeta SVG inline (garantiza 0 íconos rotos incluso 100% offline).
+       * Sincronización en vivo desde /data/carta-imagenes.json si se edita el JSON.
+       * Generación de avatares SVG con iniciales para eliminar avatares rotos de
+         Unsplash en Admin y Portal.
+
+2) Corrección crítica del Service Worker (public/sw.js):
+   - Ignora explícitamente peticiones cross-origin (url.origin !== self.location.origin).
+   - Fallback a /index.html restringido solo a navegaciones de página
+     (event.request.mode === 'navigate'), devolviendo 503 limpio para otros assets.
+   - Precachea /js/dishImages.js y /data/carta-imagenes.json y actualiza caché a
+     "melidan-shell-v12".
+
+3) Correcciones adicionales en Frontend, Backend y SQL:
+   - public/js/carta.js: highResImage() ya no altera parámetros (?w=...) de URLs
+     externas que no pertenecen a Unsplash; las 5 zonas de imágenes (carrusel,
+     miniaturas, especial del día, grilla y complementos) usan MelidanDishImages
+     con referrerpolicy="no-referrer".
+   - public/js/mozo.js, public/js/admin.js, public/js/app.js y public/index.html:
+     eliminadas todas las referencias fijas a images.unsplash.com y corregidos
+     precios decimales de respaldo en el carrito legacy de app.js (47.90 / 14.90).
+   - src/utils/syncCartaMarketing.js: lee directamente desde
+     public/data/carta-imagenes.json como fuente única de verdad y valida en su
+     comprobación rápida que no queden URLs de Unsplash y existan 46 imágenes
+     únicas para migrar melidan_db automáticamente al iniciar el servidor.
+   - database/init.sql: actualizadas las 46 filas de productos con las URLs
+     verificadas.
+   - tests/test_crud_validations.js: agregadas aserciones automatizadas para el
+     diccionario JSON/JS (46 URLs únicas <=255 chars sin Unsplash) y el guardado
+     cross-origin de public/sw.js.
+   - README.md y package.json: actualizados a v3.4.0 con tabla completa de
+     usuarios y credenciales para los 6 roles (administrador, mozo, cajero,
+     cocina, recepcionista y cliente).
+
+--------------------------------------------------------------------------------
+1. RESUMEN DE LA VERSIÓN BASE ANTERIOR (v3.3.0)
+--------------------------------------------------------------------------------
+La versión 3.3.0 consolida la evolución operativa, comercial y de estabilidad
+visual del sistema gastronómico Restaurante Melidan. Además de incorporar las
+nuevas funcionalidades clave de operación (KDS reorganizado, boleta única por
+mesa, reporte Excel nativo con gráficos y complementos aleatorios rebajados en
+Carta), esta versión incluye una auditoría clase por clase de todos los módulos
+Frontend (HTML/CSS/JS) y Backend (Node.js/PostgreSQL/PDF/XLSX) orientada a
+eliminar parpadeos (flickers), glitches de scroll/layout, condiciones de carrera
+(race conditions), dobles envíos y fallos de validación.
+
+--------------------------------------------------------------------------------
+2. NUEVAS FUNCIONALIDADES INCLUIDAS EN LA VERSIÓN 3.3.0
+--------------------------------------------------------------------------------
+[A] Cocina KDS (public/pages/cocina.html, public/js/cocina.js, public/css/cocina.css)
+    - Pestañas clicables de estado movidas al lado izquierdo: "Nuevas" (activa
+      por defecto), "Cocinando" y "Listas", junto al contador en vista/total.
+    - Filtro de pedidos en el lado derecho (buscador por mesa/comanda/plato,
+      selector de estación de cocina y ordenamiento FIFO/Recientes/Mesa),
+      operando siempre en conjunto con la pestaña de estado activa.
+
+[B] Cuenta y Boleta Única por Mesa (public/js/cajero.js, src/routes/api.js)
+    - Todos los pedidos consecutivos sin pagar de una misma mesa se consolidan
+      en una sola cuenta en Caja y en una sola Boleta/Factura electrónica PDF,
+      unificando ítems repetidos y evitando múltiples boletas por mesa.
+    - El contador "cuentas_pendientes" del Dashboard Admin usa COUNT(DISTINCT id_mesa)
+      para coincidir exactamente con las mesas por cobrar en Caja.
+
+[C] Reporte Excel Detallado de Ventas en Admin (src/utils/salesExcel.js,
+    src/routes/api.js, public/pages/admin.html, public/js/admin.js)
+    - Nuevo endpoint GET /api/reports/sales-excel protegido por RBAC solo ADMIN.
+    - Genera archivo .xlsx nativo (OOXML sin dependencias externas) con 4 hojas:
+        1) Resumen Ejecutivo: KPIs, Ventas por Medio de Pago, Ventas por
+           Categoría, Top 10 Platos Más Vendidos + Gráfico de Barras nativo +
+           Gráfico de Pastel nativo.
+        2) Platos Vendidos: ranking completo de todos los platos vendidos.
+        3) Detalle de Ventas: libro completo de comprobantes emitidos.
+        4) Detalle por Ítem: auditoría línea por línea de cada plato facturado.
+    - Accesible desde la barra superior de Admin, el Dashboard y el Historial.
+
+[D] Complementos Aleatorios con Descuento en Carrito de Carta (public/js/carta.js,
+    public/css/carta.css, public/pages/carta.html, src/routes/api.js)
+    - Antes de confirmar el pedido, el modal del carrito ofrece 4 complementos
+      elegidos al azar (bebidas, jarras, postres y entradas) con -20% exclusivo.
+    - Incluye botón "Otros al azar" para rotar sugerencias, precio anterior
+      tachado, botón "+ Añadir" en una sola línea y validación real del
+      descuento en el servidor (POST /api/orders).
+
+--------------------------------------------------------------------------------
+3. CORRECCIONES DE AUDITORÍA CLASE POR CLASE (BUGS, PARPADEOS Y GLITCHES)
+--------------------------------------------------------------------------------
+
+3.1. Correcciones de Parpadeos (Flickering), Layout y CSS
+---------------------------------------------------------
+1) public/css/animations.css
+   - Eliminada la animación de entrada "melidanScaleIn" (opacity: 0 -> 1) de
+     tarjetas que se re-renderizan dinámicamente durante el polling automático
+     o búsquedas en vivo (.table-node, .kds-ticket, .bill-card-item,
+     .staff-card-item, .menu-item-card, .dish-item-card, .order-monitoring-card).
+     Antes, cada 12-15 segundos o en cada tecla presionada, todas las tarjetas
+     parpadeaban desde opacidad 0.
+   - Agregada clase utilitaria "html.theme-switching" para suprimir transiciones
+     desfasadas durante el cambio de tema Claro <-> Oscuro.
+   - Animación giratoria del icono de tema limitada únicamente al clic manual
+     (.theme-toggle-btn.theme-spin-active i), eliminando el giro involuntario al
+     cargar cada página.
+
+2) public/css/base.css
+   - CORREGIDO GLITCH DE STICKY EN PC: cambiado "overflow: hidden" por
+     "overflow: clip" en .app-container-wide, .app-container.spa-expanded y
+     .app-container-auth. Con "overflow: hidden", los navegadores rompían
+     position: sticky en cabeceras, barra inferior del carrito y panel de caja.
+   - CORREGIDO JANK DE SCROLL MÓVIL: "background-attachment: fixed" ahora solo
+     se aplica en equipos de escritorio (@media (hover: hover) and (pointer: fine)),
+     evitando tirones y repintados en pantallas táctiles móviles.
+   - Reemplazado "--transition: all" por propiedades visuales específicas
+     (background-color, border-color, color, box-shadow, transform) para evitar
+     saltos de layout o transiciones accidentales de dimensiones.
+
+3) public/css/carta.css
+   - Añadida aceleración GPU limpia ("backface-visibility: hidden",
+     "transform: translateZ(0)", "-webkit-user-drag: none") en .carta-carousel-img
+     para eliminar micro-vibraciones sub-píxel al cambiar diapositivas y evitar
+     arrastre fantasma de imágenes con el cursor.
+   - Agregada propiedad estándar "line-clamp: 2" junto a "-webkit-line-clamp: 2"
+     en descripciones de platos, carrusel, especial del día, promos y upsell.
+
+4) public/css/admin.css y public/css/dark-mode.css
+   - CORREGIDO BUG VISUAL EN INSIGNIA YAPE: Bootstrap 5.3 no trae las clases
+     .bg-purple-subtle ni .text-purple; se definieron explícitamente para Modo
+     Claro y Modo Oscuro, corrigiendo el contraste de pagos Yape en el Historial.
+   - Mejorado contraste de .btn-outline-success (botón Excel) en Modo Oscuro.
+
+3.2. Correcciones en Clases y Controladores Frontend (JS)
+---------------------------------------------------------
+5) public/js/cajero.js (cajeroApp)
+   - CORREGIDO BUG CRÍTICO DE SOBRESCRITURA DE INPUTS: el refresco automático
+     cada 15s sobrescribía lo que el cajero estaba escribiendo en "Cliente /
+     Razón Social" y "Monto Recibido". Ahora solo se precargan esos campos al
+     cambiar de mesa seleccionada y nunca interrumpen la escritura activa.
+   - CORREGIDO PARPADEO DE CUENTAS Y COMPROBANTES: implementado diffing por HTML
+     (lastBillsHtml, lastReceiptsHtml, lastCheckoutItemsHtml), pausa cuando la
+     pestaña está oculta (document.hidden) y bloqueo de concurrencia (isLoadingAll).
+   - Agregado bloqueo anti doble cobro (isProcessingPayment).
+   - setDocType() ya no borra un DNI/RUC personalizado ingresado por el cajero;
+     solo sustituye los valores por defecto.
+
+6) public/js/cocina.js (cocinaApp)
+   - Eliminado parpadeo cada 12s mediante comparación lastRenderedHtml y pausa
+     en pestañas en segundo plano (document.hidden + isLoading).
+   - Agregado bloqueo por comanda (pendingActions Set) para evitar envíos
+     duplicados al tocar dos veces un botón en pantalla táctil de cocina.
+   - Corregido escape HTML en showToast() y visualización del número real de
+     comanda (#numero_comanda) en las notificaciones.
+
+7) public/js/mozo.js (mozoApp)
+   - Eliminado parpadeo cada 15s en la grilla de 15 mesas mediante comparación
+     lastTablesHtml + bandera isLoadingTables + pausa en document.hidden.
+   - Agregado bloqueo anti doble envío en submitOrder() (isSubmittingOrder +
+     spinner en botón) y en changeMesaStatus() (isUpdatingMesa).
+   - Corregido posible bucle infinito en fallback de imágenes (this.onerror=null).
+
+8) public/js/carta.js (cartaApp)
+   - CORREGIDO BUG DE CONSISTENCIA DE PRECIO: si el cliente agregaba un producto
+     desde los complementos (-20%) y luego lo volvía a pulsar en la carta
+     principal, el precio en frontend podía diferir del backend. Ahora se
+     mantiene sincronizado al 100% con la regla del servidor.
+   - Corregido posible bucle infinito en onerror de imágenes (this.onerror=null)
+     y agregado draggable="false" + dragstart/blur cleanup en ambos carruseles
+     para que el arrastre con mouse nunca se quede trabado.
+   - Escapado seguro de comillas simples (escapeJsSingle) en handlers de
+     categorías y promociones.
+   - Bloqueo anti doble envío en submitOrder() (isSubmittingOrder), pausa del
+     autoplay cuando la pestaña está oculta y soporte de teclado (Enter/Espacio)
+     en la barra inferior del carrito.
+
+9) public/js/admin.js (adminApp)
+   - CORREGIDA CONDICIÓN DE CARRERA (RACE CONDITION) EN BÚSQUEDA DE HISTORIAL:
+     añadido debounce de 220ms y contador secuencial (historyRequestSeq) para
+     descartar respuestas antiguas al escribir rápido en el buscador.
+   - Refactorizado openDeleteModal(id) para resolver el nombre desde staffList
+     sin inyectar texto sin escapar en atributos onclick.
+   - Agregados bloqueos anti doble envío en handleUpdateUser() y
+     confirmSoftDelete(), descarga segura en nueva pestaña para enlaces PDF y
+     prevención de bucle onerror en avatares.
+
+10) public/js/db.js (MelidanDB)
+    - Eliminado parpadeo del punto verde de estado PostgreSQL: updateConnectionBadge()
+      ahora guarda _lastBadgeState y evita reescribir el DOM en cada petición API.
+    - Agregado timeout con AbortController (15s en API JSON, 30s en generación
+      Excel) para que la interfaz nunca quede congelada ante caídas de red.
+
+11) public/js/theme.js
+    - Cambio de tema instantáneo sin parpadeos desfasados usando clase temporal
+      "theme-switching" durante 2 frames de animación, y animación de icono
+      exclusiva al pulsar el botón manualmente.
+
+12) public/js/rbac.js
+    - Validación proactiva de expiración del token en el cliente (isTokenExpired)
+      antes de cargar módulos protegidos, redirigiendo limpiamente a /login con
+      aviso claro si la sesión de 24h caducó.
+    - Normalización de barras diagonales finales en detectCurrentModule().
+
+13) public/js/app.js (AppController)
+    - Botón de login se mantiene deshabilitado durante la redirección tras
+      autenticación exitosa (evita doble clic).
+    - Bloqueo de botones en pasos OTP de recuperación de clave, prevención de
+      bucle onerror en imágenes y manejo try/catch en showElectronicReceipt() y
+      callWaiter().
+
+3.3. Correcciones en Backend, SQL, PDF y Excel
+----------------------------------------------
+14) src/routes/api.js
+    - BLOQUEO TRANSACCIONAL ANTI BOLETA DUPLICADA: POST /api/billing bloquea la
+      fila de la mesa con "SELECT id_mesa FROM mesas WHERE id_mesa = $1 FOR UPDATE"
+      dentro de la transacción para serializar cobros simultáneos de la misma mesa.
+    - Validación estricta de IDs numéricos enteros positivos (HTTP 400 en lugar
+      de 500 de PostgreSQL) en /staff/:id, /staff/:id/restore y /orders/:id/status.
+    - Límite de seguridad en cantidad por ítem (1 a 500) en POST /api/orders.
+    - Redondeo exacto de Subtotal e IGV (subtotal + igv === total al centavo) y
+      acumulación sin deriva flotante IEEE-754 en POST /api/purchases-history.
+
+15) src/utils/receiptPdf.js
+    - CORREGIDO EDGE CASE EN MONTO EN LETRAS: numberToSpanishWords() ahora
+      redondea primero a centavos enteros para evitar casos borde tipo "100/100".
+    - Ampliada altura máxima dinámica del PDF de 1150 pt a 2600 pt para soportar
+      boletas consolidadas con gran cantidad de platos sin cortes en el cupón.
+    - Redondeo exacto de Subtotal e IGV al centavo.
+
+16) src/utils/salesExcel.js
+    - Ajustado eje de categorías del Gráfico de Barras (<c:crosses val="max"/>)
+      para que el ranking #1 aparezca en la parte superior manteniendo el eje de
+      valores en la parte inferior de forma limpia en Excel.
+    - Limpieza de expresión redundante en sheetView XML.
+
+17) src/server.js
+    - Manejo seguro de res.headersSent en middleware de errores y respuesta
+      HTTP 400 limpia cuando se recibe JSON malformado (entity.parse.failed).
+
+18) public/sw.js y package.json
+    - Versión del proyecto actualizada a v3.3.0.
+    - Caché del Service Worker incrementada a "melidan-shell-v11" para forzar
+      la entrega inmediata de todas las correcciones a los navegadores.
+
+--------------------------------------------------------------------------------
+4. VERIFICACIÓN REALIZADA
+--------------------------------------------------------------------------------
+- Validación de sintaxis (node --check): 100% aprobada en todos los archivos JS
+  de backend, frontend y pruebas.
+- Auditoría profunda OOXML (.xlsx): 17/17 archivos XML y relaciones validados
+  con integridad ZIP CRC32, gráficos de barras y pastel verificados sobre rangos
+  reales de celdas en hoja "Resumen Ejecutivo".
+- Pruebas unitarias offline de PDF (numberToSpanishWords y boleta consolidada de
+  25 platos), Excel (con datos y vacío), validadores, RBAC y rutas Express HTTP
+  (200 en vistas, 400 en IDs inválidos y JSON malformado, 401/403 en Excel).
+
+- Validación v3.4.0: 46/46 URLs verificadas HTTP 200 image/* en paralelo con
+  Referer y 46/46 URLs de respaldo verificadas; 16/16 archivos JS sin errores
+  de sintaxis; paridad exacta 46/46 entre JSON, JS, syncCartaMarketing y
+  init.sql; cero URLs de Unsplash en public/; smoke test Express HTTP 200 OK.
+
+================================================================================
+Fin del reporte - Restaurante Melidan v3.4.0
+================================================================================

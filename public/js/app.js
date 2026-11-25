@@ -66,8 +66,8 @@ class AppController {
     this.staffIncludeDeleted = false;
 
     this.cart = [
-      { id: 1, id_producto: 1, name: 'Lechón a Fuego Lento', price: 48.00, precio: 48.00, qty: 1, cantidad: 1 },
-      { id: 5, id_producto: 5, name: 'Chicha Morada Artesanal (1L)', price: 14.00, precio: 14.00, qty: 1, cantidad: 1 }
+      { id: 1, id_producto: 1, name: 'Lechón a Fuego Lento', price: 47.90, precio: 47.90, qty: 1, cantidad: 1 },
+      { id: 5, id_producto: 5, name: 'Jarra de Chicha Morada Artesanal (1L)', price: 14.90, precio: 14.90, qty: 1, cantidad: 1 }
     ];
     this.activeKdsTab = 'cocinando';
     this.activeCategory = 'Todos';
@@ -128,8 +128,11 @@ class AppController {
     const nameEl = document.getElementById('admin-user-name') || document.querySelector('.user-name');
     const avatarEl = document.getElementById('admin-user-avatar');
     const adminRoleBadge = document.getElementById('admin-role-badge');
+    const resolvedAvatar = window.MelidanDishImages?.resolveAvatar
+      ? window.MelidanDishImages.resolveAvatar(user.avatar, user.name)
+      : user.avatar;
     if (nameEl) nameEl.textContent = user.name;
-    if (avatarEl && user.avatar) avatarEl.src = user.avatar;
+    if (avatarEl && resolvedAvatar) avatarEl.src = resolvedAvatar;
     if (adminRoleBadge) {
       adminRoleBadge.textContent = `${roleConfig.icon} ${roleConfig.label}`;
       adminRoleBadge.className = `badge ${roleConfig.badgeClass} border`;
@@ -138,7 +141,7 @@ class AppController {
     const staffUserName = document.getElementById('staff-header-user-name');
     const staffUserAvatar = document.getElementById('staff-user-avatar');
     if (staffUserName) staffUserName.textContent = user.name;
-    if (staffUserAvatar && user.avatar) staffUserAvatar.src = user.avatar;
+    if (staffUserAvatar && resolvedAvatar) staffUserAvatar.src = resolvedAvatar;
 
     const kdsBadge = document.getElementById('kds-user-badge');
     if (kdsBadge) kdsBadge.textContent = `${roleConfig.icon} ${user.name}`;
@@ -164,28 +167,17 @@ class AppController {
       this.showScreen('login');
     } else {
       const existingUser = window.AuthService.getCurrentUser();
-      if (existingUser) {
-        this.applyRolePermissions(existingUser);
-        this.updateUserHeaders(existingUser);
-        const roleConfig = this.getRoleConfig(existingUser.role);
-        this.showScreen(roleConfig.defaultScreen);
-      } else {
-        this.showScreen('login');
+      if (existingUser && existingUser.token) {
+        const homeUrl = window.RBAC ? window.RBAC.getHomeUrl(existingUser) : '/carta.html';
+        window.location.replace(homeUrl);
+        return;
       }
+      this.showScreen('login');
     }
 
     // Sincronización con PostgreSQL en segundo plano sin bloquear el Login
     try {
       await window.db.init();
-      if (!forceLogin && window.AuthService.getCurrentUser()) {
-        await Promise.all([
-          this.renderAdminMetrics(),
-          this.renderStaffList(),
-          this.renderMenuDishes(),
-          this.renderKdsOrders(),
-          this.renderTrackerOrder()
-        ]);
-      }
     } catch (err) {
       console.warn('[AppController] Advertencia en carga inicial:', err);
     }
@@ -493,30 +485,42 @@ class AppController {
         alertBox.classList.add('d-none');
         submitBtn.disabled = true;
         submitBtn.textContent = 'Verificando credenciales...';
+        let redirecting = false;
 
         try {
           const user = await window.AuthService.login(email, password);
-          this.applyRolePermissions(user);
-          this.updateUserHeaders(user);
           const roleConfig = this.getRoleConfig(user.role);
-
           const normRole = this.normalizeRole(user.role);
-          let targetHtml = '/admin.html';
-          if (normRole === 'ADMIN') targetHtml = '/admin.html';
-          else if (normRole === 'WAITER' || normRole === 'CLIENT' || normRole === 'RECEPCIONISTA') targetHtml = '/mozo.html';
-          else if (normRole === 'CHEF') targetHtml = '/cocina.html';
-          else if (normRole === 'CASHIER') targetHtml = '/cajero.html';
 
+          let targetHtml = '/carta.html';
+          if (window.RBAC) {
+            targetHtml = window.RBAC.getHomeUrl(user);
+          } else if (normRole === 'ADMIN') {
+            targetHtml = '/admin.html';
+          } else if (normRole === 'CHEF') {
+            targetHtml = '/cocina.html';
+          } else if (normRole === 'WAITER' || normRole === 'RECEPCIONISTA') {
+            targetHtml = '/mozo.html';
+          } else if (normRole === 'CASHIER') {
+            targetHtml = '/cajero.html';
+          } else {
+            targetHtml = '/carta.html';
+          }
+
+          redirecting = true;
+          submitBtn.textContent = 'Ingresando...';
           this.showToast(`¡Bienvenido ${user.name}! Redirigiendo a ${roleConfig.label}...`);
           setTimeout(() => {
             window.location.href = targetHtml;
-          }, 420);
+          }, 320);
         } catch (err) {
           alertBox.textContent = err.message;
           alertBox.classList.remove('d-none');
         } finally {
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'Iniciar Sesión';
+          if (!redirecting) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Iniciar Sesión';
+          }
         }
       });
     }
@@ -527,7 +531,9 @@ class AppController {
         e.preventDefault();
         const email = document.getElementById('forgot-email').value;
         const alertBox = document.getElementById('forgot1-alert');
+        const submitBtn = formForgot1.querySelector('button[type="submit"]');
         alertBox.classList.add('d-none');
+        if (submitBtn) submitBtn.disabled = true;
 
         try {
           const res = await window.AuthService.sendOtpCode(email);
@@ -542,6 +548,8 @@ class AppController {
         } catch (err) {
           alertBox.textContent = err.message;
           alertBox.classList.remove('d-none');
+        } finally {
+          if (submitBtn) submitBtn.disabled = false;
         }
       });
     }
@@ -552,7 +560,9 @@ class AppController {
         e.preventDefault();
         const code = document.getElementById('otp-code').value.replace(/[^0-9]/g, '');
         const alertBox = document.getElementById('forgot2-alert');
+        const submitBtn = formForgot2.querySelector('button[type="submit"]');
         alertBox.classList.add('d-none');
+        if (submitBtn) submitBtn.disabled = true;
 
         try {
           await window.AuthService.verifyOtp(this.currentRecoveryEmail, code);
@@ -562,6 +572,8 @@ class AppController {
         } catch (err) {
           alertBox.textContent = err.message;
           alertBox.classList.remove('d-none');
+        } finally {
+          if (submitBtn) submitBtn.disabled = false;
         }
       });
     }
@@ -573,7 +585,9 @@ class AppController {
         const p1 = document.getElementById('new-password').value;
         const p2 = document.getElementById('confirm-password').value;
         const alertBox = document.getElementById('forgot3-alert');
+        const submitBtn = formForgot3.querySelector('button[type="submit"]');
         alertBox.classList.add('d-none');
+        if (submitBtn) submitBtn.disabled = true;
 
         try {
           await window.AuthService.resetPassword(this.currentRecoveryEmail, this.currentRecoveryCode, p1, p2);
@@ -584,6 +598,8 @@ class AppController {
         } catch (err) {
           alertBox.textContent = err.message;
           alertBox.classList.remove('d-none');
+        } finally {
+          if (submitBtn) submitBtn.disabled = false;
         }
       });
     }
@@ -1217,11 +1233,13 @@ class AppController {
     container.innerHTML = dishes.map(d => {
       const price = parseFloat(d.price).toFixed(2);
       const isPopular = d.destacado_menu || d.popular;
-      const imgUrl = d.image || d.imagen_url || 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=400&q=80';
+      const imgUrl = window.MelidanDishImages?.resolve
+        ? window.MelidanDishImages.resolve(d)
+        : (d.image || d.imagen_url || '');
 
       return `
         <div class="dish-item-card">
-          <img src="${this.escapeHtml(imgUrl)}" alt="${this.escapeHtml(d.name)}" class="dish-img-thumb" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=400&q=80'">
+          <img src="${this.escapeHtml(imgUrl)}" alt="${this.escapeHtml(d.name)}" class="dish-img-thumb" loading="lazy" referrerpolicy="no-referrer" data-dish-id="${Number(d.id)}" data-dish-name="${this.escapeHtml(d.name)}" data-dish-cat="${this.escapeHtml(d.category || 'Melidan')}" onerror="window.MelidanDishImages && window.MelidanDishImages.handleError(this)">
           <div class="flex-grow-1">
             <div class="d-flex align-items-center justify-content-between gap-2">
               <h4 class="dish-name-title mb-1">${this.escapeHtml(d.name)}</h4>
@@ -1435,7 +1453,13 @@ class AppController {
 
   async showElectronicReceipt() {
     this.showToast('Consultando comprobante en PostgreSQL (melidan_db)...');
-    const receipt = await window.db.getReceipt();
+    let receipt = null;
+    try {
+      receipt = await window.db.getReceipt();
+    } catch (err) {
+      this.showToast(err.message || 'No se pudo consultar el comprobante en PostgreSQL.', 'error');
+      return;
+    }
     if (!receipt) {
       this.showToast('No se encontró comprobante registrado en PostgreSQL aún.', 'error');
       return;
@@ -1517,11 +1541,15 @@ class AppController {
   }
 
   async callWaiter() {
-    const orders = await window.db.getOrders();
-    const activeOrder = orders[0];
-    const waiter = activeOrder?.mozo_nombre || 'Carlos Paredes';
-    const table = String(activeOrder?.numero_mesa || 4).padStart(2, '0');
-    this.showToast(`🛎️ Mozo ${waiter} notificado a la Mesa ${table}. ¡Viene en camino!`);
+    try {
+      const orders = await window.db.getOrders();
+      const activeOrder = orders[0];
+      const waiter = activeOrder?.mozo_nombre || 'Carlos Paredes';
+      const table = String(activeOrder?.numero_mesa || 4).padStart(2, '0');
+      this.showToast(`🛎️ Mozo ${waiter} notificado a la Mesa ${table}. ¡Viene en camino!`);
+    } catch (_) {
+      this.showToast('🛎️ Mozo notificado a tu mesa. ¡Viene en camino!');
+    }
   }
 
   logout() {
@@ -1550,14 +1578,11 @@ class AppController {
 
     try {
       const user = await window.AuthService.login(email, password);
-      if (window.location.pathname === '/login' && window.history.replaceState) {
-        window.history.replaceState({}, '', '/');
-      }
-      this.applyRolePermissions(user);
-      this.updateUserHeaders(user);
-      const roleConfig = this.getRoleConfig(user.role);
-      this.showToast(`¡Bienvenido ${user.name}! [${roleConfig.label}]`);
-      this.showScreen(roleConfig.defaultScreen);
+      const targetHtml = window.RBAC ? window.RBAC.getHomeUrl(user) : '/carta.html';
+      this.showToast(`¡Bienvenido ${user.name}! Redirigiendo...`);
+      setTimeout(() => {
+        window.location.href = targetHtml;
+      }, 360);
     } catch (err) {
       this.showToast(`Error al autenticar: ${err.message}`, 'error');
     }
