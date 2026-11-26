@@ -98,13 +98,15 @@ async function runSync(pool) {
     const check = await client.query(`
       SELECT
         EXISTS(SELECT 1 FROM information_schema.columns WHERE table_name = 'productos' AND column_name = 'dias_disponibles') AS has_cols,
+        EXISTS(SELECT 1 FROM information_schema.columns WHERE table_name = 'pedidos' AND column_name = 'comentarios') AS has_order_cols,
+        EXISTS(SELECT 1 FROM information_schema.columns WHERE table_name = 'comprobantes' AND column_name = 'nombre_cliente') AS has_comp_cols,
         EXISTS(SELECT 1 FROM information_schema.tables WHERE table_name = 'promociones_carta') AS has_promos,
         (SELECT COUNT(*)::int FROM productos WHERE id_producto IN (28, 29, 40, 44, 45, 46)) AS new_prods,
         (SELECT COUNT(*)::int FROM productos WHERE id_producto IN (1, 4, 6, 7) AND (precio - FLOOR(precio)) > 0) AS dec_ok,
         (SELECT COUNT(*)::int FROM productos WHERE imagen_url LIKE '/img/platos/plato_%.jpg') AS local_imgs
     `);
     const st = check.rows[0];
-    if (st.has_cols && st.has_promos && st.new_prods === 6 && st.dec_ok === 4 && st.local_imgs === 46) {
+    if (st.has_cols && st.has_order_cols && st.has_comp_cols && st.has_promos && st.new_prods === 6 && st.dec_ok === 4 && st.local_imgs === 46) {
       return { migrated: false };
     }
 
@@ -113,7 +115,18 @@ async function runSync(pool) {
       ALTER TABLE productos
         ADD COLUMN IF NOT EXISTS precio_regular NUMERIC(10, 2) NULL CHECK (precio_regular IS NULL OR precio_regular >= 0),
         ADD COLUMN IF NOT EXISTS etiqueta_marketing VARCHAR(60) NULL,
-        ADD COLUMN IF NOT EXISTS dias_disponibles VARCHAR(40) NOT NULL DEFAULT 'TODOS'
+        ADD COLUMN IF NOT EXISTS dias_disponibles VARCHAR(40) NOT NULL DEFAULT 'TODOS';
+      ALTER TABLE pedidos
+        ADD COLUMN IF NOT EXISTS comentarios TEXT NULL;
+      ALTER TABLE ventas
+        ADD COLUMN IF NOT EXISTS canal_pago VARCHAR(40) NULL,
+        ADD COLUMN IF NOT EXISTS referencia_pago VARCHAR(80) NULL;
+      ALTER TABLE comprobantes
+        ADD COLUMN IF NOT EXISTS documento_cliente VARCHAR(20) NULL,
+        ADD COLUMN IF NOT EXISTS nombre_cliente VARCHAR(120) NULL,
+        ADD COLUMN IF NOT EXISTS cajero_nombre VARCHAR(120) NULL,
+        ADD COLUMN IF NOT EXISTS codigo_promo VARCHAR(40) NULL,
+        ADD COLUMN IF NOT EXISTS descripcion_promo VARCHAR(220) NULL;
     `);
 
     await client.query(`
